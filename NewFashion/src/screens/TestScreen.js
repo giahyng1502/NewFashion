@@ -1,12 +1,15 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import BenefitsInfoBox from '../components/BenefitsInfoBox'
 import FilledButton from '../components/FilledButton'
 import ScreenSize from '../contants/ScreenSize'
 import OutlinedButton from '../components/OutlinedButton'
 import TextField from '../components/TextField'
+import PasswordStrengthBar from '../components/PasswordStrengthBar'
 
 const TestScreen = () => {
+    const [password, setpassword] = useState('')
+
     return (
 
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -16,7 +19,8 @@ const TestScreen = () => {
             <FilledButton title="Continue" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} />
             <OutlinedButton icon={require('../asset/ic_freeShipping.png')} title="Sign in" customStyle={{ width: ScreenSize.width - 40, marginTop: 20 }} />
             <TextField placeholder="Enter your email" customStyle={{ width: ScreenSize.width - 40, marginTop: 20 }} />
-            <TextField isPassword={true} placeholder="Enter your password" customStyle={{ width: ScreenSize.width - 40, marginTop: 20 }} />
+            <TextField isPassword={true} placeholder="Enter your password" customStyle={{ width: ScreenSize.width - 40, marginTop: 20 }} onChangeText={setpassword}/>
+            <PasswordStrengthBar password={password} customStyle={{width: ScreenSize.width - 40, marginTop: 10}}/>
         </View>
     )
 }

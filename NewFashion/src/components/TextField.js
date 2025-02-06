@@ -1,24 +1,29 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
-const TextField = ({ isPassword = false, placeholder, customStyle }) => {
+const TextField = ({ isPassword = false, placeholder, customStyle, onChangeText }) => {
   const [text, setText] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const clearText = () => {
-    setText('');
+    handleChangeText('');
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
+  const handleChangeText = (text) => {
+    setText(text);
+    onChangeText && onChangeText(text);
+  }
+
   return (
     <View style={[styles.container, customStyle]}>
       <TextInput
         style={styles.textInput}
         value={text}
-        onChangeText={setText}
+        onChangeText={handleChangeText}
         placeholder={placeholder}
         secureTextEntry={isPassword && !showPassword}
       />
@@ -31,7 +36,7 @@ const TextField = ({ isPassword = false, placeholder, customStyle }) => {
 
       {isPassword && (
         <TouchableOpacity style={styles.eyeButton} onPress={togglePasswordVisibility}>
-          <Image 
+          <Image
             source={showPassword ? require('../asset/bt_showPassword.png') : require('../asset/bt_hiddenPassword.png')}
             style={styles.icon}
           />
