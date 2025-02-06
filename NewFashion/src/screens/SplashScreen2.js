@@ -5,7 +5,7 @@ const SplashScreen2 = () => {
   return (
       <View style={st.container}>
           <Image
-              source={require('../src/image/img_banner1.png')}
+              source={require('../assets/img_banner1.png')}
               style={st.image} />
       </View>
   )
@@ -16,8 +16,6 @@ export default SplashScreen2
 const st = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     image: {
         width: '100%',

@@ -30,14 +30,14 @@ const TextField = ({ isPassword = false, placeholder, customStyle, onChangeText 
 
       {text.length > 0 && (
         <TouchableOpacity style={styles.clearButton} onPress={clearText}>
-          <Image source={require('../asset/bt_clearText.png')} style={styles.icon} />
+          <Image source={require('../assets/bt_clearText.png')} style={styles.icon} />
         </TouchableOpacity>
       )}
 
       {isPassword && (
         <TouchableOpacity style={styles.eyeButton} onPress={togglePasswordVisibility}>
           <Image
-            source={showPassword ? require('../asset/bt_showPassword.png') : require('../asset/bt_hiddenPassword.png')}
+            source={showPassword ? require('../assets/bt_showPassword.png') : require('../assets/bt_hiddenPassword.png')}
             style={styles.icon}
           />
         </TouchableOpacity>
