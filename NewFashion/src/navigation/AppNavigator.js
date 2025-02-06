@@ -8,6 +8,7 @@ import SplashScreen2 from '../screens/SplashScreen2'
 import LoginScreen from '../screens/LoginScreen'
 import RegisterWithEmailScreen from '../screens/RegisterWithEmailScreen'
 import LoginWithEmail from '../screens/LoginWithEmail'
+import MainScreen from '../screens/MainScreen'
 
 const Stack = createStackNavigator()
 
@@ -20,7 +21,8 @@ const AppNavigator = () => {
         {/* <Stack.Screen name="Splash2" component={SplashScreen2} /> */}
         {/* <Stack.Screen name="Login" component={LoginScreen} /> */}
         {/* <Stack.Screen name="RegisterWithEmail" component={RegisterWithEmailScreen} /> */}
-        <Stack.Screen name="LoginWithEmail" component={LoginWithEmail} />
+        {/* <Stack.Screen name="LoginWithEmail" component={LoginWithEmail} /> */}
+        <Stack.Screen name="Main" component={MainScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )
