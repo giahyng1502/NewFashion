@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { ProgressBar } from 'react-native-paper';
 
-const PasswordStrengthBar = ({ password, customStyle }) => {
+const PasswordStrengthBar = ({ password, customStyle, onChangeText }) => {
     const getPasswordStrength = (password) => {
         const minLength = 8;
         let strength = 0;
@@ -27,25 +27,35 @@ const PasswordStrengthBar = ({ password, customStyle }) => {
             strength += 1;
         }
 
+        switch (strength) {
+            case 1:
+                onChangeText('Weak');
+                break
+            case 2:
+                onChangeText('Fair');
+                break
+            case 3:
+                onChangeText('Good');
+                break
+            case 4:
+                onChangeText('Strong');
+                break
+            default:
+                onChangeText('');
+        }
+
         return strength;
     };
 
     const strength = getPasswordStrength(password);
 
-    const getStrengthLabel = () => {
-        switch (strength) {
-            case 1:
-                return 'Weak';
-            case 2:
-                return 'Fair';
-            case 3:
-                return 'Good';
-            case 4:
-                return 'Strong';
-            default:
-                return '';
-        }
-    };
+    // const getStrengthLabel = () => {
+        
+    // };
+
+    // useEffect(() => {
+    //     getStrengthLabel();
+    // }, []);
 
     const getStrengthColor = () => {
         switch (strength) {
@@ -65,7 +75,6 @@ const PasswordStrengthBar = ({ password, customStyle }) => {
     return (
         <View style={[styles.container, customStyle]}>
             <ProgressBar progress={strength / 4} color={getStrengthColor()} style={styles.progressBar} />
-            <Text style={styles.strengthLabel}>{getStrengthLabel()}</Text>
         </View>
     );
 };
