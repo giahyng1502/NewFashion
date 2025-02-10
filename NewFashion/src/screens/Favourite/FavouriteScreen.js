@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const VideoScreen = () => {
+const FavouriteScreen = () => {
   return (
     <View>
-      <Text>VideoScreen</Text>
+      <Text>Favourite</Text>
     </View>
   )
 }
 
-export default VideoScreen
+export default FavouriteScreen
 
 const styles = StyleSheet.create({})

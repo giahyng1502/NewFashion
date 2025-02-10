@@ -5,6 +5,7 @@ import HomeScreen from './Home/HomeScreen'
 import CategoryScreen from './Category/CategoryScreen'
 import NotificationScreen from './Notification/NotificationScreen'
 import YouScreen from './You/YouScreen'
+import FavouriteScreen from './Favourite/FavouriteScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -24,6 +25,9 @@ const MainScreen = () => {
                         } else if (route.name === 'Category') {
                             iconName = require("../assets/icons/ic_category.png");
                             label = 'Categories'
+                        } else if (route.name === 'Favourite') {
+                            iconName = focused ? require("../assets/icons/ic_favouriteSelected.png") : require("../assets/icons/ic_favourite.png");
+                            label = 'Favourite'
                         } else if (route.name === 'Notification') {
                             iconName = require("../assets/icons/ic_notification.png");
                             label = 'Notification'
@@ -46,6 +50,7 @@ const MainScreen = () => {
             >
                 <Tab.Screen name="Home" component={HomeScreen} />
                 <Tab.Screen name="Category" component={CategoryScreen} />
+                <Tab.Screen name="Favourite" component={FavouriteScreen} />
                 <Tab.Screen name="Notification" component={NotificationScreen} />
                 <Tab.Screen name="You" component={YouScreen} />
             </Tab.Navigator>
