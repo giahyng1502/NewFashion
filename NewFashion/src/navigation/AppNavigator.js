@@ -9,6 +9,7 @@ import LoginScreen from '../screens/LoginScreen'
 import RegisterWithEmailScreen from '../screens/RegisterWithEmailScreen'
 import LoginWithEmail from '../screens/LoginWithEmail'
 import MainScreen from '../screens/MainScreen'
+import DetailsScreen from '../screens/DetailsScreen'
 
 const Stack = createStackNavigator()
 
@@ -22,7 +23,7 @@ const AppNavigator = () => {
         {/* <Stack.Screen name="Login" component={LoginScreen} /> */}
         {/* <Stack.Screen name="RegisterWithEmail" component={RegisterWithEmailScreen} /> */}
         {/* <Stack.Screen name="LoginWithEmail" component={LoginWithEmail} /> */}
-        <Stack.Screen name="Main" component={MainScreen} />
+        <Stack.Screen name="Main" component={DetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )
