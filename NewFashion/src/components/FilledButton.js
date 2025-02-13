@@ -1,11 +1,11 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const FilledButton = ({title, customStyle}) => {
+const FilledButton = ({title, customStyle, onPress}) => {
   return (
-    <View style={[st.container, customStyle]}>
+    <Pressable style={[st.container, customStyle]} onPress={onPress}>
       <Text style={st.text}>{title}</Text>
-    </View>
+    </Pressable>
   )
 }
 

@@ -1,12 +1,12 @@
-import { Image, StyleSheet, Text, View } from 'react-native'
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const OutlinedButton = ({icon, title, customStyle}) => {
+const OutlinedButton = ({icon, title, customStyle, onPress}) => {
   return (
-    <View style={[st.container, customStyle]}>
+    <Pressable style={[st.container, customStyle]} onPress={onPress}>
       {icon && <Image source={icon} style={st.icon} resizeMode='contain' />}
       <Text style={st.text}>{title}</Text>
-    </View>
+    </Pressable>
   )
 }
 
