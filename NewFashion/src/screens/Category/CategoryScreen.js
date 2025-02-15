@@ -1,5 +1,6 @@
 import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Dimensions, ScrollView } from 'react-native';
 import React from 'react';
+import Icon from 'react-native-vector-icons/Ionicons'; 
 
 const { width } = Dimensions.get('window'); // Lấy độ rộng màn hình
 const FEATURED_WIDTH = width / 4; // Chiều rộng của danh sách featured
@@ -88,13 +89,13 @@ const CategoryScreen = () => {
               <View style={styles.itemContainer}>
                 <Image source={{ uri: item.image }} style={styles.image} />
                 <View style={styles.ratingContainer}>
-                  <Ionicons name="star" size={16} color="#FFD700" />a
+                  <Icon name="star" size={16} color="#FFD700" />a
                   <Text style={styles.ratingText}>{item.rating}</Text>
                 </View>
                 <Text style={styles.price}>{item.price}</Text>
                 <Text style={styles.sold}>{item.sold}</Text>
                 <TouchableOpacity style={styles.cartButton}>
-                  <Ionicons name="cart-outline" size={20} color="black" />
+                  <Icon name="cart-outline" size={20} color="black" />
                 </TouchableOpacity>
               </View>
             )}
