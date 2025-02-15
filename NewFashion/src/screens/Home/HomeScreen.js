@@ -2,6 +2,9 @@ import { StyleSheet, ScrollView, TouchableOpacity, FlatList, View, Image, Text }
 import React, { useRef, useState } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import ProductCard from '../../components/ProductCard';
+import { io } from "socket.io-client";
+import { useDispatch, useSelector } from "react-redux";
+import { setSocketConnection } from "../../redux/reducer/userReducer";
 
 const saleProducts = [
   {
@@ -114,15 +117,14 @@ const products = [
   },
 ];
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const categories = ['All', 'Women', 'Men', 'Sports', 'Kids', 'Baby', 'Office', 'Sleepwear'];
-  const [selectedCategory, setSelectedCategory] = useState('All')
   const flatListRef = useRef(null)
-  const [searchText, setSearchText] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchText, setSearchText] = useState('');
 
   const renderItemCategory = ({ index, item }) => {
     const isSelected = item === selectedCategory;
-
     return (
       <TouchableOpacity onPress={() => {
         setSelectedCategory(item)
@@ -147,8 +149,6 @@ const HomeScreen = () => {
       </View>
       <Text style={st.priceText}>{item.price}</Text>
       <Text style={st.soldText}>{item.sold}</Text>
-
-      {/* Thanh tiến trình nhỏ */}
       <View style={st.progressBarBackground}>
         <View style={[st.progressBarFill, { width: `${item.progress * 100}%` }]} />
       </View>
@@ -160,121 +160,116 @@ const HomeScreen = () => {
   };
 
   return (
-    <ScrollView style={st.container}>
-      {/* Banner */}
-      <View style={st.bannerContainer}>
-        <Image source={require('../../assets/img_banner2.png')} style={st.bannerImage} />
-      </View>
+    <FlatList
+      data={products} // Danh sách sản phẩm chính
+      keyExtractor={(item) => item.id}
+      numColumns={2}
+      ListHeaderComponent={() => (
+        <View>
+          {/* Banner */}
+          <View style={st.bannerContainer}>
+            <TouchableOpacity onPress={() => navigation.navigate('Chat')}>
+              <Image style={st.chatIcon} source={require('../../assets/icons/ic_chat.png')} />
+            </TouchableOpacity>
+            <Image source={require('../../assets/img_banner2.png')} style={st.bannerImage} />
+          </View>
 
-      {/* Search Bar */}
-      <View style={st.searchContainer}>
-        <TextInput value={searchText} style={st.searchInput} placeholder="Search something..." onChangeText={setSearchText} />
-        {searchText.length > 0 && (
-          <TouchableOpacity style={st.clearButton} onPress={clearText}>
-            <Image source={require('../../assets/bt_clearText.png')} style={st.icon} />
-          </TouchableOpacity>
-        )}
-        <TouchableOpacity style={st.searchButton}>
-          <Image source={require('../../assets/icons/ic_search.png')} style={st.searchIcon} />
-        </TouchableOpacity>
-      </View>
+          {/* Search Bar */}
+          <View style={st.searchContainer}>
+            <TextInput value={searchText} style={st.searchInput} placeholder="Search something..." onChangeText={setSearchText} />
+            {searchText.length > 0 && (
+              <TouchableOpacity style={st.clearButton} onPress={clearText}>
+                <Image source={require('../../assets/bt_clearText.png')} style={st.icon} />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={st.searchButton}>
+              <Image source={require('../../assets/icons/ic_search.png')} style={st.searchIcon} />
+            </TouchableOpacity>
+          </View>
 
-      {/* Categories */}
-      <FlatList
-        data={categories}
-        ref={flatListRef}
-        horizontal
-        keyExtractor={(item) => item}
-        renderItem={renderItemCategory}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={st.listContainer}
-      />
+          {/* Categories */}
+          <FlatList
+            data={categories}
+            ref={flatListRef}
+            horizontal
+            keyExtractor={(item) => item}
+            renderItem={renderItemCategory}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={st.listContainer}
+          />
 
-      {/* Discount */}
-      <View style={st.discountContainer}>
-        {/* Free Shipping */}
-        <View style={st.infoItem}>
-          <View style={st.textContainer}>
-            <Image
-              source={require('../../assets/icons/ic_greenReturn.png')}
-              style={st.icon}
+          {/* Discount */}
+          <View style={st.discountContainer}>
+            {/* Free Shipping */}
+            <View style={st.infoItem}>
+              <View style={st.textContainer}>
+                <Image source={require('../../assets/icons/ic_greenReturn.png')} style={st.icon} />
+                <Text style={[st.title, { color: 'green' }]}>Free shipping</Text>
+              </View>
+              <Text style={st.subtitle}>Limited-time offer</Text>
+            </View>
+
+            {/* Divider */}
+            <View style={st.divider} />
+
+
+            {/* Free Returns */}
+            <View style={st.infoItem}>
+              <View style={st.textContainer}>
+                <Image source={require('../../assets/ic_freeReturns.png')} style={st.icon} />
+                <Text style={st.title}>Free returns</Text>
+              </View>
+              <Text style={st.subtitle}>Up to 90 days*</Text>
+            </View>
+
+            {/* Divider */}
+            <View style={st.divider} />
+
+            {/* Price Adjustment */}
+            <View style={st.infoItem}>
+              <View style={st.textContainer}>
+                <Image source={require('../../assets/icons/ic_freeAdjust.png')} style={st.icon} />
+                <Text style={st.title}>Price adjustment</Text>
+              </View>
+              <Text style={st.subtitle}>Within 30 days</Text>
+            </View>
+          </View>
+
+          <View style={{height: 6, backgroundColor: '#eee', width: '100%'}} />
+
+          {/* Lightning Deals */}
+          <View style={st.lightningDealContainer}>
+            <View style={st.header}>
+              <View style={st.subHeader}>
+                <Image source={require('../../assets/icons/ic_lightning.png')} style={st.headerImage} />
+                <Text style={st.headerTitle}>Lightning deals</Text>
+                <Image source={require('../../assets/icons/ic_arrow1.png')} style={st.headerImage} />
+              </View>
+              <Text style={st.headerOffer}>Limited time offer</Text>
+            </View>
+
+            <FlatList
+              data={saleProducts}
+              horizontal
+              keyExtractor={(item) => item.id}
+              renderItem={renderItemLightningDeal}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={st.listContainer}
             />
-            <Text style={[st.title, { color: 'green' }]}>Free shipping</Text>
           </View>
-          <Text style={st.subtitle}>Limited-time offer</Text>
+
+          <View style={{height: 6, backgroundColor: '#eee', width: '100%'}} />
         </View>
+      )}
+      renderItem={({ item }) => <ProductCard item={item} />}
+      contentContainerStyle={st.list}
+    />
+  );
+};
 
-        {/* Divider */}
-        <View style={st.divider} />
-
-        {/* Free Returns */}
-        <View style={st.infoItem}>
-          <View style={st.textContainer}>
-            <Image
-              source={require('../../assets/ic_freeReturns.png')}
-              style={st.icon}
-            />
-            <Text style={st.title}>Free returns</Text>
-          </View>
-          <Text style={st.subtitle}>Up to 90 days*</Text>
-        </View>
-
-        {/* Divider */}
-        <View style={st.divider} />
-
-        {/* Price Adjustment */}
-        <View style={st.infoItem}>
-          <View style={st.textContainer}>
-            <Image
-              source={require('../../assets/icons/ic_freeAdjust.png')}
-              style={st.icon}
-            />
-            <Text style={st.title}>Price adjustment</Text>
-          </View>
-          <Text style={st.subtitle}>Within 30 days</Text>
-        </View>
-      </View>
-
-      <View style={st.lightningDealContainer}>
-
-        {/* Tiêu đề */}
-        <View style={st.header}>
-          <View style={st.subHeader}>
-            <Image source={require('../../assets/icons/ic_lightning.png')} style={st.headerImage} />
-            <Text style={st.headerTitle}>Lightning deals</Text>
-            <Image source={require('../../assets/icons/ic_arrow1.png')} style={st.headerImage} />
-          </View>
-          <Text style={st.headerOffer}>Limited time offer</Text>
-        </View>
-
-        {/* Danh sách sản phẩm */}
-        <FlatList
-          data={saleProducts}
-          horizontal
-          keyExtractor={(item) => item.id}
-          renderItem={renderItemLightningDeal}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={st.listContainer}
-        />
-      </View>
-
-      <View>
-        <FlatList
-          data={products}
-          numColumns={2}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <ProductCard item={item} />}
-          contentContainerStyle={st.list}
-        />
-      </View>
-
-    </ScrollView>
-  )
-}
 
 const st = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#eee'
   },
 
@@ -286,6 +281,11 @@ const st = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
+  },
+
+  chatIcon: {
+    width: 30,
+    height: 30,
   },
 
   //search
@@ -382,7 +382,6 @@ const st = StyleSheet.create({
   },
   lightningDealContainer: {
     backgroundColor: '#fff',
-    marginVertical: 10,
     padding: 10,
   },
   header: {

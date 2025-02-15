@@ -10,6 +10,8 @@ import LoginWithEmail from '../screens/LoginWithEmail'
 import MainScreen from '../screens/MainScreen'
 import LoginWithPhoneNumber from '../screens/LoginWithPhoneNumber'
 import DetailsScreen from '../screens/DetailsScreen'
+import ChatScreen from "../screens/Chat/ChatScreen";
+import ChatDetail from "../screens/Chatdetail/ChatDetail";
 
 const Stack = createStackNavigator()
 
@@ -25,6 +27,8 @@ const AppNavigator = () => {
         <Stack.Screen name="Main" component={MainScreen} />
         {/* <Stack.Screen name="Detail" component={DetailsScreen} /> */}
         {/* <Stack.Screen name="LoginWithPhoneNumber" component={LoginWithPhoneNumber} /> */}
+        <Stack.Screen name="Chat" component={ChatScreen} />
+        <Stack.Screen name="ChatDetail" component={ChatDetail} />
         
       </Stack.Navigator>
     </NavigationContainer>
