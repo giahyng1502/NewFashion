@@ -10,7 +10,7 @@ export const SocketProvider = ({ children, userId }) => {
         if (userId) {
             console.log(userId)
 
-            const newSocket = io("http://10.0.2.2:3000", {
+            const newSocket = io("http://160.30.21.59:3000", {
                 transports: ["websocket"],
                 auth: { userId: userId }
             });
