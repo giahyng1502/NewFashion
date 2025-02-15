@@ -1,11 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native'
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import React from 'react'
 
-const FilledButton = ({title, customStyle}) => {
+const FilledButton = ({title, customStyle,onclick}) => {
   return (
-    <View style={[st.container, customStyle]}>
+    <TouchableOpacity
+        onPress={onclick}
+        style={[st.container, customStyle]}>
       <Text style={st.text}>{title}</Text>
-    </View>
+    </TouchableOpacity>
   )
 }
 
