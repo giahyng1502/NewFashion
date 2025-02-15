@@ -18,12 +18,12 @@ const AppNavigator = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {/* <Stack.Screen name="Test" component={TestScreen} /> */}
         <Stack.Screen name="Splash" component={SplashScreen} />
-        {/* <Stack.Screen name="Splash2" component={SplashScreen2} /> */}
-        <Stack.Screen name="Login" component={LoginScreen} />
+        {/* <Stack.Screen name="Login" component={LoginScreen} /> */}
         {/* <Stack.Screen name="RegisterWithEmail" component={RegisterWithEmailScreen} /> */}
         {/* <Stack.Screen name="LoginWithEmail" component={LoginWithEmail} /> */}
-        {/* <Stack.Screen name="Main" component={MainScreen} /> */}
+        <Stack.Screen name="Main" component={MainScreen} />
         {/* <Stack.Screen name="LoginWithPhoneNumber" component={LoginWithPhoneNumber} /> */}
+        
       </Stack.Navigator>
     </NavigationContainer>
   )
