@@ -1,14 +1,33 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import BenefitsInfoBox from '../components/BenefitsInfoBox'
-import TextField from '../components/TextField'
-import ScreenSize from '../contants/ScreenSize'
-import FilledButton from '../components/FilledButton'
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import BenefitsInfoBox from '../components/BenefitsInfoBox';
+import TextField from '../components/TextField';
+import ScreenSize from '../contants/ScreenSize';
+import FilledButton from '../components/FilledButton';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useDispatch, useSelector} from "react-redux";
+import LoadingDialog from "../dialogs/loadingDialog";
+import {login} from "../service/userService";
+import {jwtDecode} from "jwt-decode";
+import {setSocketConnection, setUser} from "../redux/reducer/userReducer";
+import {io} from "socket.io-client";
 
-const LoginWithEmail = () => {
+const LoginWithEmail = ({navigation, route}) => {
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState('');
+  const [password, setPassWord] = useState('');
+  const handleLoginWithEmail = async () => {
+    const res = await login({email,password});
+    if (res.token) {
+      await AsyncStorage.setItem("token", res.token);
+      const user = jwtDecode(res.token);
+      dispatch(setUser(user));
+      navigation.navigate('Home');
+    }
+  };
+
   return (
     <View style={st.container}>
-
       <View style={st.header}>
         <TouchableOpacity style={st.iconContainer}>
           <Image
@@ -28,8 +47,15 @@ const LoginWithEmail = () => {
         <BenefitsInfoBox icon={require('../assets/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
       </View>
       
-      <TextField placeholder="Please enter your email address" customStyle={{ width: ScreenSize.width - 40, marginTop: 40 }} />
-      <FilledButton title="Continue" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} />
+      <TextField placeholder="Please enter your email address"
+                 onChangeText={setEmail}
+                 customStyle={{ width: ScreenSize.width - 40, marginTop: 40 }} />
+
+      <TextField placeholder="Please enter your email address"
+                 onChangeText={setPassWord}
+                 isPassword
+                 customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} />
+      <FilledButton onclick={handleLoginWithEmail} title="Continue" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} />
 
       <TouchableOpacity style={st.troubleContainer}>
         <Text style={st.troubleText}>Trouble signing in?</Text>
