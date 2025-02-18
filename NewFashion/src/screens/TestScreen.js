@@ -4,7 +4,7 @@ import BenefitsInfoBox from '../components/BenefitsInfoBox'
 import FilledButton from '../components/FilledButton'
 import ScreenSize from '../contants/ScreenSize'
 import OutlinedButton from '../components/OutlinedButton'
-import TextField from '../components/TextField'
+import TextField, { TextFieldType } from '../components/TextField'
 import PasswordStrengthBar from '../components/PasswordStrengthBar'
 
 const TestScreen = () => {
@@ -19,7 +19,7 @@ const TestScreen = () => {
             <FilledButton title="Continue" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} />
             <OutlinedButton icon={require('../assets/ic_freeShipping.png')} title="Sign in" customStyle={{ width: ScreenSize.width - 40, marginTop: 20 }} />
             <TextField placeholder="Enter your email" customStyle={{ width: ScreenSize.width - 40, marginTop: 20 }} />
-            <TextField isPassword={true} placeholder="Enter your password" customStyle={{ width: ScreenSize.width - 40, marginTop: 20 }} onChangeText={setpassword}/>
+            <TextField type={TextFieldType.PASSWORD} placeholder="Enter your password" customStyle={{ width: ScreenSize.width - 40, marginTop: 20 }} onChangeText={setpassword}/>
             <PasswordStrengthBar password={password} customStyle={{width: ScreenSize.width - 40, marginTop: 10}}/>
         </View>
     )

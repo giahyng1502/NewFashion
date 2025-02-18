@@ -1,12 +1,32 @@
-import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, TextInput, TouchableOpacity, StyleSheet, Image, Text, Pressable } from 'react-native';
 
-const TextField = ({ isPassword = false, placeholder, customStyle, onChangeText }) => {
+export const TextFieldType = Object.freeze({
+  PHONENUMBER: 'phoneNumber',
+  TEXT: 'text',
+  PASSWORD: 'password',
+  DROPDOWN: 'dropdown',
+});
+
+const TextField = ({
+  type = TextFieldType.TEXT,
+  placeholder,
+  customStyle,
+  onChangeText,
+  onDropdown,
+  error = false
+}) => {
   const [text, setText] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const clearText = () => {
     handleChangeText('');
+  };
+
+  const onDropdownPress = () => {
+    if (type === TextFieldType.DROPDOWN) {
+      onDropdown && onDropdown();
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -18,23 +38,45 @@ const TextField = ({ isPassword = false, placeholder, customStyle, onChangeText 
     onChangeText && onChangeText(text);
   }
 
+  useEffect(() => {
+    if (type === TextFieldType.DROPDOWN) {
+      setText('Select');
+    }
+  }, []);
+
   return (
-    <View style={[styles.container, customStyle]}>
+    <Pressable
+      onPress={type === TextFieldType.DROPDOWN ? onDropdownPress : null}
+      style={[styles.container, customStyle, (error) ? styles.errorBorder : styles.defaultBorder]}
+    >
+      {type === TextFieldType.PHONENUMBER && (
+        <Text style={{ color: 'black', fontSize: 12, fontWeight: 'semibold' }}>
+          VN +84 {' '}
+          <Text style={{ color: '#BBBBBB', fontSize: 12, fontWeight: 'semibold' }}>|</Text>
+          {' '}
+        </Text>
+      )}
       <TextInput
         style={styles.textInput}
         value={text}
+        editable={type !== TextFieldType.DROPDOWN}
         onChangeText={handleChangeText}
         placeholder={placeholder}
-        secureTextEntry={isPassword && !showPassword}
+        secureTextEntry={type === TextFieldType.PASSWORD && !showPassword}
+        keyboardType={type === TextFieldType.PHONENUMBER ? 'phone-pad' : 'default'}
       />
 
       {text.length > 0 && (
-        <TouchableOpacity style={styles.clearButton} onPress={clearText}>
-          <Image source={require('../assets/bt_clearText.png')} style={styles.icon} />
+        <TouchableOpacity style={styles.clearButton} onPress={type !== TextFieldType.DROPDOWN ? clearText : null}>
+          {type === TextFieldType.DROPDOWN ? (
+            <Image source={require('../assets/icons/ic_arrowDown.png')} style={styles.icon} resizeMode='contain' />
+          ) : (
+            <Image source={require('../assets/bt_clearText.png')} style={styles.icon} />
+          )}
         </TouchableOpacity>
       )}
 
-      {isPassword && (
+      {type === TextFieldType.PASSWORD && (
         <TouchableOpacity style={styles.eyeButton} onPress={togglePasswordVisibility}>
           <Image
             source={showPassword ? require('../assets/bt_showPassword.png') : require('../assets/bt_hiddenPassword.png')}
@@ -42,7 +84,7 @@ const TextField = ({ isPassword = false, placeholder, customStyle, onChangeText 
           />
         </TouchableOpacity>
       )}
-    </View>
+    </Pressable>
   );
 };
 
@@ -53,10 +95,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: 40,
-    borderRadius: 8,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+  },
+  defaultBorder: {
     borderWidth: 1,
     borderColor: '#737373',
-    paddingHorizontal: 10,
+  },
+  errorBorder: {
+    borderWidth: 1,
+    borderColor: 'red',
   },
   textInput: {
     flex: 1,

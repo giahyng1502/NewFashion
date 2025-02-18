@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
-import TextField from "../components/TextField";
+import TextField, { TextFieldType } from "../components/TextField";
 import ScreenSize from "../contants/ScreenSize";
 import PasswordStrengthBar from "../components/PasswordStrengthBar";
 import FilledButton from "../components/FilledButton";
@@ -33,7 +33,7 @@ const RegisterWithEmailScreen = () => {
       <Text style={st.label}>Email *</Text>
       <TextField placeholder="Enter your email" customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }} />
       <Text style={st.label}>Password *</Text>
-      <TextField isPassword={true} placeholder="Enter your password" customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }} onChangeText={setPassword} />
+      <TextField type={TextFieldType.PASSWORD} placeholder="Enter your password" customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }} onChangeText={setPassword} />
       <PasswordStrengthBar password={password} customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onChangeText={setStrengLabel} />
 
       <Text style={{ fontWeight: 'bold', fontSize: 14, marginTop: 8 }}>Password quality: {strengLabel}</Text>

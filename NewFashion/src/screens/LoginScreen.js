@@ -8,7 +8,7 @@ import { Modal } from 'react-native-paper';
 import FilledButton from '../components/FilledButton';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
-import TextField from '../components/TextField';
+import TextField, { TextFieldType } from '../components/TextField';
 import PasswordStrengthBar from '../components/PasswordStrengthBar';
 
 const LoginScreen = () => {
@@ -199,7 +199,7 @@ const LoginScreen = () => {
                 <View style={{ padding: 10, }} >
                   <Text style={st.troubleSubtitle}>Enter a new password you would like to associate with
                     your account below.</Text>
-                  <TextField isPassword={true} placeholder="Enter your password" customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }} onChangeText={setPassword} />
+                  <TextField type={TextFieldType.PASSWORD} placeholder="Enter your password" customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }} onChangeText={setPassword} />
                   <PasswordStrengthBar password={password} customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onChangeText={setStrengLabel} />
                   <Text style={{ fontWeight: 'bold', fontSize: 14, marginTop: 8, alignSelf: 'flex-start', marginVertical: 5 }}>Password quality: {strengLabel}</Text>
                   <Text style={st.passwordQuality}>
