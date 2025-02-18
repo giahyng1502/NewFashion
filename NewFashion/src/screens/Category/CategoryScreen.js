@@ -1,223 +1,211 @@
 import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Dimensions, ScrollView } from 'react-native';
-import React from 'react';
-import Icon from 'react-native-vector-icons/Ionicons'; 
+import React, { useState } from 'react';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { SafeAreaView } from 'react-native';
 
 const { width } = Dimensions.get('window'); // Lấy độ rộng màn hình
 const FEATURED_WIDTH = width / 4; // Chiều rộng của danh sách featured
 const CATEGORY_WIDTH = width - FEATURED_WIDTH; // Chiều rộng của danh mục chính
 const ITEM_WIDTH = CATEGORY_WIDTH / 2 - 15; // Chia 2 cột, trừ khoảng cách
+const SUBCATEGORY_ITEM_WIDTH = (width * 0.7 - 40) / 3; 
 
-const categories = [
-  { id: '1', name: "Women's Clothing", image: { uri: 'https://images.squarespace-cdn.com/content/v1/63c18cf4466543579adb2f6c/59ca16a9-6b5b-4148-ba52-0bbd02a56612/Stoughton-Clothing-Center-teen-clothing.jpg' } },
-  { id: '2', name: "Women's Shoes", image: { uri: 'https://images.squarespace-cdn.com/content/v1/63c18cf4466543579adb2f6c/59ca16a9-6b5b-4148-ba52-0bbd02a56612/Stoughton-Clothing-Center-teen-clothing.jpg' } },
-  { id: '3', name: "Men's Clothing", image: { uri: 'https://images.squarespace-cdn.com/content/v1/63c18cf4466543579adb2f6c/59ca16a9-6b5b-4148-ba52-0bbd02a56612/Stoughton-Clothing-Center-teen-clothing.jpg' } },
-  { id: '4', name: "Men's Shoes", image: { uri: 'https://images.squarespace-cdn.com/content/v1/63c18cf4466543579adb2f6c/59ca16a9-6b5b-4148-ba52-0bbd02a56612/Stoughton-Clothing-Center-teen-clothing.jpg' } },
 
-  { id: '5', name: "Sport Clothing", image: { uri: 'https://images.squarespace-cdn.com/content/v1/63c18cf4466543579adb2f6c/59ca16a9-6b5b-4148-ba52-0bbd02a56612/Stoughton-Clothing-Center-teen-clothing.jpg' } },
-  { id: '6', name: "Women's Dreses", image: { uri: 'https://images.squarespace-cdn.com/content/v1/63c18cf4466543579adb2f6c/59ca16a9-6b5b-4148-ba52-0bbd02a56612/Stoughton-Clothing-Center-teen-clothing.jpg' } },
-];
 
-const featured = [
-  { id: '1', name: 'Women’s Clothing' },
-  { id: '2', name: 'Women’s Shoes' },
-  { id: '3', name: 'Women’s Lingerie & Lounge' },
-  { id: '4', name: 'Men’s Clothing' },
-  { id: '5', name: 'Men’s Shoes' },
-  { id: '6', name: 'Men’s Underwear & Sleepwear' },
-  { id: '7', name: "Kid's Clothing" },
-  { id: '8', name: "Kid's Shoes" },
-  { id: '9', name: "Sport Clothing" },
-  { id: '10', name: "Office Clothing" },
-];
-
-const products = [
-  { id: '1', image: { uri: 'https://dongphuchaianh.vn/wp-content/uploads/2022/04/dong-phuc-cong-so-nu-1.jpg' }, price: '332.495đ', rating: 4.5, sold: '831 sold' },
-  { id: '2', image: { uri: 'https://dongphuchaianh.vn/wp-content/uploads/2022/04/dong-phuc-cong-so-nu-1.jpg' }, price: '248.062đ', rating: 4.8, sold: '3,2K+ sold' },
-  { id: '3', image: { uri: 'https://dongphuchaianh.vn/wp-content/uploads/2022/04/dong-phuc-cong-so-nu-1.jpg' }, price: '152.882đ', rating: 4.2, sold: '1,1K+ sold' },
-  { id: '4', image: { uri: 'https://dongphuchaianh.vn/wp-content/uploads/2022/04/dong-phuc-cong-so-nu-1.jpg' }, price: '169.548đ', rating: 4.6, sold: '20K+ sold' },
-];
 
 const CategoryScreen = () => {
-  return (
-    <View style={styles.container}>
-      {/* Ô tìm kiếm */}
-      <View style={styles.searchContainer}>
-        <TextInput style={styles.searchInput} placeholder="Searching something..." />
+  const categories = ['Áo Nam', 'Áo Nữ', 'Quần Nam', 'Quần Nữ', 'Giày Dép',
+    'Phụ Kiện', 'Đồ Thể Thao', 'Đồ Lót', 'Đồ Ngủ', 'Đồ Công Sở',
+    'Áo Khoác', 'Váy Đầm', 'Set Đồ', 'Đồ Unisex', 'Túi Xách',
+    'Mũ & Nón', 'Kính Mắt', 'Trang Sức', 'Đồng Hồ', 'Hàng Mới Về'];
+  const subCategoriesData = {
+    'Áo Nam': [
+    { name: 'Áo Thun', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
+    { name: 'Áo Polo', image: 'https://owen.cdn.vccloud.vn/media/catalog/product/cache/d52d7e242fac6dae82288d9a793c0676/a/p/apt231548._89_2.jpg' },
+    { name: 'Áo Sơ Mi', image: 'https://pos.nvncdn.com/492284-9176/ps/20231030_NN91oPe5hc.jpeg' },
+    { name: 'Áo Hoodie', image: 'https://360.com.vn/wp-content/uploads/2023/11/AHHTK403-APTTK403-QGNTK407-12-Custom.jpg' },
+    { name: 'Áo Len', image: 'https://vitimex.com.vn/images/products/2023/08/02/original/Ao%20len%20nam_ALN9005-xam-2.jpg' }
+  ],
+  'Áo Nữ': [
+    { name: 'Áo Blouse', image: 'https://example.com/aoblouse.jpg' },
+    { name: 'Áo Croptop', image: 'https://example.com/aocroptop.jpg' },
+    { name: 'Áo Kiểu', image: 'https://example.com/aopolo.jpg' },
+    { name: 'Áo Sơ Mi Nữ', image: 'https://example.com/aopolo.jpg' },
+    { name: 'Áo Thun Nữ', image: 'https://example.com/aopolo.jpg' },
+    { name: 'Áo Polo', image: 'https://example.com/aopolo.jpg' }
+  ],
+    'Quần Nam': ['Quần Jean', 'Quần Kaki', 'Quần Short', 'Quần Tây'],
+    'Quần Nữ': ['Quần Jean Nữ', 'Quần Short Nữ', 'Quần Ống Rộng', 'Quần Legging'],
+    'Giày Dép': ['Giày Thể Thao', 'Giày Da', 'Sandal', 'Dép Lê'],
+    'Phụ Kiện': ['Khăn Quàng Cổ', 'Găng Tay', 'Thắt Lưng', 'Vớ/Tất'],
+    'Đồ Thể Thao': ['Bộ Đồ Gym', 'Áo Thể Thao', 'Quần Thể Thao'],
+    'Đồ Lót': ['Áo Ngực', 'Quần Lót Nam', 'Quần Lót Nữ'],
+    'Đồ Ngủ': ['Pijama', 'Đồ Bộ Mặc Nhà'],
+    'Đồ Công Sở': ['Áo Vest', 'Quần Âu', 'Chân Váy Công Sở'],
+    'Áo Khoác': ['Áo Khoác Jeans', 'Áo Khoác Da', 'Áo Gió', 'Áo Khoác Len'],
+    'Váy Đầm': ['Đầm Dạ Hội', 'Đầm Công Sở', 'Đầm Dạo Phố'],
+    'Set Đồ': ['Bộ Quần Áo Nữ', 'Bộ Quần Áo Nam'],
+    'Đồ Unisex': ['Áo Unisex', 'Quần Unisex'],
+    'Túi Xách': ['Túi Đeo Chéo', 'Balo', 'Túi Tote'],
+    'Mũ & Nón': ['Nón Lưỡi Trai', 'Nón Bucket'],
+    'Kính Mắt': ['Kính Mát', 'Kính Cận Thời Trang'],
+    'Trang Sức': ['Dây Chuyền', 'Nhẫn', 'Vòng Tay'],
+    'Đồng Hồ': ['Đồng Hồ Nam', 'Đồng Hồ Nữ']
+  };
+
+  const randomProducts = [
+    { id: '1', name: 'Nón Lưỡi Trai', image: { uri: 'https://dongphuchaianh.vn/wp-content/uploads/2022/04/dong-phuc-cong-so-nu-1.jpg' }, price: '332.495đ', rating: 4.5, sold: '831 sold' },
+    { id: '2', name: 'Áo Khoác Da', image: { uri: 'https://dongphuchaianh.vn/wp-content/uploads/2022/04/dong-phuc-cong-so-nu-1.jpg' }, price: '248.062đ', rating: 4.8, sold: '3,2K+ sold' },
+    { id: '3', name: 'Bộ Quần Áo Nam', image: { uri: 'https://dongphuchaianh.vn/wp-content/uploads/2022/04/dong-phuc-cong-so-nu-1.jpg' }, price: '152.882đ', rating: 4.2, sold: '1,1K+ sold' },
+    { id: '4', name: 'Đồ Bộ Mặc Nhà', image: { uri: 'https://dongphuchaianh.vn/wp-content/uploads/2022/04/dong-phuc-cong-so-nu-1.jpg' }, price: '169.548đ', rating: 4.6, sold: '20K+ sold' },
+  ];
+
+  const [selectedCategory, setSelectedCategory] = useState(categories[0]);
+  const subCategories = subCategoriesData[selectedCategory];
+
+  const renderCategoryItem = ({ item }) => (
+    <TouchableOpacity onPress={() => setSelectedCategory(item)}>
+      <View style={[styles.categoryItem, selectedCategory === item && styles.selectedCategory]}>
+        <Text style={styles.categoryText}>{item}</Text>
       </View>
+    </TouchableOpacity>
+  );
 
-      {/* Chia màn hình thành 2 cột */}
-      <View style={styles.containerItem}>
-        {/* Cột 1: Danh sách nổi bật */}
-        <View style={[styles.featuredContainer, { width: FEATURED_WIDTH }]}>
-          <Text style={styles.heading}>Featured</Text>
-          <FlatList
-            data={featured}
-            numColumns={1} // Hiển thị theo cột dọc
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.featuredItem}>
-                <Text style={styles.featuredText}>{item.name}</Text>
-              </TouchableOpacity>
-            )}
-            style={styles.featuredList}
-          />
-        </View>
-
-        {/* Cột 2: Danh mục chính */}
-        <View style={[styles.categoryContainer, { width: CATEGORY_WIDTH }]}>
-          <Text style={styles.heading}>Shop by Category</Text>
-          <FlatList
-            data={categories}
-            numColumns={3}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.categoryItem}>
-                <Image source={item.image} style={styles.categoryImage} />
-                <Text style={styles.categoryText}>{item.name}</Text>
-              </TouchableOpacity>
-            )}
-            style={styles.categoryList}
-          />
-
-          <Text style={styles.heading}>Trending items</Text>
-          {/* FlatList - Danh sách sản phẩm */}
-          <FlatList
-            data={products}
-            numColumns={2}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View style={styles.itemContainer}>
-                <Image source={{ uri: item.image }} style={styles.image} />
-                <View style={styles.ratingContainer}>
-                  <Icon name="star" size={16} color="#FFD700" />a
-                  <Text style={styles.ratingText}>{item.rating}</Text>
-                </View>
-                <Text style={styles.price}>{item.price}</Text>
-                <Text style={styles.sold}>{item.sold}</Text>
-                <TouchableOpacity style={styles.cartButton}>
-                  <Icon name="cart-outline" size={20} color="black" />
-                </TouchableOpacity>
-              </View>
-            )}
-          />
-        </View>
-      </View>
+  const renderSubCategoryItem = ({ item }) => (
+    <View style={styles.subCategoryItem}>
+      <Image source={{ uri: item.image }} style={styles.subCategoryImage} />
+      <Text style={styles.subCategoryText}>{item.name}</Text>
     </View>
+
+  );
+
+  const renderProductItem = ({ item }) => (
+    <View style={styles.productItem}>
+      <Text style={styles.productName}>{item.name}</Text>
+      <Text style={styles.productPrice}>{item.price}</Text>
+    </View>
+  );
+
+  const ListHeaderComponent = () => (
+    <View style={styles.rightListHeader}>
+      <Text style={styles.subCategoryHeader}>Sub Categories</Text>
+      <FlatList
+        data={subCategories}
+        renderItem={renderSubCategoryItem}
+        numColumns={3}
+        keyExtractor={(item) => item}
+        showsVerticalScrollIndicator={false}
+      />
+
+      <Text style={styles.productHeader}>Random Products</Text>
+      <FlatList
+        data={randomProducts}
+        renderItem={renderProductItem}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
+  );
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.rowContainer}>
+        {/* Danh sách Category bên trái */}
+        <FlatList
+          data={categories}
+          renderItem={renderCategoryItem}
+          keyExtractor={(item) => item}
+          showsVerticalScrollIndicator={false}
+          style={styles.categoryList}
+        />
+
+        {/* FlatList lớn bên phải chứa cả subcategory và random products */}
+        <FlatList
+          data={[]}
+          ListHeaderComponent={ListHeaderComponent}
+          showsVerticalScrollIndicator={false}
+          style={styles.rightList}
+        />
+      </View>
+    </SafeAreaView>
+   
   );
 };
 
 export default CategoryScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 10 },
-
-  searchContainer: {
+  container: {
+    flex: 1,
+  },
+  rowContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    borderRadius: 10,
-    padding: 5
-  },
-
-  searchInput: { flex: 1, padding: 8 },
-
-  containerItem: {
     flex: 1,
-    flexDirection: "row",
   },
-
   categoryList: {
-    paddingRight: 10, // Tạo khoảng cách giữa 2 cột
+    width: '30%', // Category chiếm 30% màn hình
+    backgroundColor: '#f0f0f0',
   },
-
-  featuredList: {
-    backgroundColor: "#f8f8f8",
-    paddingVertical: 10,
-  },
-
   categoryItem: {
-    flex: 1,
-    alignItems: 'center',
-    margin: 10,
+    padding: 20,
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
   },
-
-  categoryImage: {
+  categoryText: {
+    fontSize: 16,
+  },
+  selectedCategory: {
+    backgroundColor: '#d0d0d0',
+  },
+  rightList: {
+    width: '70%', // Sub-category và random products chiếm 70% màn hình
+  },
+  rightListHeader: {
+    paddingHorizontal: 10,
+    paddingVertical: 20,
+  },
+  subCategoryHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  subCategoryItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+  },
+  subCategoryText: {
+    fontSize: 16,
+  },
+  productHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginVertical: 10,
+  },
+  productItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+  },
+  productName: {
+    fontSize: 16,
+  },
+  productPrice: {
+    fontSize: 14,
+    color: 'gray',
+  },
+  subCategoryItem: {
+    width: SUBCATEGORY_ITEM_WIDTH,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  subCategoryImage: {
     width: 80,
     height: 80,
     borderRadius: 40,
+    marginBottom: 5,
   },
-
-  categoryText: {
-    marginTop: 5,
-    textAlign: 'center',
+  subCategoryText: {
     fontSize: 14,
-    fontWeight: 'bold',
+    textAlign: 'center',
   },
 
-  featuredItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-  },
-
-  featuredText: {
-    fontSize: 16,
-    fontWeight: "500",
-    textAlign: "center",
-  },
-
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-
-  headerText: { fontSize: 18, fontWeight: 'bold' },
-
-  sortButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: '#ddd',
-  },
-
-  sortText: { fontSize: 14, marginRight: 5 },
-
-  itemContainer: {
-    width: ITEM_WIDTH,
-    backgroundColor: '#f9f9f9',
-    marginBottom: 10,
-    marginRight: 10,
-    padding: 8,
-    borderRadius: 8,
-    position: 'relative',
-  },
-
-  image: { width: '100%', height: 150, borderRadius: 8 },
-
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 5,
-  },
-
-  ratingText: { marginLeft: 5, fontSize: 14 },
-
-  price: { fontSize: 16, fontWeight: 'bold', marginTop: 5 },
-
-  sold: { fontSize: 12, color: '#666', marginTop: 2 },
-
-  cartButton: {
-    position: 'absolute',
-    bottom: 10,
-    right: 10,
-    backgroundColor: 'white',
-    padding: 5,
-    borderRadius: 20,
-    elevation: 3,
-  },
 });
