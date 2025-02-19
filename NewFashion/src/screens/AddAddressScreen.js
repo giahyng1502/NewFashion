@@ -1,9 +1,10 @@
-import { Animated, FlatList, Image, SectionList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import { Animated, Image, Modal, Pressable, SectionList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useRef, useState } from 'react'
 import BaseHeader from '../components/BaseHeader'
 import TextField, { TextFieldType } from '../components/TextField'
 import ScreenSize from '../contants/ScreenSize'
 import FilledButton from '../components/FilledButton'
+import OutlinedButton from '../components/OutlinedButton'
 
 const addressData = require('../assets/address_local.json')
 
@@ -32,6 +33,9 @@ const AddAddressScreen = ({ navigation }) => {
     const animatedValue = useRef(new Animated.Value(0)).current;
     const bottomSheetHeight = ScreenSize.height * 0.85
     const [searchText, setSearchText] = useState('');
+
+    //Modal state
+    const [modalVisible, setModalVisible] = useState(false);
 
     // Bottom sheet functions
     const openBottomSheet = (level) => {
@@ -144,52 +148,55 @@ const AddAddressScreen = ({ navigation }) => {
     }
 
     const validateField = (field, value) => {
+        let error = '';
+
         switch (field) {
             case 'fullname':
-                if (!value) setFullnameError('Please enter a full name')
-                else if (value.trim().length < 2) setFullnameError('Please enter your full name with no less than 2 characters');
-                else setFullnameError('');
-                break;
+                error = !value.trim() ? 'Please enter a full name' :
+                    value.trim().length < 2 ? 'Please enter your full name with no less than 2 characters' : '';
+                setFullnameError(error);
+                return error;
             case 'phoneNumber':
-                const phoneRegex = /^0\d{8,9}$/; 
-                if (!value) setPhoneNumberError('Please enter a phone number so we can call for any delivery issues');
-                else if (!phoneRegex.test(value)) setPhoneNumberError('Please enter a valid 9-digit or 10-digit phone number starting with 0');
-                else setPhoneNumberError('')
-                break;
+                const phoneRegex = /^0\d{8,9}$/;
+                error = !value ? 'Please enter a phone number so we can call for any delivery issues' :
+                    !phoneRegex.test(value) ? 'Please enter a valid 9-digit or 10-digit phone number starting with 0' : '';
+                setPhoneNumberError(error);
+                return error;
             case 'city':
-                if (!selectedCity) setCityError('Please select a city');
-                else setCityError('');
-                break;
+                error = !selectedCity ? 'Please select a city' : '';
+                setCityError(error);
+                return error;
             case 'district':
-                if (!selectedDistrict) setDistrictError('Please select a district');
-                else setDistrictError('');
-                break;
+                error = !selectedDistrict ? 'Please select a district' : '';
+                setDistrictError(error);
+                return error;
             case 'ward':
-                if (!selectedWard) setWardError('Please select a ward');
-                else setWardError('');
-                break;
+                error = !selectedWard ? 'Please select a ward' : '';
+                setWardError(error);
+                return error;
             case 'streetName':
-                if (!value) setStreetNameError('Please enter a street name');
-                else setStreetNameError('');
-                break;
+                error = !value ? 'Please enter a street name' : '';
+                setStreetNameError(error);
+                return error;
             default:
-                break;
+                return '';
         }
     };
 
     const saveInfomation = () => {
-        validateField('fullname');
-        validateField('phoneNumber');
-        validateField('city');
-        validateField('district');
-        validateField('ward');
-        validateField('streetName');
+        const fullnameErr = validateField('fullname', fullname);
+        const phoneErr = validateField('phoneNumber', phoneNumber);
+        const cityErr = validateField('city');
+        const districtErr = validateField('district');
+        const wardErr = validateField('ward');
+        const streetNameErr = validateField('streetName', streetName);
 
-        if (!fullnameError && !phoneNumberError && !cityError && !districtError && !wardError && !streetNameError) {
+        if (!fullnameErr && !phoneErr && !cityErr && !districtErr && !wardErr && !streetNameErr) {
             console.log('Save information');
-
+            setModalVisible(true);
         }
     };
+
 
     return (
         <View style={st.container}>
@@ -227,7 +234,7 @@ const AddAddressScreen = ({ navigation }) => {
                     placeholder="Enter a fullname"
                     customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }}
                     onChangeText={(text) => {
-                        setFullname(text);                        
+                        setFullname(text);
                         validateField('fullname', text)
                     }}
                     error={fullnameError.length > 0}
@@ -481,6 +488,49 @@ const AddAddressScreen = ({ navigation }) => {
                     </Animated.View>
                 </View>
             )}
+
+            {/* Modal */}
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+            >
+                <View style={st.modalContainer}>
+                    {/* background */}
+                    <TouchableOpacity
+                        style={{ backgroundColor: '#00000050', flex: 1, position: 'absolute', top: 0, right: 0, left: 0, bottom: 0 }}
+                        activeOpacity={1}
+                        onPress={() => setModalVisible(false)}
+                    >
+                    </TouchableOpacity>
+                    <View style={st.modalView}>
+                        <Pressable onPress={() => setModalVisible(false)} style={st.closeModal}>
+                            <Image source={require('../assets/bt_exit.png')} resizeMode='contain' />
+                        </Pressable>
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', textAlign: 'center', marginTop: 30 }}>
+                            Courier may be unable to deliver your order as the address provider {' '}
+                            <Text style={{ color: '#D96923' }}>
+                                maybe missing the building / house number.
+                            </Text>
+                            {' '} Please check if the address provided is correct.
+                        </Text>
+                        <Text style={{ fontSize: 13, fontWeight: 'bold', textAlign: 'left', marginTop: 10, width: '100%', color: '#737373' }}>
+                            Shipping address:
+                        </Text>
+
+                        <View style={{ padding: 10, borderRadius: 5, backgroundColor: '#F5F5F5', width: '100%', marginTop: 4 }}>
+                            <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
+                                {streetName}, {selectedWard?.name}, {selectedDistrict?.name}, {selectedCity?.name}
+                            </Text>
+                        </View>
+
+                        <FilledButton title="Edit my address" customStyle={{ backgroundColor: '#EE640F', width: '100%', marginTop: 20 }} onPress={() => setModalVisible(false)} />
+                        <OutlinedButton title="It is correct" customStyle={{ width: '100%', marginTop: 10 }} onPress={() => { console.log('go to next') }} />
+                    </View>
+                </View>
+            </Modal>
+
+
         </View >
     )
 }
@@ -563,4 +613,24 @@ const st = StyleSheet.create({
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
     },
+    modalContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1
+    },
+    modalView: {
+        backgroundColor: 'white',
+        borderRadius: 8,
+        padding: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '75%'
+    },
+    closeModal: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        width: 24,
+        height: 24
+    }
 })
