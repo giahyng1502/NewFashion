@@ -116,6 +116,13 @@ const products = [
     almostSoldOut: true,
   },
 ];
+const titleCategories = [
+  { id: "1", name: "All", image: null, active: true },
+  { id: "2", name: "DEALS", image: require("../../assets/icons/ic_deals.png"), active: false, highlight: false },
+  { id: "3", name: "Best Sellers", image: require("../../assets/icons/ic_bestSell.png"), active: false },
+  { id: "4", name: "5-Star Rated", image: require("../../assets/icons/ic_fiveStar.png"), active: false },
+  { id: "5", name: "New Arrivals", image: require("../../assets/icons/ic_newArrvals.png"), active: false },
+];
 
 const HomeScreen = ({ navigation }) => {
   const categories = ['All', 'Women', 'Men', 'Sports', 'Kids', 'Baby', 'Office', 'Sleepwear'];
@@ -235,7 +242,7 @@ const HomeScreen = ({ navigation }) => {
             </View>
           </View>
 
-          <View style={{height: 6, backgroundColor: '#eee', width: '100%'}} />
+          <View style={{ height: 6, backgroundColor: '#eee', width: '100%' }} />
 
           {/* Lightning Deals */}
           <View style={st.lightningDealContainer}>
@@ -247,6 +254,7 @@ const HomeScreen = ({ navigation }) => {
               </View>
               <Text style={st.headerOffer}>Limited time offer</Text>
             </View>
+            {/*  */}
 
             <FlatList
               data={saleProducts}
@@ -257,8 +265,22 @@ const HomeScreen = ({ navigation }) => {
               contentContainerStyle={st.listContainer}
             />
           </View>
-
-          <View style={{height: 6, backgroundColor: '#eee', width: '100%'}} />
+          <View style={{ height: 6, backgroundColor: '#eee', width: '100%' }} />
+          <View>
+            <FlatList
+              horizontal
+              data={titleCategories}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity style={[st.itemCategories, item.active && st.activeCategories]}>
+                  <Image source={item.image} style={st.iconCategories} />
+                  <Text style={[st.textCategories, item.highlight && st.highlight]}>{item.name}</Text>
+                </TouchableOpacity>
+              )}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{marginLeft:'-15'}}
+            />
+          </View>
         </View>
       )}
       renderItem={({ item }) => <ProductCard item={item} />}
@@ -463,6 +485,30 @@ const st = StyleSheet.create({
   list: {
     paddingHorizontal: 3,
     backgroundColor: '#fff',
+  },
+  itemCategories: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+  },
+  activeCategories: {
+    borderBottomWidth: 3,
+    borderBottomColor: "#000000",
+  },
+  iconCategories: {
+    width: 15,
+    height: 15,
+    marginRight: 5,
+  },
+  textCategories: {
+    color: "#737373",
+    fontSize: 15,
+    fontWeight:'700'
+  },
+  highlight: {
+    color: "red",
+    fontWeight: "bold",
   },
 })
 
