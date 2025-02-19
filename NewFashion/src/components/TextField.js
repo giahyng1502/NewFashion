@@ -13,10 +13,12 @@ const TextField = ({
   placeholder,
   customStyle,
   onChangeText,
+  value = '',
   onDropdown,
+  onBlur,
   error = false
 }) => {
-  const [text, setText] = useState('');
+  const [text, setText] = useState(value);
   const [showPassword, setShowPassword] = useState(false);
 
   const clearText = () => {
@@ -44,6 +46,10 @@ const TextField = ({
     }
   }, []);
 
+  useEffect(() => {
+    setText(value);
+  }, [value]);
+
   return (
     <Pressable
       onPress={type === TextFieldType.DROPDOWN ? onDropdownPress : null}
@@ -61,6 +67,7 @@ const TextField = ({
         value={text}
         editable={type !== TextFieldType.DROPDOWN}
         onChangeText={handleChangeText}
+        onBlur={onBlur}
         placeholder={placeholder}
         secureTextEntry={type === TextFieldType.PASSWORD && !showPassword}
         keyboardType={type === TextFieldType.PHONENUMBER ? 'phone-pad' : 'default'}
