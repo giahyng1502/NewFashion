@@ -6,6 +6,7 @@ import CategoryScreen from './Category/CategoryScreen'
 import NotificationScreen from './Notification/NotificationScreen'
 import YouScreen from './You/YouScreen'
 import FavouriteScreen from './Favourite/FavouriteScreen'
+import CartScreen from './Cart/CartScreen'
 
 const Tab = createBottomTabNavigator()
 

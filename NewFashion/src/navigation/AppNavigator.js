@@ -12,6 +12,7 @@ import LoginWithPhoneNumber from '../screens/LoginWithPhoneNumber'
 import DetailsScreen from '../screens/DetailsScreen'
 import ChatScreen from "../screens/Chat/ChatScreen";
 import ChatDetail from "../screens/Chatdetail/ChatDetail";
+import CartScreen from '../screens/Cart/CartScreen'
 
 const Stack = createStackNavigator()
 
@@ -20,15 +21,16 @@ const AppNavigator = () => {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {/* <Stack.Screen name="Test" component={TestScreen} /> */}
-        <Stack.Screen name="Splash" component={SplashScreen} />
+        {/* <Stack.Screen name="Splash" component={SplashScreen} /> */}
         {/* <Stack.Screen name="Login" component={LoginScreen} /> */}
         {/* <Stack.Screen name="RegisterWithEmail" component={RegisterWithEmailScreen} /> */}
         {/* <Stack.Screen name="LoginWithEmail" component={LoginWithEmail} /> */}
-        <Stack.Screen name="Main" component={MainScreen} />
+        {/* <Stack.Screen name="Main" component={MainScreen} /> */}
         {/* <Stack.Screen name="Detail" component={DetailsScreen} /> */}
         {/* <Stack.Screen name="LoginWithPhoneNumber" component={LoginWithPhoneNumber} /> */}
-        <Stack.Screen name="Chat" component={ChatScreen} />
-        <Stack.Screen name="ChatDetail" component={ChatDetail} />
+        {/* <Stack.Screen name="Chat" component={ChatScreen} /> */}
+        {/* <Stack.Screen name="ChatDetail" component={ChatDetail} /> */}
+        <Stack.Screen name="Cart" component={CartScreen} />
         
       </Stack.Navigator>
     </NavigationContainer>
