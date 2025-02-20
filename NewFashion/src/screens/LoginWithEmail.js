@@ -43,8 +43,8 @@ const LoginWithEmail = ({navigation, route}) => {
       </View>
 
       <View style={st.infoContainer}>
-        <BenefitsInfoBox icon={require('../assets/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
-        <BenefitsInfoBox icon={require('../assets/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
+        <BenefitsInfoBox icon={require('../assets/icons/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
+        <BenefitsInfoBox icon={require('../assets/icons/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
       </View>
       
       <TextField placeholder="Please enter your email address"

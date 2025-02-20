@@ -8,7 +8,7 @@ const ShipDetail = () => {
         <View style={st.cusfont}>
             <Image source={require('../assets/icons/ic_ship.png')}/>
             <Text style={{fontWeight:'700',color:'#007637',marginLeft: 10, textAlign:'center'}}>Free shipping on all orders</Text>
-            <Image style={{marginLeft: 175}} source={require('../assets/icons/ic_next.png')}/>
+            <Image style={{marginLeft: 165}} source={require('../assets/icons/ic_next.png')}/>
         </View>
         <View>
             <Text style={{fontWeight:'700'}}><Text style={{fontWeight:'700',color:'#737373'}}>Delivery:</Text> Jan 25 - Feb 5</Text>
