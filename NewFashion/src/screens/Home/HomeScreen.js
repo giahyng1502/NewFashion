@@ -1,5 +1,5 @@
-import { StyleSheet, ScrollView, TouchableOpacity, FlatList, View, Image, Text } from 'react-native'
-import React, { useRef, useState } from 'react'
+import { StyleSheet, ScrollView, TouchableOpacity, FlatList, View, Image, Text, LayoutAnimation } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import ProductCard from '../../components/ProductCard';
 import { io } from "socket.io-client";
@@ -49,6 +49,7 @@ const products = [
     title: "Embroidered Wool-blend Scarf Jacket",
     price: "304.568đ",
     rating: 4.5,
+    ratingCount: 5,
     sold: "831 sold",
     almostSoldOut: true,
   },
@@ -58,6 +59,7 @@ const products = [
     title: "Unisex Herringbone Black Cat Sweater",
     price: "153.229đ",
     rating: 4.3,
+    ratingCount: 3,
     sold: "8,1k+ sold",
     almostSoldOut: true,
   },
@@ -67,6 +69,7 @@ const products = [
     title: "Women's High-waisted Skinny Jeans",
     price: "337.008đ",
     rating: 4.6,
+    ratingCount: 7,
     sold: "2,5k+ sold",
     almostSoldOut: true,
   },
@@ -76,6 +79,7 @@ const products = [
     title: "Women's Long Skirt With Butterfly Slit",
     price: "282.459đ",
     rating: 4.7,
+    ratingCount: 4,
     sold: "4,2k+ sold",
     almostSoldOut: true,
   },
@@ -85,6 +89,7 @@ const products = [
     title: "Women's Long Skirt With Butterfly Slit",
     price: "282.459đ",
     rating: 4.7,
+    ratingCount: 4,
     sold: "4,2k+ sold",
     almostSoldOut: true,
   },
@@ -94,6 +99,7 @@ const products = [
     title: "Women's Long Skirt With Butterfly Slit",
     price: "282.459đ",
     rating: 4.7,
+    ratingCount: 4,
     sold: "4,2k+ sold",
     almostSoldOut: true,
   },
@@ -103,6 +109,7 @@ const products = [
     title: "Women's Long Skirt With Butterfly Slit",
     price: "282.459đ",
     rating: 4.7,
+    ratingCount: 54,
     sold: "4,2k+ sold",
     almostSoldOut: true,
   },
@@ -112,30 +119,38 @@ const products = [
     title: "Women's Long Skirt With Butterfly Slit",
     price: "282.459đ",
     rating: 4.7,
+    ratingCount: 60,
     sold: "4,2k+ sold",
     almostSoldOut: true,
   },
 ];
 const titleCategories = [
-  { id: "1", name: "All", image: null, active: true },
-  { id: "2", name: "DEALS", image: require("../../assets/icons/ic_deals.png"), active: false, highlight: false },
-  { id: "3", name: "Best Sellers", image: require("../../assets/icons/ic_bestSell.png"), active: false },
-  { id: "4", name: "5-Star Rated", image: require("../../assets/icons/ic_fiveStar.png"), active: false },
-  { id: "5", name: "New Arrivals", image: require("../../assets/icons/ic_newArrvals.png"), active: false },
+  { id: "1", name: "All", image: null },
+  { id: "2", name: "DEALS", image: require("../../assets/icons/ic_deals.png"), highlight: true },
+  { id: "3", name: "Best Sellers", image: require("../../assets/icons/ic_bestSell.png") },
+  { id: "4", name: "5-Star Rated", image: require("../../assets/icons/ic_fiveStar.png") },
+  { id: "5", name: "New Arrivals", image: require("../../assets/icons/ic_newArrvals.png") },
 ];
 
 const HomeScreen = ({ navigation }) => {
   const categories = ['All', 'Women', 'Men', 'Sports', 'Kids', 'Baby', 'Office', 'Sleepwear'];
-  const flatListRef = useRef(null)
+  
+  const categoryFlatlistRef = useRef(null)
+  const titleCategoryFlatlistRef = useRef(null)
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedTitleCategory, setSelectedTitleCategory] = useState(null);
   const [searchText, setSearchText] = useState('');
+
+  useEffect(() => {
+    setSelectedTitleCategory(titleCategories[0]);
+  }, []);
 
   const renderItemCategory = ({ index, item }) => {
     const isSelected = item === selectedCategory;
     return (
       <TouchableOpacity onPress={() => {
         setSelectedCategory(item)
-        flatListRef.current.scrollToIndex({ index, animated: true });
+        categoryFlatlistRef.current.scrollToIndex({ index, animated: true });
       }
       }>
         <View style={st.categoryItem}>
@@ -143,6 +158,26 @@ const HomeScreen = ({ navigation }) => {
             {item}
           </Text>
           {isSelected && <View style={st.underline} />}
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderItemTitleCategory = ({ index, item }) => {
+    const isSelected = item === selectedTitleCategory;
+    return (
+      <TouchableOpacity onPress={() => {
+        setSelectedTitleCategory(item);
+        titleCategoryFlatlistRef.current.scrollToIndex({ index, animated: true });
+      }}>
+        <View style={[st.categoryItem, {justifyContent: 'center'}]}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            {item.image && <Image source={item.image} style={{ width: 14, height: 14 }} resizeMode='contain' />}
+            <Text style={[st.categoryText, isSelected && st.selectedText, item.highlight && { color: '#F91616' }]}>
+              {item.name}
+            </Text>
+          </View>
+          {isSelected && <View style={[st.underline, item.highlight && { backgroundColor: '#F91616' }]} />}
         </View>
       </TouchableOpacity>
     );
@@ -157,7 +192,9 @@ const HomeScreen = ({ navigation }) => {
       <Text style={st.priceText}>{item.price}</Text>
       <Text style={st.soldText}>{item.sold}</Text>
       <View style={st.progressBarBackground}>
-        <View style={[st.progressBarFill, { width: `${item.progress * 100}%` }]} />
+        <View style={[st.progressBarFill, { width: `${item.progress * 100}%` }]}>
+          <Image source={require('../../assets/icons/ic_clock.png')} style={{ width: 14, height: 14, position: 'absolute', right: -7, top: -4.5 }} />
+        </View>
       </View>
     </View>
   );
@@ -175,10 +212,10 @@ const HomeScreen = ({ navigation }) => {
         <View>
           {/* Banner */}
           <View style={st.bannerContainer}>
-            <TouchableOpacity onPress={() => navigation.navigate('Chat')}>
-              <Image style={st.chatIcon} source={require('../../assets/icons/ic_chat.png')} />
-            </TouchableOpacity>
             <Image source={require('../../assets/img_banner2.png')} style={st.bannerImage} />
+            <TouchableOpacity onPress={() => navigation.navigate('Cart')} style={{ position: 'absolute', top: 50, right: 20 }}>
+              <Image source={require('../../assets/buttons/bt_cart.png')} style={{ width: 35, height: 35 }} />
+            </TouchableOpacity>
           </View>
 
           {/* Search Bar */}
@@ -197,7 +234,7 @@ const HomeScreen = ({ navigation }) => {
           {/* Categories */}
           <FlatList
             data={categories}
-            ref={flatListRef}
+            ref={categoryFlatlistRef}
             horizontal
             keyExtractor={(item) => item}
             renderItem={renderItemCategory}
@@ -213,7 +250,7 @@ const HomeScreen = ({ navigation }) => {
                 <Image source={require('../../assets/icons/ic_greenReturn.png')} style={st.icon} />
                 <Text style={[st.title, { color: 'green' }]}>Free shipping</Text>
               </View>
-              <Text style={st.subtitle}>Limited-time offer</Text>
+              <Text style={{color: '#383838', fontSize: 12, fontWeight: 'semibold'}}>Limited-time offer</Text>
             </View>
 
             {/* Divider */}
@@ -265,20 +302,18 @@ const HomeScreen = ({ navigation }) => {
               contentContainerStyle={st.listContainer}
             />
           </View>
+
           <View style={{ height: 6, backgroundColor: '#eee', width: '100%' }} />
+
           <View>
             <FlatList
-              horizontal
               data={titleCategories}
+              ref={titleCategoryFlatlistRef}
+              horizontal
               keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={[st.itemCategories, item.active && st.activeCategories]}>
-                  <Image source={item.image} style={st.iconCategories} />
-                  <Text style={[st.textCategories, item.highlight && st.highlight]}>{item.name}</Text>
-                </TouchableOpacity>
-              )}
+              renderItem={renderItemTitleCategory}
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{marginLeft:'-15'}}
+              contentContainerStyle={st.listContainer}
             />
           </View>
         </View>
@@ -303,11 +338,6 @@ const st = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
-  },
-
-  chatIcon: {
-    width: 30,
-    height: 30,
   },
 
   //search
@@ -348,7 +378,7 @@ const st = StyleSheet.create({
     marginHorizontal: 10,
   },
   categoryText: {
-    fontSize: 18,
+    fontSize: 14,
     color: '#737373',
     fontWeight: 'bold'
   },
@@ -423,7 +453,7 @@ const st = StyleSheet.create({
   },
   headerImage: {
     width: 20,
-    height: 20
+    height: 20,
   },
   headerOffer: {
     fontSize: 15,
@@ -460,11 +490,15 @@ const st = StyleSheet.create({
     color: '#FE7018',
     fontWeight: 'bold',
     marginTop: 8,
+    width: '100%',
+    textAlign: 'center',
   },
   soldText: {
     fontSize: 12,
     color: '#737373',
-    marginTop: 3
+    marginTop: 3,
+    width: '100%',
+    textAlign: 'center',
   },
   progressBarBackground: {
     height: 5,
@@ -504,7 +538,7 @@ const st = StyleSheet.create({
   textCategories: {
     color: "#737373",
     fontSize: 15,
-    fontWeight:'700'
+    fontWeight: '700'
   },
   highlight: {
     color: "red",

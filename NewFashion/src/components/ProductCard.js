@@ -1,5 +1,6 @@
 import { StyleSheet, TouchableOpacity, View, Image, Text } from 'react-native'
 import React from 'react'
+import StarRating from './StarRating';
 
 const starImage = "https://cdn-icons-png.flaticon.com/512/2107/2107957.png";
 const cartImage = "https://cdn-icons-png.flaticon.com/512/1170/1170678.png";
@@ -9,22 +10,17 @@ const ProductCard = ({ item }) => (
     <View style={st.imageContainer}>
       <Image source={{ uri: item.image }} style={st.image} resizeMode='cover' />
     </View>
-    <Text style={st.title}>{item.title}</Text>
+    <Text style={st.title} numberOfLines={1}>{item.title}</Text>
     {item.almostSoldOut && <Text style={st.almostSoldOut}>Almost sold out</Text>}
     <View style={st.ratingContainer}>
-      {[...Array(5)].map((_, index) => (
-        <Image
-          key={index}
-          source={{ uri: starImage }}
-          style={[st.star, { tintColor: index < Math.round(item.rating) ? "gold" : "gray" }]}
-        />
-      ))}
+      <StarRating rating={item.rating} />
+      <Text style={{color: '#737373', fontSize: 12}}>{item.ratingCount}</Text>
     </View>
     <View style={st.priceContainer}>
       <Text style={st.price}>{item.price}</Text>
       <Text style={st.sold}>{item.sold}</Text>
       <TouchableOpacity>
-        <Image source={{ uri: cartImage }} style={st.cartIcon} />
+        <Image source={require('../assets/buttons/bt_addToCart.png')} style={st.cartIcon} />
       </TouchableOpacity>
     </View>
   </View>
@@ -65,6 +61,7 @@ const st = StyleSheet.create({
   ratingContainer: {
     flexDirection: "row",
     marginBottom: 5,
+    gap: 2
   },
   star: {
     width: 13,
@@ -80,6 +77,7 @@ const st = StyleSheet.create({
   priceContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     width: "100%",  
     paddingHorizontal: 1,
   },
@@ -89,7 +87,7 @@ const st = StyleSheet.create({
     fontWeight: "700",
   },
   cartIcon: {
-    width: 20,
-    height: 20,
+    width: 35,
+    height: 25,
   },
 });
