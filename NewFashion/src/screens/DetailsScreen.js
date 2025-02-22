@@ -5,6 +5,11 @@ import BannerAdsProduct from '../components/BannerAdsProduct'
 import InfoProduct from '../components/InfoProduct'
 import ProductSelection from '../components/ProductSelection'
 import ShipDetail from './ShipDetail'
+import ReviewDetail from '../components/ReviewDetail'
+import ReviewFormUser from '../components/ReviewFormUser'
+import AboutShop from '../components/AboutShop'
+import DetailProduct from '../components/DetailProduct'
+import SuggestProduct from '../components/SuggestProduct'
 
 const DetailsScreen = () => {
     return (
@@ -36,6 +41,19 @@ const DetailsScreen = () => {
                 <View>
                     <ShipDetail/>
                 </View>
+                <View>
+                    <ReviewDetail/>
+                </View>
+                <View>
+                    <ReviewFormUser/>
+                </View>
+                <View>
+                    <AboutShop/>
+                </View>
+                <View>
+                    <DetailProduct/>
+                </View>
+                <SuggestProduct/>
             </ScrollView>
             <TouchableOpacity style={st.addToCartButton}>
                 <Text style={st.addToCartText}>Add to cart</Text>

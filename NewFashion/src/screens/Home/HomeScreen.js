@@ -223,7 +223,7 @@ const HomeScreen = ({ navigation }) => {
             {/* Free Returns */}
             <View style={st.infoItem}>
               <View style={st.textContainer}>
-                <Image source={require('../../assets/ic_freeReturns.png')} style={st.icon} />
+                <Image source={require('../../assets/icons/ic_freeReturns.png')} style={st.icon} />
                 <Text style={st.title}>Free returns</Text>
               </View>
               <Text style={st.subtitle}>Up to 90 days*</Text>
