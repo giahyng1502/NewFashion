@@ -12,7 +12,7 @@ import LoginWithPhoneNumber from '../screens/LoginWithPhoneNumber'
 import DetailsScreen from '../screens/DetailsScreen'
 import ChatScreen from "../screens/Chat/ChatScreen";
 import ChatDetail from "../screens/Chatdetail/ChatDetail";
-import AddAddressScreen from '../screens/AddAddressScreen'
+import CartScreen from '../screens/Cart/CartScreen'
 
 const Stack = createStackNavigator()
 
@@ -30,7 +30,7 @@ const AppNavigator = () => {
         {/* <Stack.Screen name="LoginWithPhoneNumber" component={LoginWithPhoneNumber} /> */}
         {/* <Stack.Screen name="Chat" component={ChatScreen} /> */}
         {/* <Stack.Screen name="ChatDetail" component={ChatDetail} /> */}
-        <Stack.Screen name="AddAddress" component={AddAddressScreen} />
+        <Stack.Screen name="Cart" component={CartScreen} />
         
       </Stack.Navigator>
     </NavigationContainer>
