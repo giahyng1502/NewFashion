@@ -175,9 +175,6 @@ const HomeScreen = ({ navigation }) => {
         <View>
           {/* Banner */}
           <View style={st.bannerContainer}>
-            <TouchableOpacity onPress={() => navigation.navigate('Chat')}>
-              <Image style={st.chatIcon} source={require('../../assets/icons/ic_chat.png')} />
-            </TouchableOpacity>
             <Image source={require('../../assets/img_banner2.png')} style={st.bannerImage} />
           </View>
 
@@ -428,10 +425,6 @@ const st = StyleSheet.create({
   headerOffer: {
     fontSize: 15,
     color: '#383838',
-  },
-  //item
-  listContainer: {
-    paddingVertical: 5,
   },
   productItem: {
     width: 100,

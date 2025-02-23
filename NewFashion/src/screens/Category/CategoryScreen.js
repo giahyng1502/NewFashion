@@ -326,11 +326,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  subCategoryItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-  },
   subCategoryText: {
     fontSize: 16,
   },
@@ -361,10 +356,6 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     marginBottom: 5,
-  },
-  subCategoryText: {
-    fontSize: 14,
-    textAlign: 'center',
   },
 
   // trending items

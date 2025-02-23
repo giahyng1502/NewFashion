@@ -59,8 +59,8 @@ const LoginScreen = () => {
         </View>
 
         <View style={st.infoContainer}>
-          <BenefitsInfoBox icon={require('../assets/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
-          <BenefitsInfoBox icon={require('../assets/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
+          <BenefitsInfoBox icon={require('../assets/icons/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
+          <BenefitsInfoBox icon={require('../assets/icons/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
         </View>
 
         <OutlinedButton icon={require('../assets/bt_google.png')} title="Continue with Google" customStyle={{ width: ScreenSize.width - 40, marginTop: 40 }} />
@@ -89,8 +89,8 @@ const LoginScreen = () => {
               <Text style={st.title}>Enjoy these special offers after signing in! Are you sure you want to leave now?</Text>
 
               <View style={st.benefitsContainer}>
-                <BenefitsInfoBox icon={require('../assets/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
-                <BenefitsInfoBox icon={require('../assets/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
+                <BenefitsInfoBox icon={require('../assets/icons/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
+                <BenefitsInfoBox icon={require('../assets/icons/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
               </View>
 
               <FilledButton title="Continue" customStyle={{ backgroundColor: 'black', width: '100%', marginVertical: 10 }} />
@@ -401,10 +401,6 @@ const st = StyleSheet.create({
   closeText: {
     color: 'blue',
     fontSize: 16,
-  },
-  troubleContainer: {
-    alignItems: 'center',
-    marginTop: 20,
   },
   modalHeader: {
     flexDirection: 'row',

@@ -30,6 +30,6 @@ export const userSlice = createSlice({
     },
 })
 
-export const { setUser, setToken ,logout, setOnlineUser,setSocketConnection } = userSlice.actions
+export const { setUser, setToken ,logout, setOnlineUser } = userSlice.actions
 
 export default userSlice.reducer
