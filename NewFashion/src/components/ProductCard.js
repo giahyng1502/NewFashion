@@ -2,8 +2,6 @@ import { StyleSheet, TouchableOpacity, View, Image, Text } from 'react-native'
 import React from 'react'
 import StarRating from './StarRating';
 
-const starImage = "https://cdn-icons-png.flaticon.com/512/2107/2107957.png";
-const cartImage = "https://cdn-icons-png.flaticon.com/512/1170/1170678.png";
 
 const ProductCard = ({ item }) => (
   <View style={st.card}>

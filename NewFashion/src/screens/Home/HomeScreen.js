@@ -42,7 +42,7 @@ const saleProducts = [
 ];
 
 
-const products = [
+export const products = [
   {
     id: "1",
     image: "https://s3-alpha-sig.figma.com/img/4e98/161c/44889ce383fe72daa63daf3046238fe5?Expires=1740355200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=R9jCeHrJ2AcBylbzaG1BxXuPzuEdQbbWluD6UitzRT~v1kfTr32BYX3x6d6Gx~fq~Vg7fqk9to1pm4CE1gxig72SwrxzLnJPlYiT4dvxS~01b8bSxlk3hXQtIJybWxAfwst7Y5qFAfO~blkA1rzR4mnAwVHOjj3uTGP4rQnXRdVwr0IdmZKbBjyBQW9LBxj1MXysIs3C2alVegyryv9vazr6rv3vs9GdWgDbOiB5ECOW7U5LgX4MwlzdNajULXj6S0t57DL7OcegGavYPBYAcKpYNQF9pKelmynb36zdpiJZ82cuy4G6wh~ZqmpOh1BjNT5aZNOesRRel0CoAUMMWw__",
@@ -133,35 +133,13 @@ const titleCategories = [
 ];
 
 const HomeScreen = ({ navigation }) => {
-  const categories = ['All', 'Women', 'Men', 'Sports', 'Kids', 'Baby', 'Office', 'Sleepwear'];
-  
-  const categoryFlatlistRef = useRef(null)
   const titleCategoryFlatlistRef = useRef(null)
-  const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedTitleCategory, setSelectedTitleCategory] = useState(null);
   const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     setSelectedTitleCategory(titleCategories[0]);
   }, []);
-
-  const renderItemCategory = ({ index, item }) => {
-    const isSelected = item === selectedCategory;
-    return (
-      <TouchableOpacity onPress={() => {
-        setSelectedCategory(item)
-        categoryFlatlistRef.current.scrollToIndex({ index, animated: true });
-      }
-      }>
-        <View style={st.categoryItem}>
-          <Text style={[st.categoryText, isSelected && st.selectedText]}>
-            {item}
-          </Text>
-          {isSelected && <View style={st.underline} />}
-        </View>
-      </TouchableOpacity>
-    );
-  };
 
   const renderItemTitleCategory = ({ index, item }) => {
     const isSelected = item === selectedTitleCategory;
@@ -230,17 +208,6 @@ const HomeScreen = ({ navigation }) => {
               <Image source={require('../../assets/icons/ic_search.png')} style={st.searchIcon} />
             </TouchableOpacity>
           </View>
-
-          {/* Categories */}
-          <FlatList
-            data={categories}
-            ref={categoryFlatlistRef}
-            horizontal
-            keyExtractor={(item) => item}
-            renderItem={renderItemCategory}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={st.listContainer}
-          />
 
           {/* Discount */}
           <View style={st.discountContainer}>

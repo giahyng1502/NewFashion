@@ -1,400 +1,191 @@
-import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Dimensions, ScrollView } from 'react-native';
-import React, { useState } from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { SafeAreaView } from 'react-native';
-import SortFilter from '../../components/SortFilter';
-import { Provider as PaperProvider } from 'react-native-paper';
-
-
-const { width } = Dimensions.get('window'); // Lấy độ rộng màn hình
-const FEATURED_WIDTH = width / 4; // Chiều rộng của danh sách featured
-const CATEGORY_WIDTH = width - FEATURED_WIDTH; // Chiều rộng của danh mục chính
-const numColumns = 2; // Chia Trending Item ra 2 cột
-const ITEM_WIDTH = CATEGORY_WIDTH / 2 - 16; // Chia 2 cột, trừ khoảng cách
-const SUBCATEGORY_ITEM_WIDTH = (width * 0.7 - 40) / 3;
-
-const TrendingProducts = [
-  {
-    id: "1",
-    image: "https://s3-alpha-sig.figma.com/img/4e98/161c/44889ce383fe72daa63daf3046238fe5?Expires=1740355200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=R9jCeHrJ2AcBylbzaG1BxXuPzuEdQbbWluD6UitzRT~v1kfTr32BYX3x6d6Gx~fq~Vg7fqk9to1pm4CE1gxig72SwrxzLnJPlYiT4dvxS~01b8bSxlk3hXQtIJybWxAfwst7Y5qFAfO~blkA1rzR4mnAwVHOjj3uTGP4rQnXRdVwr0IdmZKbBjyBQW9LBxj1MXysIs3C2alVegyryv9vazr6rv3vs9GdWgDbOiB5ECOW7U5LgX4MwlzdNajULXj6S0t57DL7OcegGavYPBYAcKpYNQF9pKelmynb36zdpiJZ82cuy4G6wh~ZqmpOh1BjNT5aZNOesRRel0CoAUMMWw__",
-    title: "Embroidered Wool-blend Scarf Jacket",
-    price: "304.568đ",
-    rating: 4.5,
-    sold: "831 sold",
-    almostSoldOut: true,
-  },
-  {
-    id: "2",
-    image: "https://s3-alpha-sig.figma.com/img/2cb2/2cb9/0b8b0b7e8d2c451d364a9cd9989daa2b?Expires=1740355200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=MxUbCT~pKt~bzjJXTxOSdWg5~Id7~Axc0j1hwi00ShfmBMtCAMLSwb-V0EqGdDLX1VCwFzTwANx9bCqbYYyBx-aWdNfJo3YnTxaSJIuoY3hHdb4AsXKsSz6Uc3eRZCSwVC8etcVMrgehDfw3wyEYyRIQD9qbj9wpLe-RphjbRw13qD9xTIVvDJmaAj~9pxT~zegmA83tuF9oXpg~FDjjqEdLhfrnxTEWnGrWy8JieNcQP8Ieu9Vc0OXLgadNkXwxpFRE~JxNMgST8E6~NhvHrvRQjQ1JAf1IY9uZS7mlnTCI7p~RtBFtmb4K8A7hXRgqqGCSWARFJgDUhY7-TW6D-A__",
-    title: "Unisex Herringbone Black Cat Sweater",
-    price: "153.229đ",
-    rating: 4.3,
-    sold: "8,1k+ sold",
-    almostSoldOut: true,
-  },
-  {
-    id: "3",
-    image: "https://s3-alpha-sig.figma.com/img/892a/3ca0/8ed46d4501c5e0d775fe4d013edb9085?Expires=1740355200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=lmpaoUFuLh35eiboH7yOY-TlPT3wqCYfl2T-Sa51vxbnEUmfivu4LFdVcuVu95vm-ywDI37UAnSGe1zOAUPSEzZlt6UV2yRNFMpYJUn1vYHDX8QBEPI4sUXuJhrZunJwEJ48hwk0XgVmtqALgt~EpW~qavpKaEFyJp9vrOeIRw29sywv0OiIlYbLuIsTRiiLUl-TmTdKrw5GzeMNYVyQvY12sCEhup8nR2xcetDspcbQ7PqMuldlK5m4YpoYLVDnR2BlBID5W1zKsi8kXWFchEHhGYPfoBIjJzh7og1bRtSrJAnukxFK1hknAImgYeEEEdWoapQWhGk~zRfwgTi5mA__",
-    title: "Women's High-waisted Skinny Jeans",
-    price: "337.008đ",
-    rating: 4.6,
-    sold: "2,5k+ sold",
-    almostSoldOut: true,
-  },
-  {
-    id: "4",
-    image: "https://s3-alpha-sig.figma.com/img/72f7/b8b0/e25fdd35257029d4b6cd268bc6f370b4?Expires=1740355200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=TdnCG7V3T~d5Gt2ASm2-pOcy6a39bFWuujLOBlo~31UTwV7eycPmfbOJTLB1hXaOI6UOZUwMBFEE2GMn3QlP3zjuoWOjOxX3X5-xbXkHH3n5c0OWPTSZeS64JrWUe~C3Itper3Sw8TgR4ywN0KlASznAJbq9ncxT4I1zQOqYGN-bvihHXMqtPaBfHKh9nXXeGWNKuLG7bAkVOu46XtHmp3eUps0qvVYIGv-w1ScY0cNclNmEj-W2sw6BrhJ2gUWfP33fRyH8aJ7-r2UqMHA1E9IJ61XLJztxeRiecSlU~hdX5wHqKdSf~Gl75qN1GxHJM~dNln8FLmf2oWODjoAoYA__",
-    title: "Women's Long Skirt With Butterfly Slit",
-    price: "282.459đ",
-    rating: 4.7,
-    sold: "4,2k+ sold",
-    almostSoldOut: true,
-  },
-  {
-    id: "5",
-    image: "https://s3-alpha-sig.figma.com/img/82ec/e82c/0efa1df3f41ce0bafa2cd02b7871d6b7?Expires=1740355200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=pwIzqRZ2psvHLK-LXGZ5IrUcBsFrVxPEEBfWd-u~gYqUCvkKTQundeC9G15jR90KA7CICMbNEctyFx1oHWIB6i2uigPU0y5A0JSiJ985o3UQtSHr5h2cx6PGMvUeH64n-VJzQc3uyGDhnZukCq7cjLP4a1FUIjxbXlX-cjA5Ijkvc0uAQxwy6iSi7dXjbaN4eahZMHyFjaJo7bxv0KLylmNvm9FYoOda9WGPWvIjSqKUn~tn9CWWFLED43hTAIf8ZC9qda~M6AKj8WVwgfQtQ7VWMnIm-HWxc1qtDAv3HVg0QALC7AXlqe3u4kzoOAnEDfzqjpeU6eTJ9KdFLK1QUA__",
-    title: "Women's Long Skirt With Butterfly Slit",
-    price: "282.459đ",
-    rating: 4.7,
-    sold: "4,2k+ sold",
-    almostSoldOut: true,
-  },
-  {
-    id: "6",
-    image: "https://s3-alpha-sig.figma.com/img/5409/bec0/1345f65ce96449305337b76b033dc4a8?Expires=1740355200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=CLmcQfzKQQ4FzjV-VL7p0aSSOBKtVLO~M8JkuU46v~cliVtd0gUEfkOwTU5aqd0DZpcHwLbOOD2VVdCxtLO8zOmOlm4Y9Cb4cVAczq0X-p4OhzeeE9ZCCTs9nuCDUuznOdlkw35NbUwd670b2lztiBA0UZ6oY7AOghQe476-JcqLxz5dGbRgwTI5Vt7kQ9W5AyprHnFrorHs0DEZ6o4xAV0FD9cv~3WZ~k9mtORxCqLW30vBjT6NVjOPq0r1RBnTGUgYdsgxV0W4XZ6~WEPkYmcmZ8ML03faDnAFH6VcDMFp8siCDluNyIDvmKki7W5zCD0MDxiSKb6HTXRboSw45Q__",
-    title: "Women's Long Skirt With Butterfly Slit",
-    price: "282.459đ",
-    rating: 4.7,
-    sold: "4,2k+ sold",
-    almostSoldOut: true,
-  },
-  {
-    id: "7",
-    image: "https://s3-alpha-sig.figma.com/img/72f7/b8b0/e25fdd35257029d4b6cd268bc6f370b4?Expires=1740355200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=TdnCG7V3T~d5Gt2ASm2-pOcy6a39bFWuujLOBlo~31UTwV7eycPmfbOJTLB1hXaOI6UOZUwMBFEE2GMn3QlP3zjuoWOjOxX3X5-xbXkHH3n5c0OWPTSZeS64JrWUe~C3Itper3Sw8TgR4ywN0KlASznAJbq9ncxT4I1zQOqYGN-bvihHXMqtPaBfHKh9nXXeGWNKuLG7bAkVOu46XtHmp3eUps0qvVYIGv-w1ScY0cNclNmEj-W2sw6BrhJ2gUWfP33fRyH8aJ7-r2UqMHA1E9IJ61XLJztxeRiecSlU~hdX5wHqKdSf~Gl75qN1GxHJM~dNln8FLmf2oWODjoAoYA__",
-    title: "Women's Long Skirt With Butterfly Slit",
-    price: "282.459đ",
-    rating: 4.7,
-    sold: "4,2k+ sold",
-    almostSoldOut: true,
-  },
-  {
-    id: "8",
-    image: "https://s3-alpha-sig.figma.com/img/72f7/b8b0/e25fdd35257029d4b6cd268bc6f370b4?Expires=1740355200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=TdnCG7V3T~d5Gt2ASm2-pOcy6a39bFWuujLOBlo~31UTwV7eycPmfbOJTLB1hXaOI6UOZUwMBFEE2GMn3QlP3zjuoWOjOxX3X5-xbXkHH3n5c0OWPTSZeS64JrWUe~C3Itper3Sw8TgR4ywN0KlASznAJbq9ncxT4I1zQOqYGN-bvihHXMqtPaBfHKh9nXXeGWNKuLG7bAkVOu46XtHmp3eUps0qvVYIGv-w1ScY0cNclNmEj-W2sw6BrhJ2gUWfP33fRyH8aJ7-r2UqMHA1E9IJ61XLJztxeRiecSlU~hdX5wHqKdSf~Gl75qN1GxHJM~dNln8FLmf2oWODjoAoYA__",
-    title: "Women's Long Skirt With Butterfly Slit",
-    price: "282.459đ",
-    rating: 4.7,
-    sold: "4,2k+ sold",
-    almostSoldOut: true,
-  },
-];
-
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { View, FlatList, Text, TouchableOpacity, Animated, ActivityIndicator, Image, TextInput } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchSubCategories } from '../../redux/actions/subCateActions';
+import ScreenSize from '../../contants/ScreenSize';
+import { products } from '../Home/HomeScreen';
+import StarRating from '../../components/StarRating';
 
 const CategoryScreen = () => {
+  const [searchText, setSearchText] = useState('');
+  const categories = useSelector(state => state.category.categories);
+  const subCategoriesByCategory = useSelector(state => state.subCategory.subCategoriesByCategory);
+  const dispatch = useDispatch();
 
-  // filter 
-  const [sortOption, setSortOption] = useState("Relevance");
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const translateAnim = useRef(new Animated.Value(0)).current;
 
-  const handleSortChange = (option) => {
-    console.log("Sort by:", option);
-    setSortOption(option);
-    // Thêm logic sắp xếp danh sách sản phẩm tại đây
+  const subCateColNum = 3
+  const subCateColumnWidth = (ScreenSize.width * (3 / 4) / subCateColNum);
+  const productColNum = 2
+  const productColumnWidth = (ScreenSize.width * (3 / 4) / productColNum);
 
-    let sortedProducts = [...TrendingProducts]; // Copy danh sách sản phẩm
-
-    switch (option) {
-      case "Top sales":
-        sortedProducts.sort((a, b) => b.sales - a.sales); // Bán chạy nhất
-        break;
-      case "Most recent":
-        sortedProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Mới nhất
-        break;
-      case "Price low to high":
-        sortedProducts.sort((a, b) => a.price - b.price); // Giá thấp -> cao
-        break;
-      case "Price high to low":
-        sortedProducts.sort((a, b) => b.price - a.price); // Giá cao -> thấp
-        break;
-      case "Relevance":
-      default:
-        // Không thay đổi thứ tự
-        break;
+  useEffect(() => {
+    if (categories.length > 0) {
+      setSelectedCategory(categories[0]);
+      fetchSubCateByCategoryID(categories[0]._id);
     }
+  }, [categories]);
 
-    setProducts(sortedProducts); // Cập nhật danh sách sản phẩm đã sắp xếp
+  const fetchSubCateByCategoryID = (categoryId) => {
+    if (subCategoriesByCategory[categoryId]) {
+      setLoading(false);
+    } else {
+      setLoading(true);
+      dispatch(fetchSubCategories(categoryId))
+        .then(() => {
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.log('Fetch subCategories error: ', error);
+        });
+    }
   };
 
-  // end filter 
-  const categories = ['Featured', 'Women’s Clothing', 'Women’s Shoes', 'Women’s Lingerie & Lounge', 'Men’s Clothing', 'Men’s Shoes',
-    'Men’s Underwear & Sleepwear', 'Kid’s Clothing', 'Kid’s Shoes', 'Sport Clothing', 'Office Clothing'];
-  const subCategoriesData = {
-    'Featured': [
-      { name: 'Deals', image: '' },
-      { name: 'Women’s Jackets & Coat', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Men’s Jackets & Coat', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Women’s Panties', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Women’s Bras & Bralettes', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Women’s Dresses', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Women’s T-Shirt', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Women’s Activewear', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Men’s Activewear', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Men’s Hats & Caps', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Men’s Hoodies & Sweatshirts', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Women’s Sweaters', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Men’s T-Shirt', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Men’s Sleepwear', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Women’s Sleepwear', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Women’s Pants', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Women’s Two-piece Outfits', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Men’s Sweaters', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' }
-    ],
+  const handleCategoryPress = useCallback((category, index) => {
+    const currentIndex = categories.indexOf(selectedCategory);
+    const searchBarHeight = 60
+    const height = ScreenSize.height - searchBarHeight;
+    const slideDirection = index > currentIndex ? -height : height;
+
+    Animated.timing(translateAnim, {
+      toValue: slideDirection,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setSelectedCategory(category);
+      fetchSubCateByCategoryID(category._id);
+      translateAnim.setValue(0);
+    });
+  }, [selectedCategory, categories]);
 
 
-    'Women’s Clothing': [
-      { name: 'Áo Thun', image: 'https://pos.nvncdn.com/2865a9-85186/ps/20240503_gxip9qQsvb.jpeg' },
-      { name: 'Áo Polo', image: 'https://owen.cdn.vccloud.vn/media/catalog/product/cache/d52d7e242fac6dae82288d9a793c0676/a/p/apt231548._89_2.jpg' },
-      { name: 'Áo Sơ Mi', image: 'https://pos.nvncdn.com/492284-9176/ps/20231030_NN91oPe5hc.jpeg' },
-      { name: 'Áo Hoodie', image: 'https://360.com.vn/wp-content/uploads/2023/11/AHHTK403-APTTK403-QGNTK407-12-Custom.jpg' },
-      { name: 'Áo Len', image: 'https://vitimex.com.vn/images/products/2023/08/02/original/Ao%20len%20nam_ALN9005-xam-2.jpg' }
-    ],
-    'Women’s Shoes': [
-      { name: 'Áo Blouse', image: 'https://example.com/aoblouse.jpg' },
-      { name: 'Áo Croptop', image: 'https://example.com/aocroptop.jpg' },
-      { name: 'Áo Kiểu', image: 'https://example.com/aopolo.jpg' },
-      { name: 'Áo Sơ Mi Nữ', image: 'https://example.com/aopolo.jpg' },
-      { name: 'Áo Thun Nữ', image: 'https://example.com/aopolo.jpg' },
-      { name: 'Áo Polo', image: 'https://example.com/aopolo.jpg' }
-    ],
-    'Women’s Lingerie & Lounge': ['Quần Jean', 'Quần Kaki', 'Quần Short', 'Quần Tây'],
-    'Men’s Clothing': ['Quần Jean Nữ', 'Quần Short Nữ', 'Quần Ống Rộng', 'Quần Legging'],
-    'Men’s Shoes': ['Giày Thể Thao', 'Giày Da', 'Sandal', 'Dép Lê'],
-    'Men’s Underwear & Sleepwear': ['Khăn Quàng Cổ', 'Găng Tay', 'Thắt Lưng', 'Vớ/Tất'],
-    'Kid’s Clothing': ['Bộ Đồ Gym', 'Áo Thể Thao', 'Quần Thể Thao'],
-    'Kid’s Shoes': ['Áo Ngực', 'Quần Lót Nam', 'Quần Lót Nữ'],
-    'Sport Clothing': ['Pijama', 'Đồ Bộ Mặc Nhà'],
-    'Office Clothing': ['Áo Vest', 'Quần Âu', 'Chân Váy Công Sở'],
-    'Áo Khoác': ['Áo Khoác Jeans', 'Áo Khoác Da', 'Áo Gió', 'Áo Khoác Len'],
-    'Váy Đầm': ['Đầm Dạ Hội', 'Đầm Công Sở', 'Đầm Dạo Phố'],
-    'Set Đồ': ['Bộ Quần Women’s Shoes', 'Bộ Quần Women’s Clothing'],
-    'Đồ Unisex': ['Áo Unisex', 'Quần Unisex'],
-    'Túi Xách': ['Túi Đeo Chéo', 'Balo', 'Túi Tote'],
-    'Mũ & Nón': ['Nón Lưỡi Trai', 'Nón Bucket'],
-    'Kính Mắt': ['Kính Mát', 'Kính Cận Thời Trang'],
-    'Trang Sức': ['Dây Chuyền', 'Nhẫn', 'Vòng Tay'],
-    'Đồng Hồ': ['Đồng Hồ Nam', 'Đồng Hồ Nữ']
-  };
-
-  const randomProducts = [
-    { id: '1', name: 'Nón Lưỡi Trai', image: { uri: 'https://dongphuchaianh.vn/wp-content/uploads/2022/04/dong-phuc-cong-so-nu-1.jpg' }, price: '332.495đ', rating: 4.5, sold: '831 sold' },
-    { id: '2', name: 'Áo Khoác Da', image: { uri: 'https://dongphuchaianh.vn/wp-content/uploads/2022/04/dong-phuc-cong-so-nu-1.jpg' }, price: '248.062đ', rating: 4.8, sold: '3,2K+ sold' },
-    { id: '3', name: 'Bộ Quần Women’s Clothing', image: { uri: 'https://dongphuchaianh.vn/wp-content/uploads/2022/04/dong-phuc-cong-so-nu-1.jpg' }, price: '152.882đ', rating: 4.2, sold: '1,1K+ sold' },
-    { id: '4', name: 'Đồ Bộ Mặc Nhà', image: { uri: 'https://dongphuchaianh.vn/wp-content/uploads/2022/04/dong-phuc-cong-so-nu-1.jpg' }, price: '169.548đ', rating: 4.6, sold: '20K+ sold' },
-  ];
-
-  const [selectedCategory, setSelectedCategory] = useState(categories[0]);
-  const subCategories = subCategoriesData[selectedCategory];
-
-  const renderCategoryItem = ({ item }) => (
-    <TouchableOpacity onPress={() => setSelectedCategory(item)}>
-      <View style={[styles.categoryItem, selectedCategory === item && styles.selectedCategory]}>
-        <Text style={styles.categoryText}>{item}</Text>
-      </View>
+  const renderCategoryItem = ({ item, index }) => (
+    <TouchableOpacity
+      style={[
+        { width: '100%', padding: 10, paddingLeft: 0, backgroundColor: '#F0F0F0', flexDirection: 'row' },
+        selectedCategory === item && { backgroundColor: '#fff' }]}
+      onPress={() => handleCategoryPress(item, index)}>
+      <View style={{ backgroundColor: selectedCategory === item ? 'black' : 'transparent', width: 5 }} />
+      <Text
+        style={[{ fontSize: 14, fontWeight: 'medium', marginLeft: 5 }, selectedCategory === item && { fontWeight: 'bold' }]}>
+        {item.categoryName}
+      </Text>
     </TouchableOpacity>
   );
 
-  const renderSubCategoryItem = ({ item }) => {
-    let imageSource;
+  const renderSubCategoryItem = ({ item }) => (
+    <View style={{ alignItems: 'center', width: subCateColumnWidth, padding: 10 }}>
+      <Image source={{ uri: item.subImage }} style={{ width: 50, height: 50, borderRadius: 25 }} />
+      <Text style={{ fontSize: 12, textAlign: 'center' }}>{item.subCateName}</Text>
+    </View>
+  );
 
-    // Kiểm tra nếu item.image tồn tại và là chuỗi trước khi gọi .startsWith()
-    if (item.image && typeof item.image === 'string' && item.image.startsWith('http')) {
-      imageSource = { uri: item.image }; // Ảnh từ URL
-    } else {
-      imageSource = item.image; // Ảnh từ thư mục nội bộ (import bằng require)
+  const renderProductItem = ({ item }) => (
+    <View style={{ width: productColumnWidth, padding: 10 }}>
+      <View>
+      <Image source={{ uri: item.image }} style={{ width: '100%', aspectRatio: 1 }} />
+      <TouchableOpacity style={{position: 'absolute', right: 10, bottom: 10}}>
+        <Image source={require('../../assets/buttons/bt_addToCart2.png')} style={{ width: 20, height: 20 }} resizeMode='contain' />
+      </TouchableOpacity>
+      </View>
+      <View style={{ flexDirection: 'row', marginTop: 5 }}>
+        <StarRating rating={item.rating} />
+        <Text style={{color: '#737373', fontSize: 12, marginLeft: 5}}>{item.ratingCount}</Text>
+      </View>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 5 }}>
+        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{item.price}</Text>
+        <Text style={{ fontSize: 10, fontWeight: 'medium', color: '#737373' }}>{item.sold}</Text>
+      </View>
+    </View>
+  );
+
+
+
+  const ListHeaderComponent = () => {
+    if (!selectedCategory) {
+      return null;
     }
 
+    const { subCategories } = subCategoriesByCategory[selectedCategory._id] || { subCategories: [] };
+
     return (
-      <View style={styles.subCategoryItem}>
-        <Image source={imageSource} style={styles.subCategoryImage} />
-        <Text style={styles.subCategoryText}>{item.name}</Text>
+      <View>
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+          <>
+            <FlatList
+            data={subCategories}
+            renderItem={renderSubCategoryItem}
+            numColumns={3}
+            keyExtractor={(item) => item._id}
+            showsVerticalScrollIndicator={false}
+          />
+
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
+            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Related products</Text>
+            {/* sort by button */}
+            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={{ fontSize: 14, color: '#000' }}>Sort by</Text>
+              <Image source={require('../../assets/icons/ic_arrowDown.png')} style={{ width: 14, height: 14, marginLeft: 5 }} resizeMethod='contain' />
+            </TouchableOpacity>
+          </View>
+
+          {/* Product list */}
+          <FlatList
+            data={products}
+            renderItem={renderProductItem}
+            numColumns={2}
+            keyExtractor={(item) => item._id}
+            showsVerticalScrollIndicator={false}
+          />
+          </>
+
+          
+
+        )}
       </View>
     );
   };
 
-
-
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <Image source={{ uri: item.image }} style={styles.image} />
-      <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
-      <Text style={styles.price}>{item.price}</Text>
-    </View>
-  );
-
-  const ListHeaderComponent = () => (
-    <View style={styles.rightListHeader}>
-      <Text style={styles.subCategoryHeader}>Shop by category</Text>
-      <FlatList
-        data={subCategories}
-        renderItem={renderSubCategoryItem}
-        numColumns={3}
-        keyExtractor={(item) => item}
-        showsVerticalScrollIndicator={false}
-      />
-
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          paddingHorizontal: 10,
-        }}
-      >
-        <Text style={{ fontSize: 20, fontWeight: "bold" }}>Trending items</Text>
-        <PaperProvider>
-          <SortFilter onSortChange={handleSortChange} />
-        </PaperProvider>
-
+  return (
+    <View style={{ flex: 1, backgroundColor: '#FFF' }}>
+      {/* Search Bar */}
+      <View style={{ flexDirection: 'row', margin: 10, alignItems: 'center', borderWidth: 1.5, borderColor: '#000', borderRadius: 40, backgroundColor: '#FFF' }}>
+        <TextInput value={searchText} style={{ flex: 1, height: 40, paddingHorizontal: 15, }} placeholder="Search something..." onChangeText={setSearchText} />
+        {searchText.length > 0 && (
+          <TouchableOpacity style={{ padding: 5 }} onPress={clearText}>
+            <Image source={require('../../assets/bt_clearText.png')} style={{ width: 18, height: 18, marginRight: 7, resizeMode: 'cover', }} />
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity style={{ backgroundColor: '#000', margin: 3, padding: 8, paddingHorizontal: 16, borderRadius: 40 }}>
+          <Image source={require('../../assets/icons/ic_search.png')} style={{width: 25, height: 25}} />
+        </TouchableOpacity>
       </View>
 
-      <FlatList
-        data={TrendingProducts}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        numColumns={numColumns}
-        columnWrapperStyle={styles.row}
-      />
-    </View>
-  );
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.rowContainer}>
-        {/* Danh sách Category bên trái */}
+      <View style={{ flexDirection: 'row', flex: 1, backgroundColor: '#FFF' }}>
         <FlatList
           data={categories}
           renderItem={renderCategoryItem}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item._id}
           showsVerticalScrollIndicator={false}
-          style={styles.categoryList}
+          style={{ flex: 1 }}
         />
 
-        {/* FlatList lớn bên phải chứa cả subcategory và random products */}
-        <FlatList
-          data={[]}
-          ListHeaderComponent={ListHeaderComponent}
-          showsVerticalScrollIndicator={false}
-          style={styles.rightList}
-        />
+        {selectedCategory && (
+          <Animated.View style={{ flex: 3, transform: [{ translateY: translateAnim }] }}>
+            <FlatList
+              data={[]}
+              ListHeaderComponent={ListHeaderComponent}
+              showsVerticalScrollIndicator={false}
+            />
+          </Animated.View>
+        )}
       </View>
-    </SafeAreaView>
-
+    </View>
   );
 };
 
 export default CategoryScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  rowContainer: {
-    flexDirection: 'row',
-    flex: 1,
-  },
-  categoryList: {
-    width: '30%', // Category chiếm 30% màn hình
-    backgroundColor: '#f0f0f0',
-  },
-  categoryItem: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-  },
-  categoryText: {
-    fontSize: 16,
-  },
-  selectedCategory: {
-    backgroundColor: '#d0d0d0',
-  },
-  rightList: {
-    width: '70%', // Sub-category và random products chiếm 70% màn hình
-  },
-  rightListHeader: {
-    paddingHorizontal: 10,
-    paddingVertical: 20,
-  },
-  subCategoryHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  subCategoryItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-  },
-  subCategoryText: {
-    fontSize: 16,
-  },
-  productHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginVertical: 10,
-  },
-  productItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-  },
-  productName: {
-    fontSize: 16,
-  },
-  productPrice: {
-    fontSize: 14,
-    color: 'gray',
-  },
-  subCategoryItem: {
-    width: SUBCATEGORY_ITEM_WIDTH,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  subCategoryImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 5,
-  },
-  subCategoryText: {
-    fontSize: 14,
-    textAlign: 'center',
-  },
-
-  // trending items
-  row: {
-    justifyContent: "space-between",
-  },
-  item: {
-    width: ITEM_WIDTH,
-    backgroundColor: "#fff",
-    borderRadius: 0,
-    padding: 10,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowRadius: 4,
-  },
-  image: {
-    width: "100%",
-    height: ITEM_WIDTH,
-    borderRadius: 0,
-  },
-  title: {
-    marginTop: 8,
-    fontSize: 14,
-    fontWeight: "500",
-    textAlign: "center",
-  },
-  price: {
-    marginTop: 4,
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#e63946",
-  },
-});

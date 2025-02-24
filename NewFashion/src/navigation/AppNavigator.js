@@ -20,7 +20,6 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {/* <Stack.Screen name="Test" component={TestScreen} /> */}
         <Stack.Screen name="Splash" component={SplashScreen} />
         {/* <Stack.Screen name="Login" component={LoginScreen} /> */}
         {/* <Stack.Screen name="RegisterWithEmail" component={RegisterWithEmailScreen} /> */}
@@ -31,7 +30,6 @@ const AppNavigator = () => {
         {/* <Stack.Screen name="Chat" component={ChatScreen} /> */}
         {/* <Stack.Screen name="ChatDetail" component={ChatDetail} /> */}
         {/* <Stack.Screen name="Cart" component={CartScreen} /> */}
-        
       </Stack.Navigator>
     </NavigationContainer>
   )
