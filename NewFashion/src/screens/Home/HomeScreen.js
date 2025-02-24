@@ -1,10 +1,12 @@
-import { StyleSheet, ScrollView, TouchableOpacity, FlatList, View, Image, Text, LayoutAnimation } from 'react-native'
+import { StyleSheet, Animated, ScrollView, TouchableOpacity, FlatList, View, Image, Text, LayoutAnimation } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import ProductCard from '../../components/ProductCard';
 import { io } from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
 import { setSocketConnection } from "../../redux/reducer/userReducer";
+import ScreenSize from '../../contants/ScreenSize';
+import AppManager from '../../utils/AppManager';
 
 const saleProducts = [
   {
@@ -132,7 +134,7 @@ const titleCategories = [
   { id: "5", name: "New Arrivals", image: require("../../assets/icons/ic_newArrvals.png") },
 ];
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation, presentLogin }) => {
   const titleCategoryFlatlistRef = useRef(null)
   const [selectedTitleCategory, setSelectedTitleCategory] = useState(null);
   const [searchText, setSearchText] = useState('');
@@ -141,6 +143,13 @@ const HomeScreen = ({ navigation }) => {
     setSelectedTitleCategory(titleCategories[0]);
   }, []);
 
+  const handleSelectCartButton = async () => {
+    if (await AppManager.isUserLoggedIn()) {
+      navigation.navigate('Cart');
+    } else {
+      presentLogin()
+    }
+  }
   const renderItemTitleCategory = ({ index, item }) => {
     const isSelected = item === selectedTitleCategory;
     return (
@@ -148,7 +157,7 @@ const HomeScreen = ({ navigation }) => {
         setSelectedTitleCategory(item);
         titleCategoryFlatlistRef.current.scrollToIndex({ index, animated: true });
       }}>
-        <View style={[st.categoryItem, {justifyContent: 'center'}]}>
+        <View style={[st.categoryItem, { justifyContent: 'center' }]}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
             {item.image && <Image source={item.image} style={{ width: 14, height: 14 }} resizeMode='contain' />}
             <Text style={[st.categoryText, isSelected && st.selectedText, item.highlight && { color: '#F91616' }]}>
@@ -191,8 +200,11 @@ const HomeScreen = ({ navigation }) => {
           {/* Banner */}
           <View style={st.bannerContainer}>
             <Image source={require('../../assets/img_banner2.png')} style={st.bannerImage} />
-            <TouchableOpacity onPress={() => navigation.navigate('Cart')} style={{ position: 'absolute', top: 50, right: 20 }}>
+            <TouchableOpacity onPress={handleSelectCartButton} style={{ position: 'absolute', top: 50, right: 20 }}>
               <Image source={require('../../assets/buttons/bt_cart.png')} style={{ width: 35, height: 35 }} />
+              <View style={{ position: 'absolute', top: 2, right: 2, backgroundColor: 'red', width: 16, height: 16, borderRadius: 8, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#fff' }}>
+                <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>2</Text>
+              </View>
             </TouchableOpacity>
           </View>
 
@@ -217,7 +229,7 @@ const HomeScreen = ({ navigation }) => {
                 <Image source={require('../../assets/icons/ic_greenReturn.png')} style={st.icon} />
                 <Text style={[st.title, { color: 'green' }]}>Free shipping</Text>
               </View>
-              <Text style={{color: '#383838', fontSize: 12, fontWeight: 'semibold'}}>Limited-time offer</Text>
+              <Text style={{ color: '#383838', fontSize: 12, fontWeight: 'semibold' }}>Limited-time offer</Text>
             </View>
 
             {/* Divider */}

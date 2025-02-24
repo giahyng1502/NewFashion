@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import BaseHeader from "../../components/BaseHeader";
 
-const CartHeader = () => {
+const CartHeader = ({ onLeftButtonPress }) => {
   const [cartItems, setCartItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [isShowDeleteButton, setIsShowDeleteButton] = useState(false);
+  const [title, setTitle] = useState("Cart");
 
   const addProduct = () => {
     setCartItems([
@@ -59,36 +62,27 @@ const CartHeader = () => {
     setSelectedItems([]);
   };
 
+  useEffect(() => {
+    if (selectedItems.length > 0) {
+      setIsShowDeleteButton(true);
+      setTitle(`Selected ${selectedItems.length} items`);
+    } else {
+      setIsShowDeleteButton(false);
+      setTitle("Cart");
+    }
+  }, [selectedItems]);
+
   return (
     <View style={styles.container}>
       {/* Header Cart */}
-      <View style={styles.headerContainer}>
-        {selectedItems.length > 0 ? (
-          <TouchableOpacity onPress={() => setSelectedItems([])}>
-            <Image
-              source={require("../../assets/ic_back.png")}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.iconPlaceholder} />
-        )}
-
-        <Text style={styles.header}>
-          Cart {cartItems.length > 0 ? `(${cartItems.length})` : ""}
-        </Text>
-
-        {selectedItems.length > 0 ? (
-          <TouchableOpacity onPress={deleteSelectedItems}>
-            <Image
-              source={require("../../assets/bt_delete.png")}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.iconPlaceholder} />
-        )}
-      </View>
+      <BaseHeader
+        title={title}
+        showLeftButton={true}
+        onLeftButtonPress={onLeftButtonPress}
+        showRightButton={isShowDeleteButton}
+        rightIcon={require("../../assets/bt_delete.png")}
+        onRightButtonPress={() => { deleteSelectedItems() }}
+      />
 
       {/* Shipping Info */}
       {cartItems.length === 0 ? (
@@ -205,7 +199,6 @@ const CartHeader = () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
-    padding: 20
   },
 
   //header

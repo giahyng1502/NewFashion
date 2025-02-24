@@ -10,8 +10,8 @@ const subCategorySlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchSubCategories.fulfilled, (state, action) => {
-                const { categoryId, subCategories } = action.payload;
-                state.subCategoriesByCategory[categoryId] = { subCategories };
+                const { categoryId, subCategories, products } = action.payload;
+                state.subCategoriesByCategory[categoryId] = { subCategories, products };
                 console.log('Fetch subCategories successfully: ', action.payload);
             })
             .addCase(fetchSubCategories.rejected, (state, action) => {

@@ -1,52 +1,52 @@
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default class AppManager {
+class AppManager {
+  static instance = null;
 
-    static instance = null;
-
-    static shared() {
-        if (AppManager.instance == null) {
-            AppManager.instance = new AppManager();
-        }
-
-        return this.instance;
+  constructor() {
+    if (!AppManager.instance) {
+      AppManager.instance = this;
     }
+    return AppManager.instance;
+  }
 
-    constructor() {
-        this._isLogin = false;
-        this._userInfo = null;
+  // Hàm lưu userInfo vào AsyncStorage
+  async saveUserInfo(userInfo) {
+    try {
+      const jsonValue = JSON.stringify(userInfo);
+      await AsyncStorage.setItem('userInfo', jsonValue);
+    } catch (error) {
+      console.log('Error saving userInfo: ', error);
     }
+  }
 
-    async setUserInfo(userInfo) {
-        this._userInfo = userInfo;
-        await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
+  // Hàm lấy userInfo từ AsyncStorage
+  async getUserInfo() {
+    try {
+      const jsonValue = await AsyncStorage.getItem('userInfo');
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (error) {
+      console.log('Error getting userInfo: ', error);
     }
+  }
 
-    async getUserInfo() {
-        if (this._userInfo == null) {
-            this._userInfo = JSON.parse(await AsyncStorage.getItem('userInfo'));
-        }
+  // Hàm check xem người dùng đã login chưa (kiểm tra userInfo)
+  async isUserLoggedIn() {
+    const userInfo = await this.getUserInfo();
+    return userInfo != null;
+  }
 
-        return this._userInfo;
+  // Hàm để xóa userInfo (logout)
+  async logout() {
+    try {
+      await AsyncStorage.removeItem('userInfo');
+    } catch (error) {
+      console.log('Error logging out: ', error);
     }
+  }
+}
 
-    async isLogin() {
-        if (this._isLogin == false) {
-            this._isLogin = await AsyncStorage.getItem('isLogin');
-        }
+const instance = new AppManager();
+Object.freeze(instance);
 
-        return this._isLogin;
-    }
-
-    async login() {
-        this._isLogin = true;
-        await AsyncStorage.setItem('isLogin', 'true');
-    }
-
-    async logout() {
-        this._isLogin = false;
-        this._userInfo = null;
-        await AsyncStorage.removeItem('isLogin');
-        await AsyncStorage.removeItem('userInfo');
-    }
-} 
+export default instance;

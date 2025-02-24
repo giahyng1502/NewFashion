@@ -24,7 +24,6 @@ const SplashScreen = ({ navigation }) => {
     const loadData = async () => {
         try {
             dispatch(fetchCategories())
-            
         } catch (error) {
             console.log('Load data error: ', error);
         }

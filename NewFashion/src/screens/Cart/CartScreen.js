@@ -79,7 +79,7 @@ const products = [
   },
 ];
 
-const CartScreen = () => {
+const CartScreen = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
@@ -111,7 +111,7 @@ const CartScreen = () => {
 
   return (
     <View style={st.container}>
-      <CartHeader />
+      <CartHeader onLeftButtonPress={() => {navigation.goBack()}} />
       {/* Gợi ý sản phẩm */}
       <View style={st.footContainer}>
         {/* Categories */}

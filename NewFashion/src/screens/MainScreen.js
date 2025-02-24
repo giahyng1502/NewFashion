@@ -1,15 +1,18 @@
-import { Image, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { Image, Animated, StyleSheet, Text, TouchableOpacity, View, Easing } from 'react-native'
+import React, { useRef, useState } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import HomeScreen from './Home/HomeScreen'
 import CategoryScreen from './Category/CategoryScreen'
 import NotificationScreen from './Notification/NotificationScreen'
 import YouScreen from './You/YouScreen'
 import NFNewsScreen from './NFNews/FavouriteScreen'
+import ScreenSize from '../contants/ScreenSize'
+import BenefitsInfoBox from '../components/BenefitsInfoBox'
+import OutlinedButton from '../components/OutlinedButton'
 
 const Tab = createBottomTabNavigator()
 
-const MainScreen = () => {
+const MainScreen = ({navigation}) => {
     return (
         <View style={{ flex: 1 }}>
             <Tab.Navigator
@@ -17,7 +20,6 @@ const MainScreen = () => {
                     headerShown: false,
                     tabBarIcon: ({ focused, color, size }) => {
                         let iconName
-                        let label
 
                         if (route.name === 'Home') {
                             iconName = focused ? require("../assets/icons/ic_homeSelected.png") : require("../assets/icons/ic_home.png");
@@ -37,13 +39,15 @@ const MainScreen = () => {
                             </View>
                         )
                     },
-                    tabBarLabelStyle: styles.label, // Thêm style cho tiêu đề
-                    tabBarStyle: styles.tabBar,
+                    tabBarLabelStyle: st.label, // Thêm style cho tiêu đề
+                    tabBarStyle: st.tabBar,
                     tabBarActiveTintColor: "#1D1D1D", // Màu chữ khi active
                     tabBarInactiveTintColor: "#737373", // Màu chữ khi không active
                 })}
             >
-                <Tab.Screen name="Home" component={HomeScreen} />
+                <Tab.Screen name="Home">
+                    {props => <HomeScreen {...props} presentLogin={() => {navigation.navigate('Login')}} />}
+                </Tab.Screen>
                 <Tab.Screen name="Category" component={CategoryScreen} />
                 <Tab.Screen name="NF News" component={NFNewsScreen} />
                 <Tab.Screen name="Notification" component={NotificationScreen} />
@@ -55,7 +59,7 @@ const MainScreen = () => {
 
 export default MainScreen
 
-const styles = StyleSheet.create({
+const st = StyleSheet.create({
     tabBar: {
         backgroundColor: "#fff",
         height: 60,
@@ -70,5 +74,5 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: "600",
         paddingBottom: 5,
-    },
+    }
 })

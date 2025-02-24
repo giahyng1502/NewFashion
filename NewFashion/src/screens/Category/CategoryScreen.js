@@ -85,14 +85,14 @@ const CategoryScreen = () => {
   const renderProductItem = ({ item }) => (
     <View style={{ width: productColumnWidth, padding: 10 }}>
       <View>
-      <Image source={{ uri: item.image }} style={{ width: '100%', aspectRatio: 1 }} />
-      <TouchableOpacity style={{position: 'absolute', right: 10, bottom: 10}}>
-        <Image source={require('../../assets/buttons/bt_addToCart2.png')} style={{ width: 20, height: 20 }} resizeMode='contain' />
-      </TouchableOpacity>
+        <Image source={{ uri: item.image }} style={{ width: '100%', aspectRatio: 1 }} />
+        <TouchableOpacity style={{ position: 'absolute', right: 10, bottom: 10 }}>
+          <Image source={require('../../assets/buttons/bt_addToCart2.png')} style={{ width: 20, height: 20 }} resizeMode='contain' />
+        </TouchableOpacity>
       </View>
       <View style={{ flexDirection: 'row', marginTop: 5 }}>
         <StarRating rating={item.rating} />
-        <Text style={{color: '#737373', fontSize: 12, marginLeft: 5}}>{item.ratingCount}</Text>
+        <Text style={{ color: '#737373', fontSize: 12, marginLeft: 5 }}>{item.ratingCount}</Text>
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 5 }}>
         <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{item.price}</Text>
@@ -117,33 +117,27 @@ const CategoryScreen = () => {
         ) : (
           <>
             <FlatList
-            data={subCategories}
-            renderItem={renderSubCategoryItem}
-            numColumns={3}
-            keyExtractor={(item) => item._id}
-            showsVerticalScrollIndicator={false}
-          />
+              data={subCategories}
+              renderItem={renderSubCategoryItem}
+              numColumns={3}
+              keyExtractor={(item) => item._id}
+              showsVerticalScrollIndicator={false}
+            />
 
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
-            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Related products</Text>
-            {/* sort by button */}
-            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ fontSize: 14, color: '#000' }}>Sort by</Text>
-              <Image source={require('../../assets/icons/ic_arrowDown.png')} style={{ width: 14, height: 14, marginLeft: 5 }} resizeMethod='contain' />
-            </TouchableOpacity>
-          </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
+              <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Related products</Text>
+              {/* sort by button */}
+              <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ fontSize: 14, color: '#000' }}>Sort by</Text>
+                <Image source={require('../../assets/icons/ic_arrowDown.png')} style={{ width: 14, height: 14, marginLeft: 5 }} resizeMethod='contain' />
+              </TouchableOpacity>
+            </View>
 
-          {/* Product list */}
-          <FlatList
-            data={products}
-            renderItem={renderProductItem}
-            numColumns={2}
-            keyExtractor={(item) => item._id}
-            showsVerticalScrollIndicator={false}
-          />
+
+
           </>
 
-          
+
 
         )}
       </View>
@@ -161,7 +155,7 @@ const CategoryScreen = () => {
           </TouchableOpacity>
         )}
         <TouchableOpacity style={{ backgroundColor: '#000', margin: 3, padding: 8, paddingHorizontal: 16, borderRadius: 40 }}>
-          <Image source={require('../../assets/icons/ic_search.png')} style={{width: 25, height: 25}} />
+          <Image source={require('../../assets/icons/ic_search.png')} style={{ width: 25, height: 25 }} />
         </TouchableOpacity>
       </View>
 
@@ -177,8 +171,11 @@ const CategoryScreen = () => {
         {selectedCategory && (
           <Animated.View style={{ flex: 3, transform: [{ translateY: translateAnim }] }}>
             <FlatList
-              data={[]}
+              data={products}
               ListHeaderComponent={ListHeaderComponent}
+              renderItem={renderProductItem}
+              numColumns={2}
+              keyExtractor={(item) => item.id}
               showsVerticalScrollIndicator={false}
             />
           </Animated.View>
