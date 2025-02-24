@@ -1,5 +1,5 @@
 import { Animated, Image, Modal, Pressable, SectionList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import BaseHeader from '../components/BaseHeader'
 import TextField, { TextFieldType } from '../components/TextField'
 import ScreenSize from '../contants/ScreenSize'
@@ -39,7 +39,25 @@ const AddAddressScreen = ({ navigation }) => {
 
     // Bottom sheet functions
     const openBottomSheet = (level) => {
-        setCurrentLevel(level);
+        if (level === 'city') {
+            setCurrentLevel('city');
+        }
+        if (level === 'district') {
+            if (selectedCity === null) {
+                setCurrentLevel('city');
+            } else {
+                setCurrentLevel('district');
+            }
+        } 
+        if (level === 'ward') {
+            if (selectedCity === null) {
+                setCurrentLevel('city');
+            } else if (selectedCity !== null && selectedDistrict === null) {
+                setCurrentLevel('district');
+            } else {
+                setCurrentLevel('ward');
+            }
+        }
         setIsVisible(true);
         Animated.timing(animatedValue, {
             toValue: 1,
@@ -73,13 +91,24 @@ const AddAddressScreen = ({ navigation }) => {
         outputRange: [bottomSheetHeight, 0],
     });
 
+    useEffect(() => {
+        if (selectedCity) {
+            openBottomSheet('district');
+        }
+    }, [selectedCity]);
+
+    useEffect(() => {
+        if (selectedDistrict) {
+            openBottomSheet('ward');
+        }
+    }, [selectedDistrict]);
+
     const handleCitySelect = (city) => {
         setSelectedCity(city);
         setSelectedDistrict(null);
         setSelectedWard(null);
         setSearchText('');
         setCityError('');
-        openBottomSheet('district');
     };
 
     const handleDistrictSelect = (district) => {
@@ -87,7 +116,6 @@ const AddAddressScreen = ({ navigation }) => {
         setSelectedWard(null);
         setSearchText('');
         setDistrictError('');
-        openBottomSheet('ward');
     };
 
     const handleWardSelect = (ward) => {
