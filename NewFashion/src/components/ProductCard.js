@@ -57,7 +57,6 @@ const st = StyleSheet.create({
   },
   almostSoldOut: {
     fontSize: 12,
-    color: "red",
     fontWeight: "600",
     color:'#FE7018',
     marginBottom: 5,
