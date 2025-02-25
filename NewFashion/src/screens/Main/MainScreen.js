@@ -1,14 +1,14 @@
 import { Image, Animated, StyleSheet, Text, TouchableOpacity, View, Easing } from 'react-native'
 import React, { useRef, useState } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import HomeScreen from './Home/HomeScreen'
-import CategoryScreen from './Category/CategoryScreen'
-import NotificationScreen from './Notification/NotificationScreen'
-import YouScreen from './You/YouScreen'
-import NFNewsScreen from './NFNews/FavouriteScreen'
-import ScreenSize from '../contants/ScreenSize'
-import BenefitsInfoBox from '../components/BenefitsInfoBox'
-import OutlinedButton from '../components/OutlinedButton'
+import HomeScreen from '../Home/HomeScreen'
+import CategoryScreen from '../Category/CategoryScreen'
+import NotificationScreen from '../Notification/NotificationScreen'
+import YouScreen from '../You/YouScreen'
+import NFNewsScreen from '../NFNews/FavouriteScreen'
+import ScreenSize from '../../contants/ScreenSize'
+import BenefitsInfoBox from '../../components/BenefitsInfoBox'
+import OutlinedButton from '../../components/OutlinedButton'
 
 const Tab = createBottomTabNavigator()
 
@@ -22,15 +22,15 @@ const MainScreen = ({navigation}) => {
                         let iconName
 
                         if (route.name === 'Home') {
-                            iconName = focused ? require("../assets/icons/ic_homeSelected.png") : require("../assets/icons/ic_home.png");
+                            iconName = focused ? require("../../assets/icons/ic_homeSelected.png") : require("../../assets/icons/ic_home.png");
                         } else if (route.name === 'Category') {
-                            iconName = require("../assets/icons/ic_category.png");
+                            iconName = require("../../assets/icons/ic_category.png");
                         } else if (route.name === 'NF News') {
-                            iconName = focused ? require("../assets/icons/ic_newsSelected.png") : require("../assets/icons/ic_news.png");
+                            iconName = focused ? require("../../assets/icons/ic_newsSelected.png") : require("../../assets/icons/ic_news.png");
                         } else if (route.name === 'Notification') {
-                            iconName = focused ? require("../assets/icons/ic_notificationSelected.png") : require("../assets/icons/ic_notification.png");
+                            iconName = focused ? require("../../assets/icons/ic_notificationSelected.png") : require("../../assets/icons/ic_notification.png");
                         } else if (route.name === 'You') {
-                            iconName = require("../assets/icons/ic_you.png");
+                            iconName = require("../../assets/icons/ic_you.png");
                         }
 
                         return (
@@ -46,7 +46,7 @@ const MainScreen = ({navigation}) => {
                 })}
             >
                 <Tab.Screen name="Home">
-                    {props => <HomeScreen {...props} presentLogin={() => {navigation.navigate('Login')}} />}
+                    {props => <HomeScreen {...props} pushScreen={(screenName) => navigation.navigate(screenName)} />}
                 </Tab.Screen>
                 <Tab.Screen name="Category" component={CategoryScreen} />
                 <Tab.Screen name="NF News" component={NFNewsScreen} />

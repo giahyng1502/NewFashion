@@ -7,7 +7,7 @@ import SplashScreen from '../screens/SplashScreen'
 import LoginScreen from '../screens/LoginScreen'
 import RegisterWithEmailScreen from '../screens/RegisterWithEmailScreen'
 import LoginWithEmail from '../screens/LoginWithEmail'
-import MainScreen from '../screens/MainScreen'
+import MainScreen from '../screens/Main/MainScreen'
 import LoginWithPhoneNumber from '../screens/LoginWithPhoneNumber'
 import DetailsScreen from '../screens/DetailsScreen'
 import ChatScreen from "../screens/Chat/ChatScreen";

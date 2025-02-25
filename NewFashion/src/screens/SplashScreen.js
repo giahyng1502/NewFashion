@@ -2,6 +2,7 @@ import { StyleSheet, Image, View, Animated } from 'react-native'
 import React, { useEffect, useRef } from 'react'
 import { fetchCategories } from '../redux/actions/categoryActions';
 import { useDispatch } from 'react-redux';
+import AppManager from '../utils/AppManager';
 
 const SplashScreen = ({ navigation }) => {
     const fadeAnimLogo = useRef(new Animated.Value(1)).current;
@@ -24,6 +25,7 @@ const SplashScreen = ({ navigation }) => {
     const loadData = async () => {
         try {
             dispatch(fetchCategories())
+            await AppManager.getUserInfo();
         } catch (error) {
             console.log('Load data error: ', error);
         }

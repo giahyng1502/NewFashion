@@ -31,11 +31,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: 10,
-        paddingVertical: 0,
+        
         backgroundColor: 'transparent',
     },
     title: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
         textAlign: 'center',
         position: 'absolute',

@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class AppManager {
   static instance = null;
+  userInfo = null;
 
   constructor() {
     if (!AppManager.instance) {
@@ -10,40 +11,42 @@ class AppManager {
     return AppManager.instance;
   }
 
-  // Hàm lưu userInfo vào AsyncStorage
+  //hàm save userInfor vào storage 
   async saveUserInfo(userInfo) {
     try {
-      const jsonValue = JSON.stringify(userInfo);
-      await AsyncStorage.setItem('userInfo', jsonValue);
+      await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
+      this.userInfo = userInfo;
     } catch (error) {
-      console.log('Error saving userInfo: ', error);
+      console.log('saveUserInfo error: ', error);
     }
   }
 
-  // Hàm lấy userInfo từ AsyncStorage
+  //hàm get userInfo từ storage
   async getUserInfo() {
     try {
-      const jsonValue = await AsyncStorage.getItem('userInfo');
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
+      const userInfo = await AsyncStorage.getItem('userInfo');
+      this.userInfo = JSON.parse(userInfo);
+      return this.userInfo;
     } catch (error) {
-      console.log('Error getting userInfo: ', error);
+      console.log('getUserInfo error: ', error);
     }
   }
 
-  // Hàm check xem người dùng đã login chưa (kiểm tra userInfo)
-  async isUserLoggedIn() {
-    const userInfo = await this.getUserInfo();
-    return userInfo != null;
-  }
-
-  // Hàm để xóa userInfo (logout)
-  async logout() {
+  //hàm remove userInfo khỏi storage
+  async removeUserInfo() {
     try {
       await AsyncStorage.removeItem('userInfo');
+      this.userInfo = null;
     } catch (error) {
-      console.log('Error logging out: ', error);
+      console.log('removeUserInfo error: ', error);
     }
   }
+
+  //hàm check xem user đã login chưa
+  isUserLoggedIn() {
+    return this.userInfo !== null;
+  }
+  
 }
 
 const instance = new AppManager();

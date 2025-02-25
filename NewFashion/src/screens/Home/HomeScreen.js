@@ -126,6 +126,7 @@ export const products = [
     almostSoldOut: true,
   },
 ];
+
 const titleCategories = [
   { id: "1", name: "All", image: null },
   { id: "2", name: "DEALS", image: require("../../assets/icons/ic_deals.png"), highlight: true },
@@ -134,7 +135,7 @@ const titleCategories = [
   { id: "5", name: "New Arrivals", image: require("../../assets/icons/ic_newArrvals.png") },
 ];
 
-const HomeScreen = ({ navigation, presentLogin }) => {
+const HomeScreen = ({ navigation, pushScreen }) => {
   const titleCategoryFlatlistRef = useRef(null)
   const [selectedTitleCategory, setSelectedTitleCategory] = useState(null);
   const [searchText, setSearchText] = useState('');
@@ -144,12 +145,9 @@ const HomeScreen = ({ navigation, presentLogin }) => {
   }, []);
 
   const handleSelectCartButton = async () => {
-    if (await AppManager.isUserLoggedIn()) {
-      navigation.navigate('Cart');
-    } else {
-      presentLogin()
-    }
+    pushScreen('Cart');
   }
+  
   const renderItemTitleCategory = ({ index, item }) => {
     const isSelected = item === selectedTitleCategory;
     return (
@@ -199,12 +197,16 @@ const HomeScreen = ({ navigation, presentLogin }) => {
         <View>
           {/* Banner */}
           <View style={st.bannerContainer}>
+            {/* Banner */}
             <Image source={require('../../assets/img_banner2.png')} style={st.bannerImage} />
+            {/* Cart Button */}
             <TouchableOpacity onPress={handleSelectCartButton} style={{ position: 'absolute', top: 50, right: 20 }}>
               <Image source={require('../../assets/buttons/bt_cart.png')} style={{ width: 35, height: 35 }} />
-              <View style={{ position: 'absolute', top: 2, right: 2, backgroundColor: 'red', width: 16, height: 16, borderRadius: 8, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#fff' }}>
-                <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>2</Text>
-              </View>
+              {AppManager.isUserLoggedIn() && (
+                <View style={{ position: 'absolute', top: 2, right: 2, backgroundColor: 'red', width: 16, height: 16, borderRadius: 8, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#fff' }}>
+                  <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>2</Text>
+                </View>
+              )}
             </TouchableOpacity>
           </View>
 
