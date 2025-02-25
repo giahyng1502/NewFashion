@@ -1,0 +1,203 @@
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { RadioButton } from "react-native-paper";
+
+const PaymentAndCoupon = () => {
+  const [selectedPayment, setSelectedPayment] = useState(null);
+
+  const totalBeforeDiscount = 1007658;
+  const discount = 202329;
+  const totalAfterDiscount = totalBeforeDiscount - discount;
+
+  return (
+    <View style={styles.container}>
+      {/* payment */}
+      <View style={styles.paymentContainer}>
+          {/* title */}
+          <Text style={styles.sectionTitle}>Payment methods</Text>
+        <View style={styles.titleContainer}>
+          <Image source={require("../../assets/icons/ic_important.png")} style={styles.importantIcon} />
+          <Text style={styles.subTitle}>Please select a payment method</Text>
+        </View>
+
+        {/* Direct Payment */}
+        <View style={styles.paymentOption}>
+          <RadioButton
+            value="direct"
+            status={selectedPayment === "direct" ? "checked" : "unchecked"}
+            onPress={() => setSelectedPayment("direct")}
+          />
+          <Image source={require("../../assets/icons/ic_cash.png")} style={styles.paymentIcon} />
+          <Text style={styles.paymentText}>Direct payment</Text>
+        </View>
+
+        {/* MoMo E-wallet */}
+        <View style={styles.paymentOption}>
+          <RadioButton
+            value="momo"
+            status={selectedPayment === "momo" ? "checked" : "unchecked"}
+            onPress={() => setSelectedPayment("momo")}
+          />
+          <Image source={require("../../assets/icons/ic_momo.png")} style={styles.paymentIcon} />
+          <Text style={styles.paymentText}>Momo e-wallet</Text>
+        </View>
+
+        {/* ZaloPay */}
+        <View style={[styles.paymentOption,{marginBottom:0,borderBottomWidth:0,paddingBottom:0}]}>
+          <RadioButton
+            value="zalopay"
+            status={selectedPayment === "zalopay" ? "checked" : "unchecked"}
+            onPress={() => setSelectedPayment("zalopay")}
+          />
+          <Image source={require("../../assets/icons/ic_zaloPay.png")} style={styles.paymentIcon} />
+          <Text style={styles.paymentText}>Zalopay</Text>
+        </View>
+      </View>
+
+      {/* line */}
+      <View style={{backgroundColor:'#eee',width:'100%',height:10}}/>
+
+      {/* Coupon */}
+      <View style={[styles.titleContainer,{marginBottom:0,padding:15,justifyContent:'space-between',alignItems:'center'}]}>
+        <Text style={styles.couponText}>Apply coupon</Text>
+        <TouchableOpacity>
+            <Image source={require('../../assets/ic_arrowRight.png')} style={styles.importantIcon}/>
+        </TouchableOpacity>
+      </View>
+
+      {/* line */}
+      <View style={{backgroundColor:'#eee',width:'100%',height:10}}/>
+
+      {/* Summary */}
+      <View style={styles.summaryContainer}>
+        <View style={styles.summaryRow}>
+          <Text style={styles.textBold}>Item(s) total:</Text>
+          <Text style={[styles.textBold,{textDecorationLine:'line-through',color:'#737373'}]}>{totalBeforeDiscount.toLocaleString()}đ</Text>
+        </View>
+
+        <View style={styles.summaryRow}>
+          <Text style={styles.textBold}>Item(s) discount:</Text>
+          <Text style={[styles.textBold,{textDecorationLine:'line-through',color:'#D96923'}]}>-{discount.toLocaleString()}đ</Text>
+        </View>
+
+        <View style={styles.summaryRow}>
+          <Text style={styles.textBold}>Subtotal:</Text>
+          <Text style={styles.textBold}>{totalAfterDiscount.toLocaleString()}đ</Text>
+        </View>
+
+        <View style={[styles.summaryRow,{borderTopWidth:1,borderBottomWidth:1,paddingVertical:15,borderColor:'#D7D7D7'}]}>
+          <Text style={styles.textBold}>Shipping:</Text>
+          <Text style={[styles.textBold,{color:'#078809'}]}>FREE</Text>
+        </View>
+
+        <View style={{width:'100%',flexDirection:'column'}}>
+          <View style={styles.summaryRow}>
+            <Text style={[styles.textBold,{fontSize:20}]}>Order total:</Text>
+            <Text style={[styles.textBold,{fontSize:20}]}>{totalAfterDiscount.toLocaleString()}đ</Text>
+          </View>
+          <View style={styles.subTextContainer}>
+            <Text style={styles.text}>By submitting your order, you agree to our </Text>
+            <TouchableOpacity>
+              <Text style={styles.link}>Terms of Use </Text>
+            </TouchableOpacity>
+            <Text style={styles.text}>and </Text>
+            <TouchableOpacity>
+              <Text style={styles.link}>Privacy Policy</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    marginVertical:10,
+    backgroundColor: "#fff",
+    flexDirection:'column'
+  },
+  paymentContainer:{
+    padding:15
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom:5
+  },
+  subTitle:{
+    color:'#737373'
+  },
+  titleContainer:{
+    flexDirection:'row',
+    marginBottom:15
+  },
+  importantIcon:{
+    width:20,
+    height:20,
+    marginRight:5
+  },
+  //payment
+  paymentOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    borderBottomWidth:1,
+    paddingBottom:10,
+    borderColor:'#D7D7D7'
+  },
+  paymentIcon: {
+    width: 35,
+    height: 35,
+    marginHorizontal: 10,
+  },
+  paymentText: {
+    fontSize: 16,
+    fontWeight:'bold',
+    marginLeft:5
+  },
+  //coupon
+  couponText: {
+    fontSize: 18,
+    color: "#000",
+    fontWeight:'bold'
+  },
+  //summary
+  summaryContainer: {
+    padding: 15,
+  },
+  summaryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  textStrikethrough: {
+    textDecorationLine: "line-through",
+    color: "#777",
+  },
+  textBold: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color:'#000'
+  },
+  subTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap:'wrap',
+    width:'100%'
+  },
+  text: {
+    fontSize: 15,
+    color: '#737373',
+    fontWeight:'bold'
+  },
+  link: {
+    fontSize: 15,
+    color: '#1976D2',
+    textDecorationLine: 'underline',
+    fontWeight:'bold'
+  },
+});
+
+export default PaymentAndCoupon;
