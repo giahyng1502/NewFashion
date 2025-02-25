@@ -402,10 +402,6 @@ const st = StyleSheet.create({
     color: 'blue',
     fontSize: 16,
   },
-  troubleContainer: {
-    alignItems: 'center',
-    marginTop: 20,
-  },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',

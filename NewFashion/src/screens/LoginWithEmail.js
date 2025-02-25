@@ -6,11 +6,8 @@ import ScreenSize from '../contants/ScreenSize';
 import FilledButton from '../components/FilledButton';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useDispatch, useSelector} from "react-redux";
-import LoadingDialog from "../dialogs/loadingDialog";
 import {login} from "../service/userService";
 import {jwtDecode} from "jwt-decode";
-import {setSocketConnection, setUser} from "../redux/reducer/userReducer";
-import {io} from "socket.io-client";
 
 const LoginWithEmail = ({navigation, route}) => {
   const dispatch = useDispatch();
