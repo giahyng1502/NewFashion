@@ -16,6 +16,7 @@ import HeaderDetail from "../../components/HeaderDetail";
 import StatusBar from "./StatusBar";
 import LikePost from "../../components/LikePost";
 import ButtonWithLeftIcon from "../../components/ButtonWithLeftIcon";
+import BaseHeader from '../../components/BaseHeader';
 const post = {
     shopName: 'NewFashion',
     time: '2 hours ago',
@@ -178,7 +179,8 @@ function DetailPostScreen({ navigation }) {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={styles.container}
         >
-            <HeaderDetail title={'New Fashion'} navigation={navigation} />
+            
+            <BaseHeader title={'New Fashion'} showLeftButton={true} onLeftButtonPress={() => {navigation.goBack()}} />
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={{ flex: 1 }}>
                     <FlatList

@@ -135,7 +135,7 @@ const titleCategories = [
   { id: "5", name: "New Arrivals", image: require("../../assets/icons/ic_newArrvals.png") },
 ];
 
-const HomeScreen = ({ navigation, pushScreen }) => {
+const HomeScreen = ({ navigation }) => {
   const titleCategoryFlatlistRef = useRef(null)
   const [selectedTitleCategory, setSelectedTitleCategory] = useState(null);
   const [searchText, setSearchText] = useState('');
@@ -145,7 +145,7 @@ const HomeScreen = ({ navigation, pushScreen }) => {
   }, []);
 
   const handleSelectCartButton = async () => {
-    pushScreen('Cart');
+    navigation.navigate('Cart');
   }
   
   const renderItemTitleCategory = ({ index, item }) => {

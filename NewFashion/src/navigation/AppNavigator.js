@@ -21,10 +21,9 @@ const Stack = createStackNavigator()
 const AppNavigator = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={'Main'}>
-         <Stack.Screen name="Test" component={TestScreen} />
+      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={'Splash'}>
          <Stack.Screen name="Splash" component={SplashScreen} />
-         <Stack.Screen name="Login" component={LoginScreen} />
+         <Stack.Screen name="Login" component={LoginScreen} options={{presentation: 'modal'}}/>
          <Stack.Screen name="RegisterWithEmail" component={RegisterWithEmailScreen} />
          <Stack.Screen name="LoginWithEmail" component={LoginWithEmail} />
          <Stack.Screen name="Main" component={MainScreen} />

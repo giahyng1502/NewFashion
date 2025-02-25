@@ -101,8 +101,6 @@ const CategoryScreen = () => {
     </View>
   );
 
-
-
   const ListHeaderComponent = () => {
     if (!selectedCategory) {
       return null;
@@ -132,13 +130,7 @@ const CategoryScreen = () => {
                 <Image source={require('../../assets/icons/ic_arrowDown.png')} style={{ width: 14, height: 14, marginLeft: 5 }} resizeMethod='contain' />
               </TouchableOpacity>
             </View>
-
-
-
           </>
-
-
-
         )}
       </View>
     );
