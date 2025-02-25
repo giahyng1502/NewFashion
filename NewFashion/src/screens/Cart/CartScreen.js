@@ -7,6 +7,7 @@ import FilledButton from '../../components/FilledButton'
 import ScreenSize from '../../contants/ScreenSize'
 import OutlinedButton from '../../components/OutlinedButton'
 import ProductCard from '../../components/ProductCard';
+import AppManager from '../../utils/AppManager';
 
 const DATA = [
   {
@@ -129,6 +130,14 @@ const CartScreen = ({ navigation }) => {
       setIsSelectedAll(!isSelectedAll);
       return updatedCart;
     });
+  }
+
+  const handleCheckOut = () => {
+    if (AppManager.isUserLoggedIn()) {
+      navigation.navigate('CheckOut');
+    } else {
+      navigation.navigate('Login');
+    }
   }
 
   return (
@@ -337,7 +346,7 @@ const CartScreen = ({ navigation }) => {
         </TouchableOpacity>
 
         {/* check out button */}
-        <FilledButton title={checkOutTitleButton} onPress={() => navigation.navigate('CheckOut')} customStyle={{ backgroundColor: '#FA7806', width: ScreenSize.width / 3 }} />
+        <FilledButton title={checkOutTitleButton} onPress={() => handleCheckOut()} customStyle={{ backgroundColor: '#FA7806', width: ScreenSize.width / 3 }} />
       </View>
 
       {/* )} */}
