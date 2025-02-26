@@ -24,10 +24,14 @@ const SplashScreen = ({ navigation }) => {
 
     const loadData = async () => {
         try {
-            dispatch(fetchCategories())            
+            console.log('Load data');
+
+            const fetchResult = await dispatch(fetchCategories()).unwrap();
+            console.log('Fetch categories success:', fetchResult);
+
             await AppManager.getUserInfo();
             console.log(AppManager.userInfo);
-            
+
         } catch (error) {
             console.log('Load data error: ', error);
         }

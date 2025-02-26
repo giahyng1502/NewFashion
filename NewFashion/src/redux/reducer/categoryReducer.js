@@ -14,9 +14,7 @@ const categorySlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchCategories.fulfilled, (state, action) => {
-                state.categories = action.payload;
-                console.log('Fetch categories successfully: ', action.payload);
-                
+                state.categories = action.payload;                
             })
             .addCase(fetchCategories.rejected, (state, action) => {
                 console.log('Fetch categories failed: ', action.payload); 
