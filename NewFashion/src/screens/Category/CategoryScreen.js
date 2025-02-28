@@ -5,6 +5,7 @@ import { fetchSubCategories } from '../../redux/actions/subCateActions';
 import ScreenSize from '../../contants/ScreenSize';
 import { products } from '../Home/HomeScreen';
 import StarRating from '../../components/StarRating';
+import SearchBar from '../../components/SearchBar';
 
 const CategoryScreen = () => {
   const [searchText, setSearchText] = useState('');
@@ -138,20 +139,9 @@ const CategoryScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#FFF' }}>
-      {/* Search Bar */}
-      <View style={{ flexDirection: 'row', margin: 10, alignItems: 'center', borderWidth: 1.5, borderColor: '#000', borderRadius: 40, backgroundColor: '#FFF' }}>
-        <TextInput value={searchText} style={{ flex: 1, height: 40, paddingHorizontal: 15, }} placeholder="Search something..." onChangeText={setSearchText} />
-        {searchText.length > 0 && (
-          <TouchableOpacity style={{ padding: 5 }} onPress={clearText}>
-            <Image source={require('../../assets/bt_clearText.png')} style={{ width: 18, height: 18, marginRight: 7, resizeMode: 'cover', }} />
-          </TouchableOpacity>
-        )}
-        <TouchableOpacity style={{ backgroundColor: '#000', margin: 3, padding: 8, paddingHorizontal: 16, borderRadius: 40 }}>
-          <Image source={require('../../assets/icons/ic_search.png')} style={{ width: 25, height: 25 }} />
-        </TouchableOpacity>
-      </View>
+      <SearchBar onSearch={() => {}} />
 
-      <View style={{ flexDirection: 'row', flex: 1, backgroundColor: '#FFF' }}>
+      <View style={{ flexDirection: 'row', flex: 1, backgroundColor: '#FFF', overflow: 'hidden' }}>
         <FlatList
           data={categories}
           renderItem={renderCategoryItem}

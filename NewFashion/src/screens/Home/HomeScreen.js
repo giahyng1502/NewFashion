@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSocketConnection } from "../../redux/reducer/userReducer";
 import ScreenSize from '../../contants/ScreenSize';
 import AppManager from '../../utils/AppManager';
+import SearchBar from '../../components/SearchBar';
 
 const saleProducts = [
   {
@@ -211,7 +212,7 @@ const HomeScreen = ({ navigation }) => {
           </View>
 
           {/* Search Bar */}
-          <View style={st.searchContainer}>
+          {/* <View style={st.searchContainer}>
             <TextInput value={searchText} style={st.searchInput} placeholder="Search something..." onChangeText={setSearchText} />
             {searchText.length > 0 && (
               <TouchableOpacity style={st.clearButton} onPress={clearText}>
@@ -221,7 +222,8 @@ const HomeScreen = ({ navigation }) => {
             <TouchableOpacity style={st.searchButton}>
               <Image source={require('../../assets/icons/ic_search.png')} style={st.searchIcon} />
             </TouchableOpacity>
-          </View>
+          </View> */}
+          <SearchBar onSearch={() => { }} />
 
           {/* Discount */}
           <View style={st.discountContainer}>

@@ -9,7 +9,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {login} from "../service/userService";
 import {jwtDecode} from "jwt-decode";
 
-const LoginWithEmail = ({navigation, route}) => {
+const CheckEmail = ({navigation, route}) => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassWord] = useState('');
@@ -26,7 +26,7 @@ const LoginWithEmail = ({navigation, route}) => {
   return (
     <View style={st.container}>
       <View style={st.header}>
-        <TouchableOpacity style={st.iconContainer}>
+        <TouchableOpacity style={st.iconContainer} onPress={() => navigation.goBack()}>
           <Image
             source={require('../assets/bt_exit.png')}
             style={st.closeIcon}
@@ -72,7 +72,7 @@ const LoginWithEmail = ({navigation, route}) => {
   )
 }
 
-export default LoginWithEmail
+export default CheckEmail
 
 const st = StyleSheet.create({
   container: {

@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {jwtDecode} from "jwt-decode";
 
 class AppManager {
   static instance = null;
@@ -10,29 +11,35 @@ class AppManager {
     }
     return AppManager.instance;
   }
-
-  //hàm save userInfor vào storage 
-  async saveUserInfo(userInfo) {
+  
+  async saveUserInfo(token) {
     try {
-      await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
+      await AsyncStorage.setItem('token', token)
+      const userInfo = jwtDecode(token);
       this.userInfo = userInfo;
     } catch (error) {
       console.log('saveUserInfo error: ', error);
     }
   }
 
-  //hàm get userInfo từ storage
-  async getUserInfo() {
+  getUserInfo() {
+    return this.userInfo;
+  }
+
+  async loadUserInfo() {
     try {
-      const userInfo = await AsyncStorage.getItem('userInfo');
-      this.userInfo = JSON.parse(userInfo);
-      return this.userInfo;
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        const userInfo = jwtDecode(token);
+        this.userInfo = userInfo;
+      } else {
+        this.userInfo = null;
+      }
     } catch (error) {
-      console.log('getUserInfo error: ', error);
+      console.log('loadUserInfo error: ', error);
     }
   }
 
-  //hàm remove userInfo khỏi storage
   async removeUserInfo() {
     try {
       await AsyncStorage.removeItem('userInfo');
@@ -42,7 +49,6 @@ class AppManager {
     }
   }
 
-  //hàm check xem user đã login chưa
   isUserLoggedIn() {
     return this.userInfo !== null;
   }
