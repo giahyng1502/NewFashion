@@ -3,12 +3,12 @@ import axios from "../../service/axios"
 
 export const checkEmail = createAsyncThunk(
     'users/checkEmail',
-    async (_, thunkAPI) => {
+    async (email, thunkAPI) => {
         try {
-            const response = await axios.get('/users/checkEmail');            
-            return response.data;
+            const response = await axios.post('/users/checkEmail', email);            
+            return response;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.response.data);
+            return thunkAPI.rejectWithValue(error.response);
         }
     }
 );

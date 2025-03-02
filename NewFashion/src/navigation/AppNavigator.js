@@ -5,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import SplashScreen from '../screens/SplashScreen'
 import LoginScreen from '../screens/LoginScreen'
 import RegisterWithEmailScreen from '../screens/RegisterWithEmailScreen'
-import CheckEmail from '../screens/CheckEmail'
+import LoginWithEmailScreen from '../screens/LoginWithEmailScreen'
 import MainScreen from '../screens/MainScreen'
 import LoginWithPhoneNumber from '../screens/LoginWithPhoneNumber'
 import DetailsScreen from '../screens/DetailsScreen'
@@ -25,7 +25,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Login" component={LoginScreen} options={{ presentation: 'modal' }} />
         <Stack.Screen name="RegisterWithEmail" component={RegisterWithEmailScreen} />
-        <Stack.Screen name="CheckEmail" component={CheckEmail} />
+        <Stack.Screen name="LoginWithEmail" component={LoginWithEmailScreen} />
         <Stack.Screen name="Main" component={MainScreen} />
         <Stack.Screen name="Detail" component={DetailsScreen} />
         <Stack.Screen name="LoginWithPhoneNumber" component={LoginWithPhoneNumber} />
