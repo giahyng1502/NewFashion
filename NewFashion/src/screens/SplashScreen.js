@@ -1,8 +1,9 @@
 import { StyleSheet, Image, View, Animated } from 'react-native'
 import React, { useEffect, useRef } from 'react'
 import { fetchCategories } from '../redux/actions/categoryActions';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import AppManager from '../utils/AppManager';
+import { fetchProducts } from '../redux/actions/productActions';
 
 const SplashScreen = ({ navigation }) => {
     const fadeAnimLogo = useRef(new Animated.Value(1)).current;
@@ -29,7 +30,10 @@ const SplashScreen = ({ navigation }) => {
             const fetchResult = await dispatch(fetchCategories()).unwrap();
             console.log('Fetch categories success:', fetchResult);
 
-            await AppManager.getUserInfo();
+            const fetchProduct = await dispatch(fetchProducts(1)).unwrap();
+            console.log('Fetch products success:', fetchProduct);
+
+            await AppManager.loadUserInfo();
             console.log(AppManager.userInfo);
 
         } catch (error) {

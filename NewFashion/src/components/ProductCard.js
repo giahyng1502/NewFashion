@@ -2,21 +2,24 @@ import { StyleSheet, TouchableOpacity, View, Image, Text } from 'react-native'
 import React from 'react'
 import StarRating from './StarRating';
 
+const convertPrice = (price) => {
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "đ";
+}
 
 const ProductCard = ({ item }) => (
   <View style={st.card}>
     <View style={st.imageContainer}>
-      <Image source={{ uri: item.image }} style={st.image} resizeMode='cover' />
+      <Image source={{ uri: item.image[0] }} style={st.image} resizeMode='cover' />
     </View>
-    <Text style={st.title} numberOfLines={1}>{item.title}</Text>
-    {item.almostSoldOut && <Text style={st.almostSoldOut}>Almost sold out</Text>}
+    <Text style={st.title} numberOfLines={1}>{item.name}</Text>
+    {(item.stock <= 10) && <Text style={st.almostSoldOut}>Almost sold out</Text>}
     <View style={st.ratingContainer}>
       <StarRating rating={item.rating} />
-      <Text style={{color: '#737373', fontSize: 12}}>{item.ratingCount}</Text>
+      <Text style={{color: '#737373', fontSize: 12}}>{item.rateCount}</Text>
     </View>
     <View style={st.priceContainer}>
-      <Text style={st.price}>{item.price}</Text>
-      <Text style={st.sold}>{item.sold}</Text>
+      <Text style={st.price}>{convertPrice(item.price)}</Text>
+      <Text style={st.sold}>{item.sold} sold</Text>
       <TouchableOpacity>
         <Image source={require('../assets/buttons/bt_addToCart.png')} style={st.cartIcon} />
       </TouchableOpacity>
