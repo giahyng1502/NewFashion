@@ -15,14 +15,16 @@ import CartScreen from '../screens/Cart/CartScreen'
 import homeScreen from "../screens/Home/HomeScreen";
 import DetailPostScreen from "../screens/Post/DetailPostScreen";
 import ImagePreview from '../screens/ImagePreview'
+import OrderScreen from '../screens/Order/OrderScreen'
 
 const Stack = createStackNavigator()
 
 const AppNavigator = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={'Splash'}>
-        <Stack.Screen name="Splash" component={SplashScreen} />
+      {/* Sửa lại thành Splash như lúc đầu */}
+      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={'Order'}>
+        {/* <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Login" component={LoginScreen} options={{ presentation: 'modal' }} />
         <Stack.Screen name="RegisterWithEmail" component={RegisterWithEmailScreen} />
         <Stack.Screen name="LoginWithEmail" component={LoginWithEmailScreen} />
@@ -33,7 +35,8 @@ const AppNavigator = () => {
         <Stack.Screen name="ChatDetail" component={ChatDetail} />
         <Stack.Screen name="PostDetail" component={DetailPostScreen} />
         <Stack.Screen name="Cart" component={CartScreen} />
-        <Stack.Screen name="ImagePreview" component={ImagePreview} options={{presentation: 'modal'}} />
+        <Stack.Screen name="ImagePreview" component={ImagePreview} options={{presentation: 'modal'}} /> */}
+        <Stack.Screen name="Order" component={OrderScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>
