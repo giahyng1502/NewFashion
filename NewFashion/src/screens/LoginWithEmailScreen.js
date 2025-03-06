@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "../service/userService";
 import { jwtDecode } from "jwt-decode";
 import BenefitsInfoBox from '../components/BenefitsInfoBox';
-import { checkEmail } from '../redux/actions/userActions';
+import { checkEmail, loginWithEmail, register } from '../redux/actions/userActions';
 import PasswordStrengthBar from '../components/PasswordStrengthBar';
 
 const LoginWithEmailScreen = ({ navigation }) => {
@@ -134,11 +134,35 @@ const LoginWithEmailScreen = ({ navigation }) => {
     }
   }
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const emailError = validateField('email', email);
 
     const passwordError = validateField('password', password);
 
+
+    // if (emailError || passwordError) {
+    //   console.log('Login failed');
+    //   return
+    // }
+
+    let user = {
+      email: email,
+      password: password
+    }
+    console.log("User",user);
+    
+    dispatch(loginWithEmail(user))
+      .then((result) => {
+        console.log('result: ', result);
+      }).catch((err) => {
+        console.log("Login error: ", err);
+      });
+
+  }
+
+  const handleRegister = () => {
+    const emailError = validateField('email', email);
+    const passwordError = validateField('password', password);
 
     if (emailError || passwordError) {
       console.log('Register failed');
@@ -147,25 +171,27 @@ const LoginWithEmailScreen = ({ navigation }) => {
 
     let user = {
       email: email,
+      name: "nguoidung",
       password: password
     }
-
-    dispatch(login(user))
+    console.log(user);
+    
+    dispatch(register(user))
       .then((result) => {
-        console.log('result: ', result);
-        // if (result.meta.requestStatus === 'fulfilled') {
-        //   let token = result.payload.data.token;
-        //   let user = jwtDecode(token);
-        //   console.log('User: ', user);
-        // }
-      }).catch((err) => {
-        console.log("Login error: ", err);
+        console.log('Register successful', result);
+      })
+      .catch((err) => {
+        console.log("Register error: ", err);
       });
   }
 
   const handleContinue = () => {
     if (isContinue) {
-      handleLogin()
+      if (isRegister) {
+        handleRegister()
+      }else {
+        handleLogin()
+      }
     } else {
       handleCheckEmail()
     }
@@ -233,11 +259,15 @@ const LoginWithEmailScreen = ({ navigation }) => {
               <Text style={st.errorLabel} numberOfLines={0}>{passwordError}</Text>
             </View>
           }
-          <PasswordStrengthBar password={password} customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onChangeText={setStrengLabel} />
-          <Text style={{ fontWeight: 'bold', fontSize: 14, marginTop: 8, alignSelf: 'flex-start', marginVertical: 5 }}>Password quality: {strengLabel}</Text>
+          {(isContinue && isRegister) &&
+            <>
+              <PasswordStrengthBar password={password} customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onChangeText={setStrengLabel} />
+              <Text style={{ fontWeight: 'bold', fontSize: 14, marginTop: 8, alignSelf: 'flex-start', marginVertical: 5 }}>Password quality: {strengLabel}</Text>
+            </>
+
+          }
         </Animated.View>
       )}
-
       <FilledButton
         onPress={handleContinue}
         title="Continue"
