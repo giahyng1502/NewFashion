@@ -6,8 +6,8 @@ const convertPrice = (price) => {
   return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "đ";
 }
 
-const ProductCard = ({ item }) => (
-  <View style={st.card}>
+const ProductCard = ({ item, onSelected }) => (
+  <TouchableOpacity style={st.card} onPress={() => onSelected(item)}>
     <View style={st.imageContainer}>
       <Image source={{ uri: item.image[0] }} style={st.image} resizeMode='cover' />
     </View>
@@ -24,7 +24,7 @@ const ProductCard = ({ item }) => (
         <Image source={require('../assets/buttons/bt_addToCart.png')} style={st.cartIcon} />
       </TouchableOpacity>
     </View>
-  </View>
+  </TouchableOpacity>
 );
 
 export default ProductCard

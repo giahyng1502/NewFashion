@@ -27,7 +27,7 @@ const AppNavigator = () => {
           <Stack.Screen name="RegisterWithEmail" component={RegisterWithEmailScreen} />
           <Stack.Screen name="LoginWithEmail" component={LoginWithEmailScreen} />
           <Stack.Screen name="Main" component={MainScreen} />
-          <Stack.Screen name="Detail" component={DetailsScreen} />
+          <Stack.Screen name="ProductDetail" component={DetailsScreen} />
           <Stack.Screen name="LoginWithPhoneNumber" component={LoginWithPhoneNumber} />
           <Stack.Screen name="Chat" component={ChatScreen} />
           <Stack.Screen name="ChatDetail" component={ChatDetail} />

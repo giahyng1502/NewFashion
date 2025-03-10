@@ -9,6 +9,7 @@ import { jwtDecode } from "jwt-decode";
 import BenefitsInfoBox from '../components/BenefitsInfoBox';
 import { checkEmail, loginWithEmail, register } from '../redux/actions/userActions';
 import PasswordStrengthBar from '../components/PasswordStrengthBar';
+import AppManager from '../utils/AppManager'
 
 const LoginWithEmailScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -46,6 +47,12 @@ const LoginWithEmailScreen = ({ navigation }) => {
   };
 
   const handleCheckEmail = () => {
+    const emailError = validateField('email', email);
+    if (emailError) {
+      console.log('Check email failed');
+      return
+    }
+
     let emailObj = {
       email: email
     }
@@ -136,14 +143,13 @@ const LoginWithEmailScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     const emailError = validateField('email', email);
-
     const passwordError = validateField('password', password);
 
 
-    // if (emailError || passwordError) {
-    //   console.log('Login failed');
-    //   return
-    // }
+    if (emailError || passwordError) {
+      console.log('Login failed');
+      return
+    }
 
     let user = {
       email: email,
@@ -154,10 +160,10 @@ const LoginWithEmailScreen = ({ navigation }) => {
     dispatch(loginWithEmail(user))
       .then((result) => {
         console.log('result: ', result);
+        AppManager.saveUserInfo(result)
       }).catch((err) => {
         console.log("Login error: ", err);
       });
-
   }
 
   const handleRegister = () => {
@@ -169,9 +175,11 @@ const LoginWithEmailScreen = ({ navigation }) => {
       return
     }
 
+    let name = email.split('@')[0];
+
     let user = {
       email: email,
-      name: "nguoidung",
+      name: name,
       password: password
     }
     console.log(user);
@@ -179,6 +187,8 @@ const LoginWithEmailScreen = ({ navigation }) => {
     dispatch(register(user))
       .then((result) => {
         console.log('Register successful', result);
+        AppManager.saveUserInfo(result)
+        navigation.replace('Main')
       })
       .catch((err) => {
         console.log("Register error: ", err);

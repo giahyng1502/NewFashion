@@ -9,6 +9,7 @@ import ScreenSize from '../../contants/ScreenSize';
 import AppManager from '../../utils/AppManager';
 import SearchBar from '../../components/SearchBar';
 import { fetchProducts } from '../../redux/actions/productActions';
+import {jwtDecode} from "jwt-decode";
 
 const saleProducts = [
   {
@@ -81,8 +82,12 @@ const HomeScreen = ({ navigation }) => {
     )
   }
 
-  const handleSelectCartButton = async () => {
+  const handleSelectCartButton = () => {
     navigation.navigate('Cart');
+  }
+
+  const handleSelectedItem = (item) => {
+    navigation.navigate("ProductDetail", { item });
   }
   
   const renderItemTitleCategory = ({ index, item }) => {
@@ -120,10 +125,6 @@ const HomeScreen = ({ navigation }) => {
       </View>
     </View>
   );
-
-  const clearText = () => {
-    setSearchText('');
-  };
 
   return (
     <FlatList
@@ -225,7 +226,7 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
       )}
-      renderItem={({ item }) => <ProductCard item={item} />}
+      renderItem={({ item }) => <ProductCard item={item} onSelected={() => {handleSelectedItem(item)}} />}
       onEndReached={loadMoreProducts}
       onEndReachedThreshold={0.5}
       ListFooterComponent={renderFooter}

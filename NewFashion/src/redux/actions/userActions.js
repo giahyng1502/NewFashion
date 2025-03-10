@@ -19,7 +19,7 @@ export const loginWithEmail = createAsyncThunk(
     async (user, thunkAPI) => {
         try {
             const response = await axios.post('/users/login', user);            
-            return response.data;
+            return response.token;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
         }
@@ -31,7 +31,7 @@ export const register = createAsyncThunk(
     async (user, thunkAPI) => {
         try {
             const response = await axios.post('/users/register', user)
-            return response.data;
+            return response.token;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
         }
