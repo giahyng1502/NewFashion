@@ -15,31 +15,27 @@ import CartScreen from '../screens/Cart/CartScreen'
 import homeScreen from "../screens/Home/HomeScreen";
 import DetailPostScreen from "../screens/Post/DetailPostScreen";
 import ImagePreview from '../screens/ImagePreview'
-import OrderScreen from '../screens/Order/OrderScreen'
 
 const Stack = createStackNavigator()
 
 const AppNavigator = () => {
   return (
-    <NavigationContainer>
-      {/* Sửa lại thành Splash như lúc đầu */}
-      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={'Order'}>
-        {/* <Stack.Screen name="Splash" component={SplashScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} options={{ presentation: 'modal' }} />
-        <Stack.Screen name="RegisterWithEmail" component={RegisterWithEmailScreen} />
-        <Stack.Screen name="LoginWithEmail" component={LoginWithEmailScreen} />
-        <Stack.Screen name="Main" component={MainScreen} />
-        <Stack.Screen name="Detail" component={DetailsScreen} />
-        <Stack.Screen name="LoginWithPhoneNumber" component={LoginWithPhoneNumber} />
-        <Stack.Screen name="Chat" component={ChatScreen} />
-        <Stack.Screen name="ChatDetail" component={ChatDetail} />
-        <Stack.Screen name="PostDetail" component={DetailPostScreen} />
-        <Stack.Screen name="Cart" component={CartScreen} />
-        <Stack.Screen name="ImagePreview" component={ImagePreview} options={{presentation: 'modal'}} /> */}
-        <Stack.Screen name="Order" component={OrderScreen} />
-
-      </Stack.Navigator>
-    </NavigationContainer>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={'Splash'}>
+          <Stack.Screen name="Splash" component={SplashScreen} />
+          <Stack.Screen name="Login" component={LoginScreen} options={{ presentation: 'modal' }} />
+          <Stack.Screen name="RegisterWithEmail" component={RegisterWithEmailScreen} />
+          <Stack.Screen name="LoginWithEmail" component={LoginWithEmailScreen} />
+          <Stack.Screen name="Main" component={MainScreen} />
+          <Stack.Screen name="ProductDetail" component={DetailsScreen} />
+          <Stack.Screen name="LoginWithPhoneNumber" component={LoginWithPhoneNumber} />
+          <Stack.Screen name="Chat" component={ChatScreen} />
+          <Stack.Screen name="ChatDetail" component={ChatDetail} />
+          <Stack.Screen name="PostDetail" component={DetailPostScreen} />
+          <Stack.Screen name="Cart" component={CartScreen} />
+          <Stack.Screen name="ImagePreview" component={ImagePreview} options={{ presentation: 'modal' }} />
+        </Stack.Navigator>
+      </NavigationContainer>
   )
 }
 
