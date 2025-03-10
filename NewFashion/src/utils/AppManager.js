@@ -11,6 +11,15 @@ class AppManager {
     }
     return AppManager.instance;
   }
+
+  async getToken() {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      return token;
+    } catch (error) {
+      console.log('getToken error: ', error);
+    }
+  }
   
   async saveUserInfo(token) {
     try {

@@ -5,8 +5,8 @@ import BannerAdsProduct from '../components/BannerAdsProduct'
 import InfoProduct from '../components/InfoProduct'
 import ProductSelection from '../components/ProductSelection'
 import ShipDetail from './ShipDetail'
-import ReviewDetail from '../components/ReviewDetail'
-import ReviewFormUser from '../components/ReviewFormUser'
+import ReviewDetail, { Ratingbar } from '../components/ReviewDetail'
+import ReviewFormUser, { ReviewItem } from '../components/ReviewFormUser'
 import AboutShop from '../components/AboutShop'
 import DetailProduct from '../components/DetailProduct'
 import SuggestProduct from '../components/SuggestProduct'
@@ -16,6 +16,31 @@ import Swiper from 'react-native-swiper'
 import ProductCard from '../components/ProductCard'
 import StarRating from '../components/StarRating'
 import SupportFunctions from '../utils/SupportFunctions'
+
+const reviews = [
+    {
+        id: "1",
+        name: "Ngaan nè",
+        avataruser: require("../assets/icons/ic_user.png"),
+        date: "Nov 22, 2024",
+        color: "Black",
+        size: "M",
+        rating: 5,
+        review:
+            "Tôi rất thích thiết kế này, mặc vào rất tôn dáng và lộng lẫy, rất xứng đáng với giá tiền. Sẽ ủng hộ shop thật nhiều nhiều hơn nữa trong tương lai.",
+    },
+    {
+        id: "2",
+        name: "Do Duyen",
+        avataruser: require("../assets/icons/ic_user2.png"),
+        date: "Nov 24, 2024",
+        color: "Blue",
+        size: "M",
+        rating: 4,
+        review:
+            "Trời ơi xinh xỉu shop ơi, mãi iuuu, mặc lên xinh quá thế, mong rằng shop có thêm nhiều thiết kế như thế này, sẽ ủng hộ dài dài.",
+    },
+];
 
 const DetailsScreen = ({ navigation, route }) => {
     const { item } = route.params;
@@ -36,47 +61,6 @@ const DetailsScreen = ({ navigation, route }) => {
 
     return (
         <View style={st.container}>
-            {/* <ScrollView>
-                <View>
-                    <ImageDetailProduct />
-                </View>
-                <View style={st.headerbar}>
-                    <TouchableOpacity>
-                        <Image source={require('../assets/icons/ic_getback.png')} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{ marginLeft: 250 }}>
-                        <Image source={require('../assets/icons/ic_seach.png')} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{ marginLeft: 10 }}>
-                        <Image source={require('../assets/icons/ic_share.png')} />
-                    </TouchableOpacity>
-                </View>
-                <View>
-                    <BannerAdsProduct />
-                </View>
-                <View>
-                    <InfoProduct />
-                </View>
-                <View>
-                    <ProductSelection />
-                </View>
-                <View>
-                    <ShipDetail/>
-                </View>
-                <View>
-                    <ReviewDetail/>
-                </View>
-                <View>
-                    <ReviewFormUser/>
-                </View>
-                <View>
-                    <AboutShop/>
-                </View>
-                <View>
-                    <DetailProduct/>
-                </View>
-                <SuggestProduct/>
-            </ScrollView> */}
             <View style={{ padding: 20, position: 'absolute', flexDirection: 'row', justifyContent: 'space-between', width: '100%', zIndex: 99 }}>
                 <TouchableOpacity style={{ width: 35, height: 35 }} onPress={() => navigation.goBack()}>
                     <Image source={require('../assets/icons/ic_getback.png')} style={{ width: 35, height: 35 }} />
@@ -94,6 +78,7 @@ const DetailsScreen = ({ navigation, route }) => {
             </View>
             <FlatList
                 data={products}
+                numColumns={2}
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => <ProductCard item={item} />}
                 onEndReachedThreshold={0.5}
@@ -114,10 +99,8 @@ const DetailsScreen = ({ navigation, route }) => {
                                 onIndexChanged={(index) => setCurrentIndex(index)}
                             >
                                 {item.image.map((image, index) => (
-
-
-                                    <View key={index} style={{}}>
-                                        <Image source={{ uri: image }} style={{}} />
+                                    <View key={index} style={{ flex: 1 }}>
+                                        <Image source={{ uri: image }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
                                     </View>
                                 ))}
                             </Swiper>
@@ -147,6 +130,7 @@ const DetailsScreen = ({ navigation, route }) => {
                             <Text style={{ fontSize: 14, fontWeight: 'medium', color: '#737373', marginLeft: 8, textDecorationLine: 'line-through' }}>600.000đ</Text>
                         </View>
 
+                        {/* color */}
                         <View style={{ marginHorizontal: 20, marginTop: 10 }}>
                             <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#000' }}>Color: {selectedColor?.nameColor}</Text>
                             <View style={{ marginTop: 10 }}>
@@ -171,6 +155,7 @@ const DetailsScreen = ({ navigation, route }) => {
                             </View>
                         </View>
 
+                        {/* size */}
                         <View style={{ marginHorizontal: 20, marginTop: 10 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#000', flexShrink: 1 }}>Size: </Text>
@@ -199,9 +184,9 @@ const DetailsScreen = ({ navigation, route }) => {
                         {/* Quantity */}
                         <View style={{ marginHorizontal: 20, marginTop: 20, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
                             <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#000' }}>Qty: </Text>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', borderRadius: 5, borderWidth: 1, borderColor: '#73733760'}}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', borderRadius: 5, borderWidth: 1, borderColor: '#73733760' }}>
                                 <TouchableOpacity
-                                    style={{backgroundColor: '#F0F0F0', width: 30, height: 30, opacity: quantity === 1 ? 0.5 : 1 , justifyContent: 'center'}}
+                                    style={{ backgroundColor: '#F0F0F0', width: 30, height: 30, opacity: quantity === 1 ? 0.5 : 1, justifyContent: 'center' }}
                                     onPress={() => {
                                         if (quantity > 1) {
                                             setQuantity(quantity - 1);
@@ -215,13 +200,13 @@ const DetailsScreen = ({ navigation, route }) => {
                                         resizeMode="contain"
                                     />
                                 </TouchableOpacity>
-                                <View style={{ height: '100%', paddingHorizontal: 10}}>
+                                <View style={{ height: '100%', paddingHorizontal: 10 }}>
                                     <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                                         {quantity}
                                     </Text>
                                 </View>
                                 <TouchableOpacity
-                                    style={{backgroundColor: '#F0F0F0', width: 30, height: 30, alignItems: 'center', justifyContent: 'center' }}
+                                    style={{ backgroundColor: '#F0F0F0', width: 30, height: 30, alignItems: 'center', justifyContent: 'center' }}
                                     onPress={() => setQuantity(quantity + 1)}
                                 >
                                     <Image
@@ -231,6 +216,95 @@ const DetailsScreen = ({ navigation, route }) => {
                                     />
                                 </TouchableOpacity>
                             </View>
+                        </View>
+
+                        <View style={{ width: '100%', height: 6, backgroundColor: '#EEEEEE', marginTop: 20 }} />
+
+                        {/* Shipping */}
+                        <View style={{ marginHorizontal: 20, marginTop: 20 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Image source={require('../assets/icons/ic_ship.png')} style={{ width: 18, height: 18 }} />
+                                    <Text style={{ fontWeight: '700', color: '#007637', marginLeft: 10, textAlign: 'center' }}>Free shipping on all orders</Text>
+                                </View>
+                                <Image style={{ marginLeft: 165 }} source={require('../assets/icons/ic_next.png')} />
+                            </View>
+
+                            <Text style={{ fontWeight: 'bold', fontSize: 12, color: '#000', marginTop: 10 }}>
+                                <Text style={{ color: '#737373' }}>Delivery:</Text>
+                                Jan 25 - Feb 5
+                            </Text>
+
+                            <Text style={{ fontWeight: 'bold', fontSize: 12, color: '#737373', marginTop: 10 }}>
+                                Get a 25.000đ credit for late delivery
+                            </Text>
+
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                <Text style={{ fontWeight: 'bold', fontSize: 12, color: '#000' }}>
+                                    <Text style={{ color: '#737373' }}>Courier company: </Text>
+                                </Text>
+                                <Image source={require('../assets/icons/ic_j&t.png')} style={{ width: 15, height: 15, marginLeft: 5 }} resizeMode='contain' />
+                                <Text style={{ fontWeight: 'bold', fontSize: 12, color: '#000', marginLeft: 5 }}>BEST EXPRESS</Text>
+                            </View>
+                        </View>
+
+                        <View style={{ width: '100%', height: 6, backgroundColor: '#EEEEEE', marginTop: 20 }} />
+
+                        {/* Review */}
+                        <View style={{ marginHorizontal: 20, marginTop: 10, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                            <Text style={{ fontWeight: 'bold', fontSize: 14, color: '#000' }}>
+                                {item.rating}
+                            </Text>
+
+                            <StarRating rating={item.rating} />
+
+                            <Text style={{ fontWeight: 'bold', fontSize: 12, color: '#000' }}>
+                                ({item.rateCount})
+                            </Text>
+                        </View>
+
+                        <View style={{ width: '100%', height: 1, backgroundColor: '#BBBBBB', marginTop: 10 }} />
+
+                        <View style={{ marginHorizontal: 20, marginTop: 10 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Text style={{ fontWeight: 'bold', fontSize: 14, color: '#000' }}>Item reviews</Text>
+                                <TouchableOpacity>
+                                    <Text style={{ fontWeight: 'medium', fontSize: 12, color: '#000' }}>See all</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <View style={{ marginTop: 10 }}>
+                                <Ratingbar label="Small" percentage={11} />
+                                <Ratingbar label="True to size" percentage={11} />
+                                <Ratingbar label="Large" percentage={11} />
+                            </View>
+
+                            <View style={{ width: '100%', height: 1, backgroundColor: '#BBBBBB', marginTop: 10 }} />
+
+                            <FlatList
+                                data={reviews}
+                                keyExtractor={(item) => item.id}
+                                renderItem={({ item }) => <ReviewItem {...item} />}
+                            />
+                        </View>
+
+                        <View style={{ width: '100%', height: 6, backgroundColor: '#EEEEEE', marginTop: 20 }} />
+
+                        {/* About product */}
+                        <View style={{ marginHorizontal: 20, marginTop: 10 }}>
+                            <Text style={{ fontWeight: 'bold', fontSize: 14, color: '#000' }}>Product details</Text>
+                        </View>
+
+                        <View style={{ width: '100%', height: 1, backgroundColor: '#BBBBBB', marginTop: 10 }} />
+
+                        <DetailProduct item={item} />
+
+                        <View style={{ width: '100%', height: 6, backgroundColor: '#EEEEEE' }} />
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 20, marginVertical: 10 }}>
+                            <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
+                            <Text style={{ marginHorizontal: 10, fontWeight: 'semibold', fontSize: 14, color: '#000' }}>Có thể bạn sẽ thích</Text>
+                            <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
                         </View>
                     </>
                 }

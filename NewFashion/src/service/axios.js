@@ -1,5 +1,6 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import AppManager from "../utils/AppManager";
 // baseURL: "http://160.30.21.59:3000",
 // baseURL: "https://b79c-42-119-222-88.ngrok-free.app",
 const api = axios.create({
@@ -13,7 +14,7 @@ const api = axios.create({
 // Thêm Interceptor
 api.interceptors.request.use(
     async (config) => {
-        const token = await AsyncStorage.getItem("token");
+        const token = await AppManager.getToken();
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
