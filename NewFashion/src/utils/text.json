@@ -1,0 +1,12 @@
+{
+    "meta": {
+        "arg": {
+            "email": "trungthanh25012002@gmail.com",
+            "password": "12345678"
+        },
+        "requestId": "JXT1WikjSmP8DWQeZmquj",
+        "requestStatus": "fulfilled"
+    },
+    "payload": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2NlZmIxMzlhMmMyYzdkYTJlMDcyMzAiLCJlbWFpbCI6InRydW5ndGhhbmgyNTAxMjAwMkBnbWFpbC5jb20iLCJuYW1lIjoidHJ1bmd0aGFuaDI1MDEyMDAyIiwicm9sZSI6MCwiaWF0IjoxNzQxNjE5NDY0LCJleHAiOjE3NDQyMTE0NjR9.CNWHa4Li_yMJv94L49ULumXjo3CLxSjFMBRnIns6MIM",
+    "type": "users/login/fulfilled"
+}

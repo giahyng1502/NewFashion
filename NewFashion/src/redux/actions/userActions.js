@@ -19,7 +19,7 @@ export const loginWithEmail = createAsyncThunk(
     async (user, thunkAPI) => {
         try {
             const response = await axios.post('/users/login', user);            
-            return response.token;
+            return response.payload;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
         }

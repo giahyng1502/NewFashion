@@ -36,47 +36,6 @@ const DetailsScreen = ({ navigation, route }) => {
 
     return (
         <View style={st.container}>
-            {/* <ScrollView>
-                <View>
-                    <ImageDetailProduct />
-                </View>
-                <View style={st.headerbar}>
-                    <TouchableOpacity>
-                        <Image source={require('../assets/icons/ic_getback.png')} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{ marginLeft: 250 }}>
-                        <Image source={require('../assets/icons/ic_seach.png')} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{ marginLeft: 10 }}>
-                        <Image source={require('../assets/icons/ic_share.png')} />
-                    </TouchableOpacity>
-                </View>
-                <View>
-                    <BannerAdsProduct />
-                </View>
-                <View>
-                    <InfoProduct />
-                </View>
-                <View>
-                    <ProductSelection />
-                </View>
-                <View>
-                    <ShipDetail/>
-                </View>
-                <View>
-                    <ReviewDetail/>
-                </View>
-                <View>
-                    <ReviewFormUser/>
-                </View>
-                <View>
-                    <AboutShop/>
-                </View>
-                <View>
-                    <DetailProduct/>
-                </View>
-                <SuggestProduct/>
-            </ScrollView> */}
             <View style={{ padding: 20, position: 'absolute', flexDirection: 'row', justifyContent: 'space-between', width: '100%', zIndex: 99 }}>
                 <TouchableOpacity style={{ width: 35, height: 35 }} onPress={() => navigation.goBack()}>
                     <Image source={require('../assets/icons/ic_getback.png')} style={{ width: 35, height: 35 }} />

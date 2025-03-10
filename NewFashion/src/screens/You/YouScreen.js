@@ -11,6 +11,7 @@ import {
 import BenefitsInfoBox from '../../components/BenefitsInfoBox';
 import FilledButton from '../../components/FilledButton';
 import ProductCard from '../../components/ProductCard';
+import AppManager from '../../utils/AppManager';
 
 const browsingHistory = [
   {
@@ -168,7 +169,7 @@ const YouScreen = ({navigation}) => {
         ListHeaderComponent={
           <View>
             {/* islogin = false */}
-            {!isLogin && (
+            {!AppManager.isUserLoggedIn() && (
               <>
                 <View>
                   <View style={st.header}>
@@ -229,7 +230,7 @@ const YouScreen = ({navigation}) => {
               </>
             )}
             {/*  islogin = true */}
-            {isLogin && (
+            {AppManager.isUserLoggedIn() && (
               <>
                 <View>
                   <View style={st.userInfo}>

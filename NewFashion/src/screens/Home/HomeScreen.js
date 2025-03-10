@@ -230,7 +230,7 @@ const HomeScreen = ({ navigation }) => {
       onEndReached={loadMoreProducts}
       onEndReachedThreshold={0.5}
       ListFooterComponent={renderFooter}
-      contentContainerStyle={st.list}
+      contentContainerStyle={{paddingHorizontal: 3,backgroundColor: '#fff'}}
     />
   );
 };
