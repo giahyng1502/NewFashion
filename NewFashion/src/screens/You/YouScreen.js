@@ -11,6 +11,7 @@ import {
 import BenefitsInfoBox from '../../components/BenefitsInfoBox';
 import FilledButton from '../../components/FilledButton';
 import ProductCard from '../../components/ProductCard';
+import AppManager from '../../utils/AppManager'
 
 const browsingHistory = [
   {
@@ -153,7 +154,7 @@ const bottomMenuItems = [
 ];
 
 const YouScreen = ({navigation}) => {
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
   const handleNavigate = item => navigation.navigate(item.text);
 
   return (
@@ -168,7 +169,7 @@ const YouScreen = ({navigation}) => {
         ListHeaderComponent={
           <View>
             {/* islogin = false */}
-            {!isLogin && (
+            {!AppManager.shared.isUserLoggedIn() && (
               <>
                 <View>
                   <View style={st.header}>
@@ -229,7 +230,7 @@ const YouScreen = ({navigation}) => {
               </>
             )}
             {/*  islogin = true */}
-            {isLogin && (
+            {AppManager.shared.isUserLoggedIn() && (
               <>
                 <View>
                   <View style={st.userInfo}>

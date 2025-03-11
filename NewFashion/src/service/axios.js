@@ -14,7 +14,7 @@ const api = axios.create({
 // Thêm Interceptor
 api.interceptors.request.use(
     async (config) => {
-        const token = await AppManager.getToken();
+        const token = await AppManager.shared.getToken();
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }

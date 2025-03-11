@@ -16,6 +16,8 @@ import Swiper from 'react-native-swiper'
 import ProductCard from '../components/ProductCard'
 import StarRating from '../components/StarRating'
 import SupportFunctions from '../utils/SupportFunctions'
+import AppManager from '../utils/AppManager'
+import { addToCart } from '../redux/actions/cartActions'
 
 const reviews = [
     {
@@ -51,13 +53,42 @@ const DetailsScreen = ({ navigation, route }) => {
     const [quantity, setQuantity] = React.useState(1);
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        console.log(item.image)
-        setSelectedColor(item.color[0])
-        console.log(item.color[0]);
+    const { carts } = useSelector(state => state.cart);
 
+    useEffect(() => {
+        setSelectedColor(item.color[0])
     }, [])
 
+    const addToCartHandle = () => {
+        if (!AppManager.shared.isUserLoggedIn()) {
+            navigation.navigate('Login');
+            return
+        }
+
+        if (!selectedColor || !selectedSize) {
+            alert('Please select color and size');
+            return;
+        }
+
+        const cartItem = {
+            productId: item._id,
+            quantity: quantity,
+            color: selectedColor,
+            size: selectedSize,
+        }
+
+        dispatch(addToCart(cartItem))
+            .then(() => {
+                alert('Add to cart successfully');
+            })
+            .catch((error) => {
+                alert('Add to cart failed');
+            })
+    }
+
+    const handleSelectCartButton = () => {
+        navigation.navigate('Cart');
+    }
 
     return (
         <View style={st.container}>
@@ -66,12 +97,17 @@ const DetailsScreen = ({ navigation, route }) => {
                     <Image source={require('../assets/icons/ic_getback.png')} style={{ width: 35, height: 35 }} />
                 </TouchableOpacity>
 
-                <View style={{ flexDirection: 'row' }}>
-                    <TouchableOpacity style={{ width: 35, height: 35, marginLeft: 10 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TouchableOpacity onPress={handleSelectCartButton} style={{ marginRight: 10 }}>
                         <Image source={require('../assets/buttons/bt_cart.png')} style={{ width: 35, height: 35 }} />
+                        {(AppManager.shared.isUserLoggedIn() && carts.length > 0) && (
+                            <View style={{ position: 'absolute', top: 2, right: 2, backgroundColor: 'red', width: 16, height: 16, borderRadius: 8, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#fff' }}>
+                                <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>{carts.length}</Text>
+                            </View>
+                        )}
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{ width: 35, height: 35, marginLeft: 10 }}>
+                    <TouchableOpacity style={{ width: 35, height: 35 }}>
                         <Image source={require('../assets/icons/ic_share.png')} style={{ width: 35, height: 35 }} />
                     </TouchableOpacity>
                 </View>
@@ -309,7 +345,7 @@ const DetailsScreen = ({ navigation, route }) => {
                     </>
                 }
             />
-            <TouchableOpacity style={st.addToCartButton}>
+            <TouchableOpacity style={st.addToCartButton} onPress={addToCartHandle}>
                 <Text style={st.addToCartText}>Add to cart</Text>
             </TouchableOpacity>
         </View>

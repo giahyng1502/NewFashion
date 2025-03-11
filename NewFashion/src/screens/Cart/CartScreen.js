@@ -2,7 +2,6 @@ import { Animated, FlatList, Image, Pressable, ScrollView, SectionList, StyleShe
 import React, { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import BaseHeader from '../../components/BaseHeader'
-import { products } from '../Home/HomeScreen'
 import FilledButton from '../../components/FilledButton'
 import ScreenSize from '../../contants/ScreenSize'
 import OutlinedButton from '../../components/OutlinedButton'
@@ -68,9 +67,27 @@ const CartScreen = ({ navigation }) => {
   const pickColorAndSizeBottomSheetAnimatedValue = React.useRef(new Animated.Value(0)).current;
   const pickColorAndSizeBottomSheetHeight = 1000
 
+  const { carts } = useSelector(state => state.cart);
+  const { products, loading, page, hasMore } = useSelector(state => state.product);
+
   React.useEffect(() => {
     setSelectedCategory(categories[0]);
   }, []);
+
+  const loadMoreProducts = () => {
+    if (!loading && hasMore) {
+      dispatch(fetchProducts(page));
+    }
+  };
+
+  const renderFooter = () => {
+    if (!loading) return null;
+    return (
+      <View style={{ padding: 10 }}>
+        <ActivityIndicator size="small" color="#0000ff" />
+      </View>
+    )
+  }
 
   const toggleBottomSheet = () => {
     if (!isShowPriceBottomSheet) {
@@ -213,7 +230,7 @@ const CartScreen = ({ navigation }) => {
   }
 
   const handleCheckOut = () => {
-    if (AppManager.isUserLoggedIn()) {
+    if (AppManager.shared.isUserLoggedIn()) {
       navigation.navigate('CheckOut');
     } else {
       navigation.navigate('Login');
@@ -235,16 +252,16 @@ const CartScreen = ({ navigation }) => {
       {/* benefit */}
       <View style={{ borderWidth: 1, borderColor: '#737337', borderRadius: 5, marginHorizontal: 20, marginTop: 10, flexDirection: 'row', padding: 10, alignItems: 'center', gap: 10 }}>
         <Image
-          source={isLogin ? require("../../assets/icons/ic_greenCheckSolid.png") : require("../../assets/icons/ic_truck.png")}
+          source={AppManager.shared.isUserLoggedIn() ? require("../../assets/icons/ic_greenCheckSolid.png") : require("../../assets/icons/ic_truck.png")}
           style={{ width: 20, aspectRatio: 1 }}
           resizeMode="contain"
         />
 
-        <Text style={{ fontSize: 12, fontWeight: 'bold', color: isLogin ? '#078809' : 'black', flex: 1 }} >
+        <Text style={{ fontSize: 12, fontWeight: 'bold', color: AppManager.shared.isUserLoggedIn() ? '#078809' : 'black', flex: 1 }} >
           FREE SHIPPING and free returns
         </Text>
 
-        {isLogin && (
+        {AppManager.shared.isUserLoggedIn() && (
           <Text style={{ fontSize: 10, fontWeight: 'semibold', color: '555' }} >
             Exclusive offer
           </Text>
@@ -256,7 +273,7 @@ const CartScreen = ({ navigation }) => {
         ListHeaderComponent={() => (
           <>
             {/* empty view */}
-            {(!isLogin || cartItems.length === 0) && (
+            {(!AppManager.shared.isUserLoggedIn() || carts.length === 0) && (
               <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, paddingVertical: 20 }}>
                 <Image
                   source={require("../../assets/icons/ic_emptyCart.png")}
@@ -277,10 +294,10 @@ const CartScreen = ({ navigation }) => {
             )}
 
             {/* cart items */}
-            {isLogin && cartItems.length > 0 && (
+            {AppManager.shared.isUserLoggedIn() && carts.length > 0 && (
               <FlatList
-                data={cartItems}
-                keyExtractor={item => item.id}
+                data={carts}
+                keyExtractor={item => item._id}
                 renderItem={({ item }) => (
                   <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
                     <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
@@ -355,7 +372,7 @@ const CartScreen = ({ navigation }) => {
             )}
 
             {/* button sign in/register */}
-            {!isLogin && (
+            {!AppManager.shared.isUserLoggedIn() && (
               <>
                 <FilledButton title={'Sign in / Register'} onPress={() => navigation.navigate('Login')} customStyle={{ backgroundColor: '#FA7806', width: ScreenSize.width - 100, alignSelf: 'center' }} />
                 <OutlinedButton title={'Start shopping'} onPress={() => navigation.goBack()} customStyle={{ width: ScreenSize.width - 100, alignSelf: 'center', marginTop: 10 }} />
@@ -365,27 +382,11 @@ const CartScreen = ({ navigation }) => {
             {/* devide */}
             <View style={{ height: 6, backgroundColor: '#eee', width: '100%', marginTop: 20 }} />
 
-            {/* category */}
-            <FlatList
-              data={categories}
-              horizontal
-              ref={categoryFlatlistRef}
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(item) => item._id}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={{ padding: 10, alignItems: 'center' }}
-                  onPress={() => {
-                    setSelectedCategory(item)
-                    categoryFlatlistRef.current.scrollToIndex({ index: categories.indexOf(item), animated: true })
-                  }}>
-                  <Text style={{ fontSize: 14, fontWeight: 'bold', color: selectedCategory === item ? 'black' : '#737337' }}>
-                    {item.categoryName}
-                  </Text>
-                  {selectedCategory === item && <View style={{ width: '30%', height: 5, backgroundColor: 'black', marginTop: 5, borderRadius: 2.5 }} />}
-                </TouchableOpacity>
-              )}
-            />
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 20, marginVertical: 10 }}>
+              <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
+              <Text style={{ marginHorizontal: 10, fontWeight: 'semibold', fontSize: 14, color: '#000' }}>Có thể bạn sẽ thích</Text>
+              <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
+            </View>
           </>
         )}
         data={products}
@@ -397,43 +398,43 @@ const CartScreen = ({ navigation }) => {
       />
 
       {/* check out container */}
-      {/* {(isLogin || cartItems.length > 0) && ( */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 }}>
-        {/* select all button */}
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity style={{ width: 30 }} onPress={() => selectedAll()}>
-            <Image
-              source={isSelectedAll ? require("../../assets/icons/ic_blackCheckedSolid.png") : require("../../assets/icons/ic_unchecked.png")}
-              style={{ width: '100%' }}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
+      {(carts.length > 0) && (
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 }}>
+          {/* select all button */}
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity style={{ width: 30 }} onPress={() => selectedAll()}>
+              <Image
+                source={isSelectedAll ? require("../../assets/icons/ic_blackCheckedSolid.png") : require("../../assets/icons/ic_unchecked.png")}
+                style={{ width: '100%' }}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
 
-          <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 5 }}>
-            All
-          </Text>
+            <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 5 }}>
+              All
+            </Text>
+          </View>
+
+          {/* total price and original price */}
+          {cartItems.filter(item => item.isSeleted).length > 0 && (
+            <TouchableOpacity onPress={toggleBottomSheet}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
+                  266.444đ
+                </Text>
+                <Image source={require("../../assets/icons/ic_arrowUp.png")} style={{ width: 18, height: 18, marginLeft: 5 }} resizeMode="contain" />
+              </View>
+              <Text style={{ fontSize: 12, color: '#737337', textDecorationLine: 'line-through' }}>
+                300.444đ
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {/* check out button */}
+          <FilledButton title={checkOutTitleButton} onPress={() => handleCheckOut()} customStyle={{ backgroundColor: '#FA7806', width: ScreenSize.width / 3 }} />
         </View>
 
-        {/* total price and original price */}
-        {cartItems.filter(item => item.isSeleted).length > 0 && (
-          <TouchableOpacity onPress={toggleBottomSheet}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
-                266.444đ
-              </Text>
-              <Image source={require("../../assets/icons/ic_arrowUp.png")} style={{ width: 18, height: 18, marginLeft: 5 }} resizeMode="contain" />
-            </View>
-            <Text style={{ fontSize: 12, color: '#737337', textDecorationLine: 'line-through' }}>
-              300.444đ
-            </Text>
-          </TouchableOpacity>
-        )}
-
-        {/* check out button */}
-        <FilledButton title={checkOutTitleButton} onPress={() => handleCheckOut()} customStyle={{ backgroundColor: '#FA7806', width: ScreenSize.width / 3 }} />
-      </View>
-
-      {/* )} */}
+      )}
 
       {/* price bottom sheet */}
       {isShowPriceBottomSheet && (
@@ -532,7 +533,7 @@ const CartScreen = ({ navigation }) => {
           {/* content */}
           <Animated.View style={{ transform: [{ translateY: pickColorAndSizeBottomSheetTranslateY }], backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
             <View style={{ flexDirection: 'row', padding: 20 }}>
-              <TouchableOpacity style={{ width: 150 }} onPress={() => navigation.navigate('ImagePreview', {images: selectedCartItem.image})}>
+              <TouchableOpacity style={{ width: 150 }} onPress={() => navigation.navigate('ImagePreview', { images: selectedCartItem.image })}>
                 <Image source={selectedCartItem.image} style={{ width: 150, height: 150 }} resizeMode="contain" />
 
                 <Image source={require('../../assets/icons/ic_zoom.png')} style={{ width: 20, height: 20, position: 'absolute', top: 5, right: 5 }} />
@@ -554,7 +555,7 @@ const CartScreen = ({ navigation }) => {
               </View>
 
               <TouchableOpacity onPress={closePickUpColorAndSizeBottomSheet}>
-              <Image source={require('../../assets/bt_exit.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
+                <Image source={require('../../assets/bt_exit.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
               </TouchableOpacity>
             </View>
 
@@ -629,7 +630,7 @@ const CartScreen = ({ navigation }) => {
 
             </ScrollView>
 
-            <FilledButton title={'Confirm'} customStyle={{width: ScreenSize.width - 40, backgroundColor: '#FA7806', alignSelf: 'center', marginBottom: 20}} />
+            <FilledButton title={'Confirm'} customStyle={{ width: ScreenSize.width - 40, backgroundColor: '#FA7806', alignSelf: 'center', marginBottom: 20 }} />
 
           </Animated.View>
 

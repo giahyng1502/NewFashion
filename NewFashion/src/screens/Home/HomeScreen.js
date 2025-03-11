@@ -10,6 +10,7 @@ import AppManager from '../../utils/AppManager';
 import SearchBar from '../../components/SearchBar';
 import { fetchProducts } from '../../redux/actions/productActions';
 import {jwtDecode} from "jwt-decode";
+import { fetchCart } from '../../redux/actions/cartActions';
 
 const saleProducts = [
   {
@@ -60,11 +61,11 @@ const HomeScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState('');
   const dispatch = useDispatch();
   const {products, loading, page, hasMore} = useSelector(state => state.product);
+  const {carts} = useSelector(state => state.cart);
 
   useEffect(() => {
-    setSelectedTitleCategory(titleCategories[0]);
-    console.log(products);
-    
+    setSelectedTitleCategory(titleCategories[0]);    
+    dispatch(fetchCart())
   }, []);
 
   const loadMoreProducts = () => {
@@ -140,9 +141,9 @@ const HomeScreen = ({ navigation }) => {
             {/* Cart Button */}
             <TouchableOpacity onPress={handleSelectCartButton} style={{ position: 'absolute', top: 50, right: 20 }}>
               <Image source={require('../../assets/buttons/bt_cart.png')} style={{ width: 35, height: 35 }} />
-              {AppManager.isUserLoggedIn() && (
+              {(AppManager.shared.isUserLoggedIn() && carts.length > 0) && (
                 <View style={{ position: 'absolute', top: 2, right: 2, backgroundColor: 'red', width: 16, height: 16, borderRadius: 8, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#fff' }}>
-                  <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>2</Text>
+                  <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>{carts.length}</Text>
                 </View>
               )}
             </TouchableOpacity>

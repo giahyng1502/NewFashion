@@ -2,15 +2,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jwtDecode} from "jwt-decode";
 
 class AppManager {
-  static instance = null;
-  userInfo = null;
-
   constructor() {
-    if (!AppManager.instance) {
-      AppManager.instance = this;
-    }
-    return AppManager.instance;
+      if (!AppManager.instance) {
+          this.currentUser = null
+          AppManager.instance = this;
+      }
+      return AppManager.instance;
   }
+
+  static shared = new AppManager();
 
   async getToken() {
     try {
@@ -39,8 +39,10 @@ class AppManager {
     try {
       const token = await AsyncStorage.getItem('token');
       if (token) {
-        const userInfo = jwtDecode(token);
-        this.userInfo = userInfo;
+        const userInfoFromToken = jwtDecode(token);
+        this.userInfo = userInfoFromToken;
+        console.log('userInfo:', this.userInfo);
+        
       } else {
         this.userInfo = null;
       }
@@ -58,13 +60,10 @@ class AppManager {
     }
   }
 
-  isUserLoggedIn() {
+  isUserLoggedIn() {    
     return this.userInfo !== null;
   }
   
 }
 
-const instance = new AppManager();
-Object.freeze(instance);
-
-export default instance;
+export default AppManager;

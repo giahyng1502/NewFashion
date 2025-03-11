@@ -27,19 +27,29 @@ const SplashScreen = ({ navigation }) => {
         try {
             console.log('Load data');
 
+            // Gọi và unwrap fetchCategories
             const fetchResult = await dispatch(fetchCategories()).unwrap();
             console.log('Fetch categories success:', fetchResult);
 
+            // Gọi và unwrap fetchProducts
             const fetchProduct = await dispatch(fetchProducts(1)).unwrap();
-            console.log('Fetch products success:', fetchProduct);
+            // console.log('Fetch products success:', fetchProduct);
 
-            await AppManager.loadUserInfo();
-            console.log(AppManager.userInfo);
+            // Load user info và dừng lại nếu gặp lỗi
+            await AppManager.shared.loadUserInfo();
+
+            const token = await AppManager.shared.getToken();
+            console.log('Token:', token);
+            
+
+            navigation.replace('Main');
 
         } catch (error) {
             console.log('Load data error: ', error);
+            // Bạn có thể hiển thị thông báo lỗi hoặc xử lý lỗi tại đây nếu cần
         }
     };
+
 
     const animate = () => {
         Animated.sequence([

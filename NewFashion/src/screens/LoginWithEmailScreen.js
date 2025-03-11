@@ -59,7 +59,6 @@ const LoginWithEmailScreen = ({ navigation }) => {
 
     dispatch(checkEmail(emailObj))
       .then((result) => {
-        console.log('result: ', result);
         if (result.meta.requestStatus === 'fulfilled') {
           runAnimation(false);
         } else {
@@ -155,15 +154,30 @@ const LoginWithEmailScreen = ({ navigation }) => {
       email: email,
       password: password
     }
-    console.log("User",user);
-    
+
     dispatch(loginWithEmail(user))
       .then((result) => {
         console.log('result: ', result);
-        AppManager.saveUserInfo(result)
-      }).catch((err) => {
+        console.log('token: ', result.payload.token);
+
+        // Lưu token
+        AppManager.shared.saveUserInfo(result.payload.token)
+          .then(() => {
+            // Lấy lại token đã lưu và log ra
+            return AppManager.shared.getToken();
+          })
+          .then((token) => {
+            console.log('token: ', token); // Token thực tế
+            navigation.replace('Main');
+          })
+          .catch((err) => {
+            console.log('Error in token processing: ', err);
+          });
+      })
+      .catch((err) => {
         console.log("Login error: ", err);
       });
+
   }
 
   const handleRegister = () => {
@@ -183,23 +197,36 @@ const LoginWithEmailScreen = ({ navigation }) => {
       password: password
     }
     console.log(user);
-    
+
     dispatch(register(user))
       .then((result) => {
         console.log('Register successful', result);
-        AppManager.saveUserInfo(result)
-        navigation.replace('Main')
+
+        // Lưu token
+        AppManager.shared.saveUserInfo(result.payload.token)
+          .then(() => {
+            // Lấy token đã lưu
+            return AppManager.shared.getToken();
+          })
+          .then((token) => {
+            console.log('token: ', token); // Token thực tế
+            navigation.replace('Main');
+          })
+          .catch((err) => {
+            console.log('Error in saving or retrieving token: ', err);
+          });
       })
       .catch((err) => {
         console.log("Register error: ", err);
       });
+
   }
 
   const handleContinue = () => {
     if (isContinue) {
       if (isRegister) {
         handleRegister()
-      }else {
+      } else {
         handleLogin()
       }
     } else {
