@@ -44,12 +44,6 @@ const SplashScreen = ({ navigation }) => {
             
 
             navigation.replace('Main');
-
-            if(AppManager.isUserLoggedIn()){
-                const fetchOrders = await dispatch(fetchOrders()).unwrap();
-                console.log('Fetch order successfully:', fetchOrders);
-            }
-
         } catch (error) {
             console.log('Load data error: ', error);
             // Bạn có thể hiển thị thông báo lỗi hoặc xử lý lỗi tại đây nếu cần
