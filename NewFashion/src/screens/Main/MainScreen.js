@@ -9,6 +9,7 @@ import NFNewsScreen from '../NFNews/FavouriteScreen'
 import ScreenSize from '../../contants/ScreenSize'
 import BenefitsInfoBox from '../../components/BenefitsInfoBox'
 import OutlinedButton from '../../components/OutlinedButton'
+import SearchScreen from '../SearchScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -52,6 +53,7 @@ const MainScreen = ({navigation}) => {
                 <Tab.Screen name="NF News" component={NFNewsScreen} />
                 <Tab.Screen name="Notification" component={NotificationScreen} />
                 <Tab.Screen name="You" component={YouScreen} />
+                <Tab.Screen name="Search" component={SearchScreen} />
             </Tab.Navigator>
         </View>
     )
