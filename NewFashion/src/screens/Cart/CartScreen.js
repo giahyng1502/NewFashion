@@ -1,4 +1,4 @@
-import { Animated, FlatList, Image, Pressable, ScrollView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Animated, FlatList, Image, Pressable, ScrollView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import BaseHeader from '../../components/BaseHeader'
@@ -7,42 +7,8 @@ import ScreenSize from '../../contants/ScreenSize'
 import OutlinedButton from '../../components/OutlinedButton'
 import ProductCard from '../../components/ProductCard';
 import AppManager from '../../utils/AppManager';
-
-const DATA = [
-  {
-    id: '1',
-    image: require("../../assets/image/ig_product1.png"),
-    price: '268.443đ',
-    quantity: 3,
-    status: 'Almost sold out',
-    size: 'M',
-    color: 'Black',
-    name: 'Embroidered Wool-blend Scarf Jacket',
-    isSeleted: false
-  },
-  {
-    id: '2',
-    image: require("../../assets/image/ig_product1.png"),
-    price: '199.999đ',
-    quantity: 1,
-    status: 'Limited stock',
-    size: 'M',
-    color: 'Black',
-    name: 'Embroidered Wool-blend Scarf Jacket',
-    isSeleted: false
-  },
-  {
-    id: '3',
-    image: require("../../assets/image/ig_product1.png"),
-    price: '320.000đ',
-    quantity: 2,
-    status: 'Selling fast',
-    size: 'M',
-    color: 'Black',
-    name: 'Embroidered Wool-blend Scarf Jacket',
-    isSeleted: false
-  }
-];
+import { deleteCart, updateCart } from '../../redux/actions/cartActions';
+import SupportFunctions from '../../utils/SupportFunctions';
 
 const color = [{ color: 'Black', image: require('../../assets/image/ig_product1.png') }, { color: 'White', image: require('../../assets/image/ig_product1.png') }, { color: 'Red', image: require('../../assets/image/ig_product1.png') }, { color: 'Blue', image: require('../../assets/image/ig_product1.png') }, { color: 'Green', image: require('../../assets/image/ig_product1.png') }, { color: 'Yellow', image: require('../../assets/image/ig_product1.png') }]
 const size = ['S', 'M', 'L', 'XL', 'XXL']
@@ -51,7 +17,6 @@ const CartScreen = ({ navigation }) => {
   const [title, setTitle] = React.useState('Cart')
   const [showDeleteButton, setShowDeleteButton] = React.useState(false)
   const [isLogin, setIsLogin] = React.useState(true)
-  const [cartItems, setCartItems] = React.useState(DATA)
   const categories = useSelector(state => state.category.categories);
   const [selectedCategory, setSelectedCategory] = React.useState(null);
   const categoryFlatlistRef = useRef(null)
@@ -68,10 +33,14 @@ const CartScreen = ({ navigation }) => {
   const pickColorAndSizeBottomSheetHeight = 1000
 
   const { carts } = useSelector(state => state.cart);
+  const [cartItems, setCartItems] = React.useState(carts);
   const { products, loading, page, hasMore } = useSelector(state => state.product);
 
-  React.useEffect(() => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
     setSelectedCategory(categories[0]);
+    setCartItems(carts);
   }, []);
 
   const loadMoreProducts = () => {
@@ -158,76 +127,237 @@ const CartScreen = ({ navigation }) => {
   });
 
   const toggleSelectItem = (id) => {
-    setCartItems((prevCart) => {
-      const index = prevCart.findIndex(item => item.id === id);
-      if (index !== -1) {
-        const updatedCart = [...prevCart];
-        updatedCart[index] = { ...updatedCart[index], isSeleted: !updatedCart[index].isSeleted };
-
-        const selectedCartItems = updatedCart.filter(item => item.isSeleted);
-        setTitle(selectedCartItems.length > 0 ? `Cart (${selectedCartItems.length})` : 'Cart');
-        setCheckOutTitleButton(selectedCartItems.length > 0 ? `Checkout (${selectedCartItems.length})` : 'Checkout');
-        setShowDeleteButton(selectedCartItems.length > 0);
-        setIsSelectedAll(selectedCartItems.length === updatedCart.length);
-
-        return updatedCart;
+    // Cập nhật FlatList trước tiên
+    const updatedCart = cartItems.map(item => {
+      if (item._id === id) {
+        return {
+          ...item,
+          isSelected: !item.isSelected
+        };
       }
-      return prevCart;
+      return item;
     });
+
+    setCartItems(updatedCart); // Cập nhật trạng thái cho FlatList
+
+    // Tìm sản phẩm có id trùng khớp
+    const selectedItem = updatedCart.find(item => item._id === id);
+
+    // Kiểm tra nếu sản phẩm được tìm thấy và cập nhật lên server
+    if (selectedItem) {
+      const updatedCartForServer = {
+        productInCartId: selectedItem._id,
+        quantity: selectedItem.quantity,
+        size: selectedItem.size,
+        color: {
+          nameColor: selectedItem.color.nameColor,
+          imageColor: selectedItem.color.imageColor
+        },
+        isSelected: selectedItem.isSelected
+      };
+
+      console.log(updatedCartForServer);
+
+      // Gửi yêu cầu lên server với sản phẩm đã chọn
+      dispatch(updateCart(updatedCartForServer))
+        .then((result) => {
+          console.log(result);
+          const selectedCartItems = updatedCart.filter(item => item.isSelected);
+          setTitle(selectedCartItems.length > 0 ? `Cart (${selectedCartItems.length})` : 'Cart');
+          setCheckOutTitleButton(selectedCartItems.length > 0 ? `Checkout (${selectedCartItems.length})` : 'Checkout');
+          setShowDeleteButton(selectedCartItems.length > 0);
+          setIsSelectedAll(selectedCartItems.length === updatedCart.length);
+        })
+        .catch((error) => {
+          console.error("Error updating cart:", error);
+        });
+    }
   };
 
+
+
   const handleDeleteItem = () => {
-    setCartItems(cartItems.filter(item => !item.isSeleted));
-    setTitle('Cart');
-    setCheckOutTitleButton('Checkout');
-    setShowDeleteButton(false);
-  }
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete the selected items?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            // Xóa các sản phẩm đã chọn
+            const updatedCart = cartItems.filter(item => !item.isSelected);
+            setCartItems(updatedCart);
+  
+            // Gửi yêu cầu xóa lên server với các sản phẩm được chọn
+            dispatch(deleteCart())
+              .then((result) => {
+                console.log(result);
+                setTitle('Cart');
+                setCheckOutTitleButton('Checkout');
+                setShowDeleteButton(false);
+                setIsSelectedAll(false);
+              })
+              .catch((error) => {
+                console.error("Error deleting cart:", error);
+              });
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   const increaseQuantity = (id) => {
-    setCartItems((prevCart) => {
-      const index = prevCart.findIndex(item => item.id === id);
-      if (index !== -1) {
-        const updatedCart = [...prevCart];
-        updatedCart[index] = { ...updatedCart[index], quantity: updatedCart[index].quantity + 1 };
-        return updatedCart;
+    const updatedCart = cartItems.map(item => {
+      if (item._id === id) {
+        return {
+          ...item,
+          quantity: item.quantity + 1
+        };
       }
-      return prevCart;
+      return item;
     });
-  }
+
+    setCartItems(updatedCart); // Cập nhật trạng thái FlatList
+
+    // Tìm sản phẩm có id trùng khớp
+    const selectedItem = updatedCart.find(item => item._id === id);
+
+    if (selectedItem) {
+      const updatedCartForServer = {
+        productInCartId: selectedItem._id,
+        quantity: selectedItem.quantity,
+        size: selectedItem.size,
+        color: {
+          nameColor: selectedItem.color.nameColor,
+          imageColor: selectedItem.color.imageColor
+        },
+        isSelected: selectedItem.isSelected
+      };
+
+      // Gửi yêu cầu cập nhật lên server với đối tượng được chọn
+      dispatch(updateCart(updatedCartForServer))
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((error) => {
+          console.error("Error updating cart:", error);
+        });
+    }
+  };
+
+
 
   const decreaseQuantity = (id) => {
-    setCartItems((prevCart) => {
-      const index = prevCart.findIndex(item => item.id === id);
-      if (index !== -1) {
-        const updatedCart = [...prevCart];
-
-        if (updatedCart[index].quantity === 1) {
-          updatedCart.splice(index, 1);
+    const updatedCart = cartItems.map(item => {
+      if (item._id === id) {
+        if (item.quantity === 1) {
+          return null; // Xóa sản phẩm nếu số lượng là 1
         } else {
-          updatedCart[index] = { ...updatedCart[index], quantity: updatedCart[index].quantity - 1 };
+          return {
+            ...item,
+            quantity: item.quantity - 1
+          };
         }
-
-        const selectedCartItems = updatedCart.filter(item => item.isSeleted);
-        setTitle(selectedCartItems.length > 0 ? `Cart (${selectedCartItems.length})` : 'Cart');
-        setShowDeleteButton(selectedCartItems.length > 0);
-
-        return updatedCart;
       }
-      return prevCart;
-    });
+      return item;
+    }).filter(item => item !== null); // Loại bỏ sản phẩm bị xóa
+
+    setCartItems(updatedCart); // Cập nhật trạng thái FlatList
+
+    // Tìm sản phẩm có id trùng khớp
+    const selectedItem = updatedCart.find(item => item._id === id);
+
+    if (selectedItem) {
+      const updatedCartForServer = {
+        productInCartId: selectedItem._id,
+        quantity: selectedItem.quantity,
+        size: selectedItem.size,
+        color: {
+          nameColor: selectedItem.color.nameColor,
+          imageColor: selectedItem.color.imageColor
+        },
+        isSelected: selectedItem.isSelected
+      };
+
+      // Gửi yêu cầu cập nhật lên server với đối tượng được chọn
+      dispatch(updateCart(updatedCartForServer))
+        .then((result) => {
+          console.log(result);
+          const selectedCartItems = updatedCart.filter(item => item.isSelected);
+          setTitle(selectedCartItems.length > 0 ? `Cart (${selectedCartItems.length})` : 'Cart');
+          setShowDeleteButton(selectedCartItems.length > 0);
+        })
+        .catch((error) => {
+          console.error("Error updating cart:", error);
+        });
+    }
   };
 
   const selectedAll = () => {
-    setCartItems((prevCart) => {
-      const updatedCart = prevCart.map(item => ({ ...item, isSeleted: !isSelectedAll }));
-      setTitle(isSelectedAll ? 'Cart' : `Cart (${updatedCart.length})`);
-      setCheckOutTitleButton(isSelectedAll ? 'Checkout' : `Checkout (${updatedCart.length})`);
-      setShowDeleteButton(!isSelectedAll);
-      setIsSelectedAll(!isSelectedAll);
-      setIsShowPriceBottomSheet(false);
-      return updatedCart;
-    });
-  }
+    const updatedCart = cartItems.map(item => ({ ...item })); // Tạo bản sao mới của mảng cartItems
+    const promises = []; // Tạo một mảng promises để theo dõi các yêu cầu
+
+    // Sử dụng vòng lặp for để cập nhật trạng thái isSelected của từng sản phẩm và gửi từng đối tượng lên server
+    for (let i = 0; i < updatedCart.length; i++) {
+      const updatedItem = {
+        ...updatedCart[i], // Tạo một bản sao của từng sản phẩm
+        isSelected: !isSelectedAll // Cập nhật trạng thái isSelected
+      };
+
+      // Cập nhật mảng updatedCart với đối tượng mới đã được thay đổi
+      updatedCart[i] = updatedItem;
+
+      // Chuẩn bị dữ liệu để gửi lên server
+      const updatedItemForServer = {
+        productInCartId: updatedItem._id,
+        quantity: updatedItem.quantity,
+        size: updatedItem.size,
+        color: {
+          nameColor: updatedItem.color.nameColor,
+          imageColor: updatedItem.color.imageColor
+        },
+        isSelected: updatedItem.isSelected
+      };
+
+      // Gửi yêu cầu cập nhật từng sản phẩm và thêm vào mảng promises
+      const updatePromise = dispatch(updateCart(updatedItemForServer))
+        .then((result) => {
+          console.log(`Updated item ${updatedItem._id}:`, result);
+        })
+        .catch((error) => {
+          console.error(`Error updating item ${updatedItem._id}:`, error);
+        });
+
+      promises.push(updatePromise); // Lưu lại các promise
+    }
+
+    // Cập nhật FlatList sau khi đã cập nhật toàn bộ
+    setCartItems(updatedCart);
+
+    // Cập nhật các tiêu đề và nút hành động dựa trên trạng thái chọn
+    setTitle(!isSelectedAll ? `Cart (${updatedCart.length})` : 'Cart');
+    setCheckOutTitleButton(!isSelectedAll ? `Checkout (${updatedCart.length})` : 'Checkout');
+    setShowDeleteButton(!isSelectedAll);
+    setIsSelectedAll(!isSelectedAll); // Đảo ngược trạng thái chọn tất cả
+    setIsShowPriceBottomSheet(false); // Ẩn BottomSheet nếu cần
+
+    // Chờ tất cả các promises hoàn thành
+    Promise.all(promises)
+      .then(() => {
+        console.log("All items updated successfully.");
+      })
+      .catch((error) => {
+        console.error("Error updating some items:", error);
+      });
+  };
+
+
 
   const handleCheckOut = () => {
     if (AppManager.shared.isUserLoggedIn()) {
@@ -235,6 +365,25 @@ const CartScreen = ({ navigation }) => {
     } else {
       navigation.navigate('Login');
     }
+  }
+
+  const getFinalPriceOfSelectedItems = () => {
+    return cartItems
+      .filter(item => item.isSelected)
+      .reduce((total, item) => {
+        const discountMultiplier = item.disCountSale > 0 ? (1 - item.disCountSale) : 1;
+        const itemPrice = item.price * discountMultiplier * item.quantity;
+        return total + itemPrice;
+      }, 0);
+  }
+
+  const getOriginalPriceOfSelectedItems = () => {
+    return cartItems
+      .filter(item => item.isSelected)
+      .reduce((total, item) => {
+        const itemPrice = item.price * item.quantity;
+        return total + itemPrice;
+      }, 0);
   }
 
   return (
@@ -294,32 +443,32 @@ const CartScreen = ({ navigation }) => {
             )}
 
             {/* cart items */}
-            {AppManager.shared.isUserLoggedIn() && carts.length > 0 && (
+            {AppManager.shared.isUserLoggedIn() && cartItems.length > 0 && (
               <FlatList
-                data={carts}
+                data={cartItems}
                 keyExtractor={item => item._id}
                 renderItem={({ item }) => (
                   <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
                     <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                      <Pressable style={{ width: 30 }} onPress={() => { toggleSelectItem(item.id) }}>
+                      <Pressable style={{ width: 30 }} onPress={() => { toggleSelectItem(item._id) }}>
                         <Image
-                          source={item.isSeleted ? require("../../assets/icons/ic_blackCheckedSolid.png") : require("../../assets/icons/ic_unchecked.png")}
+                          source={item.isSelected ? require("../../assets/icons/ic_blackCheckedSolid.png") : require("../../assets/icons/ic_unchecked.png")}
                           style={{ width: '100%' }}
                           resizeMode="contain"
                         />
                       </Pressable>
 
-                      <Image source={item.image} style={{ width: 100, height: 100, borderWidth: 1, borderColor: '#73737350', borderRadius: 10 }} resizeMode="contain" />
+                      <Image source={{ uri: item.color.imageColor }} style={{ width: 100, height: 100, borderWidth: 1, borderColor: '#73737350', borderRadius: 10 }} resizeMode="cover" />
 
                       <View style={{ flex: 1, height: 100, justifyContent: 'space-between' }}>
                         <View>
                           <Text style={{ fontSize: 14, fontWeight: 'bold' }} numberOfLines={1}>
-                            {item.name}
+                            {item.productId.name}
                           </Text>
 
                           <TouchableOpacity onPress={() => { openPickUpColorAndSizeBottomSheet(item) }} style={{ backgroundColor: '#eee', padding: 5, borderRadius: 5, alignSelf: 'flex-start', marginTop: 5, flexDirection: 'row', alignItems: 'center' }}>
                             <Text style={{ fontSize: 12, color: '#737337' }}>
-                              {item.size}, {item.color}
+                              {item.size}, {item.color.nameColor}
                             </Text>
 
                             <Image source={require("../../assets/icons/ic_arrowUp.png")} style={{ width: 15, height: 15, transform: [{ rotate: '180deg' }] }} resizeMode="contain" />
@@ -328,14 +477,20 @@ const CartScreen = ({ navigation }) => {
 
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                           <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#FA7806' }}>
-                            {item.price} {' '}
-                            <Text style={{ marginLeft: 5, fontSize: 10, fontWeight: 'medium', color: '#737373', textDecorationLine: 'line-through' }}>
-                              300.444đ
-                            </Text>
+                            {item.disCountSale !== 0 ? (item.price - (item.price * item.disCountSale)) : item.price} {' '}
+                            {item.disCountSale !== 0 && (
+                              <Text style={{ marginLeft: 5, fontSize: 10, fontWeight: 'medium', color: '#737373', textDecorationLine: 'line-through' }}>
+                                {item.price}
+                              </Text>
+                            )}
                           </Text>
 
                           <View style={{ flexDirection: 'row', alignItems: 'center', borderRadius: 5, borderWidth: 1, borderColor: '#73733760', paddingHorizontal: 5 }}>
-                            <TouchableOpacity style={{ width: 10 }} onPress={() => decreaseQuantity(item.id)}>
+                            <TouchableOpacity
+                              style={{ width: 10, opacity: item.quantity === 1 ? 0.5 : 1 }} // Thay đổi độ trong suốt nếu bị disable
+                              onPress={() => decreaseQuantity(item._id)}
+                              disabled={item.quantity === 1} // Vô hiệu hóa nếu số lượng là 1
+                            >
                               <Image
                                 source={require("../../assets/icons/ic_minus.png")}
                                 style={{ width: '100%' }}
@@ -347,7 +502,7 @@ const CartScreen = ({ navigation }) => {
                                 {item.quantity}
                               </Text>
                             </View>
-                            <TouchableOpacity style={{ width: 10 }} onPress={() => increaseQuantity(item.id)}>
+                            <TouchableOpacity style={{ width: 10 }} onPress={() => increaseQuantity(item._id)}>
                               <Image
                                 source={require("../../assets/icons/ic_plus.png")}
                                 style={{ width: '100%' }}
@@ -359,11 +514,13 @@ const CartScreen = ({ navigation }) => {
                       </View>
                     </View>
 
-                    <Text style={{ marginLeft: 150, fontSize: 10, color: '#FA7806', marginTop: 5, fontStyle: 'italic', fontWeight: 'bold' }}>
-                      Big sale {' '}
-                      <Text style={{ fontStyle: 'normal' }}>|</Text>
-                      {' '} Limited time
-                    </Text>
+                    {item.disCountSale !== 0 && (
+                      <Text style={{ marginLeft: 150, fontSize: 10, color: '#FA7806', marginTop: 5, fontStyle: 'italic', fontWeight: 'bold' }}>
+                        Big sale {' '}
+                        <Text style={{ fontStyle: 'normal' }}>|</Text>
+                        {' '} Limited time
+                      </Text>
+                    )}
 
                     <View style={{ height: 1, backgroundColor: '#73737360', marginTop: 10 }} />
                   </View>
@@ -392,13 +549,13 @@ const CartScreen = ({ navigation }) => {
         data={products}
         numColumns={2}
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => <ProductCard item={item} />}
         style={{ marginTop: 5 }}
       />
 
       {/* check out container */}
-      {(carts.length > 0) && (
+      {(cartItems.length > 0) && (
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 }}>
           {/* select all button */}
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -416,17 +573,23 @@ const CartScreen = ({ navigation }) => {
           </View>
 
           {/* total price and original price */}
-          {cartItems.filter(item => item.isSeleted).length > 0 && (
+          {cartItems.filter(item => item.isSelected).length > 0 && (
             <TouchableOpacity onPress={toggleBottomSheet}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
-                  266.444đ
-                </Text>
-                <Image source={require("../../assets/icons/ic_arrowUp.png")} style={{ width: 18, height: 18, marginLeft: 5 }} resizeMode="contain" />
+              <View style={{ justifyContent: cartItems.some(item => item.isSelected && item.disCountSale > 0) ? 'flex-start' : 'center', alignItems: 'center', height: 50 }}> {/* Adjust height for vertical centering */}
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
+                    {SupportFunctions.convertPrice(getFinalPriceOfSelectedItems())}
+                  </Text>
+                  <Image source={require("../../assets/icons/ic_arrowUp.png")} style={{ width: 18, height: 18, marginLeft: 5 }} resizeMode="contain" />
+                </View>
+
+                {/* Conditional rendering of the discount price */}
+                {cartItems.some(item => item.isSelected && item.disCountSale > 0) && (
+                  <Text style={{ fontSize: 12, color: '#737337', textDecorationLine: 'line-through' }}>
+                    {SupportFunctions.convertPrice(getOriginalPriceOfSelectedItems())}
+                  </Text>
+                )}
               </View>
-              <Text style={{ fontSize: 12, color: '#737337', textDecorationLine: 'line-through' }}>
-                300.444đ
-              </Text>
             </TouchableOpacity>
           )}
 
@@ -534,7 +697,7 @@ const CartScreen = ({ navigation }) => {
           <Animated.View style={{ transform: [{ translateY: pickColorAndSizeBottomSheetTranslateY }], backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
             <View style={{ flexDirection: 'row', padding: 20 }}>
               <TouchableOpacity style={{ width: 150 }} onPress={() => navigation.navigate('ImagePreview', { images: selectedCartItem.image })}>
-                <Image source={selectedCartItem.image} style={{ width: 150, height: 150 }} resizeMode="contain" />
+                <Image source={{ uri: selectedCartItem.color.imageColor }} style={{ width: 150, height: 150 }} resizeMode="cover" />
 
                 <Image source={require('../../assets/icons/ic_zoom.png')} style={{ width: 20, height: 20, position: 'absolute', top: 5, right: 5 }} />
               </TouchableOpacity>
@@ -605,7 +768,7 @@ const CartScreen = ({ navigation }) => {
                 </Text>
 
                 <View style={{ flexDirection: 'row', alignItems: 'center', borderRadius: 5, borderWidth: 1, borderColor: '#73733760', paddingHorizontal: 5 }}>
-                  <TouchableOpacity style={{ width: 20 }} onPress={() => decreaseQuantity(item.id)}>
+                  <TouchableOpacity style={{ width: 20 }} onPress={() => decreaseQuantity(item._id)}>
                     <Image
                       source={require("../../assets/icons/ic_minus.png")}
                       style={{ width: '100%' }}
@@ -617,7 +780,7 @@ const CartScreen = ({ navigation }) => {
                       {selectedCartItem.quantity}
                     </Text>
                   </View>
-                  <TouchableOpacity style={{ width: 20 }} onPress={() => increaseQuantity(item.id)}>
+                  <TouchableOpacity style={{ width: 20 }} onPress={() => increaseQuantity(item._id)}>
                     <Image
                       source={require("../../assets/icons/ic_plus.png")}
                       style={{ width: '100%' }}

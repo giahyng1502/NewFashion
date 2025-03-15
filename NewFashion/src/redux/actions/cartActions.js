@@ -25,3 +25,27 @@ export const addToCart = createAsyncThunk(
         }
     }
 );
+
+export const updateCart = createAsyncThunk(
+    'cart/updateCart',
+    async (data, thunkAPI) => {
+        try {
+            const response = await axios.put('/cart/updatecart/', data);            
+            return response.cart.products;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const deleteCart = createAsyncThunk(
+    'cart/deleteCart',
+    async (_, thunkAPI) => {
+        try {
+            const response = await axios.delete('/cart/removeFromCart/');            
+            return response.cart.products;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);

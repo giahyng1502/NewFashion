@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { addToCart, fetchCart } from '../actions/cartActions';
+import { addToCart, deleteCart, fetchCart, updateCart } from '../actions/cartActions';
 
 
 const initialState = {
@@ -26,6 +26,22 @@ const cartSlice = createSlice({
             })
             .addCase(addToCart.rejected, (state, action) => {
                 console.log('Add to cart failed: ', action.payload);
+            })
+
+            // Update cart
+            .addCase(updateCart.fulfilled, (state, action) => {
+                state.carts = action.payload;
+            })
+            .addCase(updateCart.rejected, (state, action) => {
+                console.log('Update cart failed: ', action.payload);
+            })
+
+            // Delete cart
+            .addCase(deleteCart.fulfilled, (state, action) => {
+                state.carts = action.payload;
+            })
+            .addCase(deleteCart.rejected, (state, action) => {
+                console.log('Delete cart failed: ', action.payload);
             })
     },
 });
