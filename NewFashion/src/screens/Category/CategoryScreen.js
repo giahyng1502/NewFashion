@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, FlatList, Text, TouchableOpacity, Animated, ActivityIndicator, Image, TextInput } from 'react-native';
+import { View, FlatList, Text, TouchableOpacity, Animated, ActivityIndicator, Image, TextInput, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSubCategories } from '../../redux/actions/subCateActions';
 import ScreenSize from '../../contants/ScreenSize';
 import { products } from '../Home/HomeScreen';
 import StarRating from '../../components/StarRating';
 import SearchBar from '../../components/SearchBar';
+import { useNavigation } from '@react-navigation/native';
 
 const CategoryScreen = () => {
   const [searchText, setSearchText] = useState('');
   const categories = useSelector(state => state.category.categories);
   const subCategoriesByCategory = useSelector(state => state.subCategory.subCategoriesByCategory);
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -139,7 +141,26 @@ const CategoryScreen = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#FFF' }}>
-      <SearchBar onSearch={() => {}} />
+      <TouchableOpacity onPress={() => navigation.navigate('Search')} style={styles.searchContainer}>
+          <TextInput
+            value={searchText}
+            style={styles.searchInput}
+            placeholder="Search something..."
+            editable={false}
+          />
+          {searchText.length > 0 && (
+            <TouchableOpacity style={styles.clearButton}
+            // onPress={handleClearText}
+            >
+              <Image source={require('../../assets/bt_clearText.png')} style={styles.icon} />
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity style={styles.searchButton}
+            onPress={() => navigation.navigate('Search')}
+          >
+            <Image source={require('../../assets/icons/ic_search.png')} style={styles.searchIcon} />
+          </TouchableOpacity>
+      </TouchableOpacity>
 
       <View style={{ flexDirection: 'row', flex: 1, backgroundColor: '#FFF', overflow: 'hidden' }}>
         <FlatList
@@ -168,3 +189,39 @@ const CategoryScreen = () => {
 };
 
 export default CategoryScreen;
+
+const styles = StyleSheet.create({
+  searchContainer: {
+    flexDirection: 'row',
+    margin: 10,
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: '#000',
+    borderRadius: 40
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    paddingHorizontal: 15,
+  },
+  clearButton: {
+    padding: 5,
+  },
+  searchButton: {
+    backgroundColor: '#000',
+    margin: 3,
+    padding: 8,
+    paddingHorizontal: 16,
+    borderRadius: 40
+  },
+  searchIcon: {
+    width: 25,
+    height: 25
+  },
+  icon: {
+    width: 18,
+    height: 18,
+    marginRight: 7,
+    resizeMode: 'contain',
+  }
+})
