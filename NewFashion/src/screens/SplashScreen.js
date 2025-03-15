@@ -4,6 +4,7 @@ import { fetchCategories } from '../redux/actions/categoryActions';
 import { useDispatch, useSelector } from 'react-redux';
 import AppManager from '../utils/AppManager';
 import { fetchProducts } from '../redux/actions/productActions';
+import { fetchOrders } from '../redux/actions/orderActions';
 
 const SplashScreen = ({ navigation }) => {
     const fadeAnimLogo = useRef(new Animated.Value(1)).current;
@@ -43,6 +44,11 @@ const SplashScreen = ({ navigation }) => {
             
 
             navigation.replace('Main');
+
+            if(AppManager.isUserLoggedIn()){
+                const fetchOrders = await dispatch(fetchOrders()).unwrap();
+                console.log('Fetch order successfully:', fetchOrders);
+            }
 
         } catch (error) {
             console.log('Load data error: ', error);
