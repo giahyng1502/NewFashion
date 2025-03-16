@@ -20,9 +20,9 @@ const ProductCard = ({ item, onSelected }) => (
     <View style={st.priceContainer}>
       <Text style={st.price}>{convertPrice(item.price)}</Text>
       <Text style={st.sold}>{item.sold} sold</Text>
-      <TouchableOpacity>
+      {/* <TouchableOpacity>
         <Image source={require('../assets/buttons/bt_addToCart.png')} style={st.cartIcon} />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   </TouchableOpacity>
 );
@@ -69,7 +69,7 @@ const st = StyleSheet.create({
     marginRight: 2,
   },
   sold: {
-    fontSize: 12,
+    fontSize: 14,
     color: "#737373",
     fontWeight:700,
     marginTop:3,
@@ -82,7 +82,7 @@ const st = StyleSheet.create({
     paddingHorizontal: 1,
   },
   price: {
-    fontSize: 14,
+    fontSize: 16,
     color: "#1D1D1D", 
     fontWeight: "700",
   },

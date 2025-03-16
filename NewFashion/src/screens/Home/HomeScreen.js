@@ -78,7 +78,7 @@ const HomeScreen = ({ navigation }) => {
     if (!loading) return null;
     return (
       <View style={{ padding: 10 }}>
-        <ActivityIndicator size="small" color="#0000ff" />
+        <ActivityIndicator size="small" color="#FA7806" />
       </View>
     )
   }
@@ -232,6 +232,7 @@ const HomeScreen = ({ navigation }) => {
       onEndReachedThreshold={0.5}
       ListFooterComponent={renderFooter}
       contentContainerStyle={{paddingHorizontal: 3,backgroundColor: '#fff'}}
+      showsVerticalScrollIndicator={false}
     />
   );
 };

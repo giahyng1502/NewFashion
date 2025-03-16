@@ -1,4 +1,4 @@
-import { Alert, Animated, FlatList, Image, Pressable, ScrollView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, Animated, FlatList, Image, Pressable, ScrollView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import BaseHeader from '../../components/BaseHeader'
@@ -9,9 +9,8 @@ import ProductCard from '../../components/ProductCard';
 import AppManager from '../../utils/AppManager';
 import { deleteCart, updateCart } from '../../redux/actions/cartActions';
 import SupportFunctions from '../../utils/SupportFunctions';
+import { fetchProducts } from '../../redux/actions/productActions';
 
-const color = [{ color: 'Black', image: require('../../assets/image/ig_product1.png') }, { color: 'White', image: require('../../assets/image/ig_product1.png') }, { color: 'Red', image: require('../../assets/image/ig_product1.png') }, { color: 'Blue', image: require('../../assets/image/ig_product1.png') }, { color: 'Green', image: require('../../assets/image/ig_product1.png') }, { color: 'Yellow', image: require('../../assets/image/ig_product1.png') }]
-const size = ['S', 'M', 'L', 'XL', 'XXL']
 
 const CartScreen = ({ navigation }) => {
   const [title, setTitle] = React.useState('Cart')
@@ -23,6 +22,9 @@ const CartScreen = ({ navigation }) => {
   const [isSelectedAll, setIsSelectedAll] = React.useState(false)
   const [checkOutTitleButton, setCheckOutTitleButton] = React.useState('Checkout')
   const [selectedCartItem, setSelectedCartItem] = React.useState(null)
+  const [selectedColor, setSelectedColor] = React.useState(null);
+  const [selectedSize, setSelectedSize] = React.useState(null);
+  const [tempQuantity, setTempQuantity] = React.useState(1);
 
   const [isShowPriceBottomSheet, setIsShowPriceBottomSheet] = React.useState(false)
   const animatedValue = React.useRef(new Animated.Value(0)).current;
@@ -41,6 +43,8 @@ const CartScreen = ({ navigation }) => {
   useEffect(() => {
     setSelectedCategory(categories[0]);
     setCartItems(carts);
+    setTitle( carts.length > 0 ? `Cart (${carts.length})` : 'Cart' );
+    setCheckOutTitleButton( carts.length > 0 ? `Checkout (${carts.length})` : 'Checkout' );
   }, []);
 
   const loadMoreProducts = () => {
@@ -53,7 +57,7 @@ const CartScreen = ({ navigation }) => {
     if (!loading) return null;
     return (
       <View style={{ padding: 10 }}>
-        <ActivityIndicator size="small" color="#0000ff" />
+        <ActivityIndicator size="small" color="#FA7806" />
       </View>
     )
   }
@@ -98,6 +102,11 @@ const CartScreen = ({ navigation }) => {
   const openPickUpColorAndSizeBottomSheet = (item) => {
     setIsShowPickColorAndSizeBottomSheet(true);
     setSelectedCartItem(item);
+    let color = item.productId.color.find(color => color.nameColor === item.color.nameColor);
+    setSelectedColor(color);
+    let size = item.productId.size.find(size => size === item.size);
+    setSelectedSize(size);
+    setTempQuantity(item.quantity);
     Animated.timing(pickColorAndSizeBottomSheetAnimatedValue, {
       toValue: 1,
       duration: 500,
@@ -174,8 +183,6 @@ const CartScreen = ({ navigation }) => {
     }
   };
 
-
-
   const handleDeleteItem = () => {
     Alert.alert(
       "Confirm Delete",
@@ -192,7 +199,7 @@ const CartScreen = ({ navigation }) => {
             // Xóa các sản phẩm đã chọn
             const updatedCart = cartItems.filter(item => !item.isSelected);
             setCartItems(updatedCart);
-  
+
             // Gửi yêu cầu xóa lên server với các sản phẩm được chọn
             dispatch(deleteCart())
               .then((result) => {
@@ -250,8 +257,6 @@ const CartScreen = ({ navigation }) => {
         });
     }
   };
-
-
 
   const decreaseQuantity = (id) => {
     const updatedCart = cartItems.map(item => {
@@ -357,8 +362,6 @@ const CartScreen = ({ navigation }) => {
       });
   };
 
-
-
   const handleCheckOut = () => {
     if (AppManager.shared.isUserLoggedIn()) {
       navigation.navigate('CheckOut');
@@ -384,6 +387,54 @@ const CartScreen = ({ navigation }) => {
         const itemPrice = item.price * item.quantity;
         return total + itemPrice;
       }, 0);
+  }
+
+  const getDiscountPriceOfSelectedItems = () => {
+    return getOriginalPriceOfSelectedItems() - getFinalPriceOfSelectedItems();
+  }
+
+  const handleConfirmPickColorAndSize = () => {
+    //update cart
+    const updatedCart = cartItems.map(item => {
+      if (item._id === selectedCartItem._id) {
+        return {
+          ...item,
+          size: selectedSize,
+          color: {
+            nameColor: selectedColor.nameColor,
+            imageColor: selectedColor.imageColor
+          },
+          quantity: tempQuantity
+        };
+      }
+      return item;
+    });
+
+    setCartItems(updatedCart);
+
+    const updatedItemForServer = {
+      productInCartId: selectedCartItem._id,
+      quantity: tempQuantity,
+      size: selectedSize,
+      color: {
+        nameColor: selectedColor.nameColor,
+        imageColor: selectedColor.imageColor
+      },
+      isSelected: selectedCartItem.isSelected
+    };
+
+    dispatch(updateCart(updatedItemForServer))
+      .then((result) => {
+        console.log(result);
+        closePickUpColorAndSizeBottomSheet();
+      })
+      .catch((error) => {
+        console.error("Error updating cart:", error);
+      });
+  }
+
+  const handleSelectedItem = (item) => {
+    navigation.navigate("ProductDetail", { item });
   }
 
   return (
@@ -419,6 +470,9 @@ const CartScreen = ({ navigation }) => {
 
       {/* Flat list với header chứa flat list cart items, data là phần sản phẩm của cửa hàng */}
       <FlatList
+        data={products}
+        numColumns={2}
+        keyExtractor={(item) => item._id}
         ListHeaderComponent={() => (
           <>
             {/* empty view */}
@@ -477,10 +531,10 @@ const CartScreen = ({ navigation }) => {
 
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                           <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#FA7806' }}>
-                            {item.disCountSale !== 0 ? (item.price - (item.price * item.disCountSale)) : item.price} {' '}
+                            {SupportFunctions.convertPrice(item.disCountSale !== 0 ? (item.price - (item.price * item.disCountSale)) : item.price)} {' '}
                             {item.disCountSale !== 0 && (
                               <Text style={{ marginLeft: 5, fontSize: 10, fontWeight: 'medium', color: '#737373', textDecorationLine: 'line-through' }}>
-                                {item.price}
+                                {SupportFunctions.convertPrice(item.price)}
                               </Text>
                             )}
                           </Text>
@@ -546,17 +600,17 @@ const CartScreen = ({ navigation }) => {
             </View>
           </>
         )}
-        data={products}
-        numColumns={2}
+        renderItem={({ item }) => <ProductCard item={item} onSelected={() => {handleSelectedItem(item)}} />}
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item._id}
-        renderItem={({ item }) => <ProductCard item={item} />}
+        onEndReached={loadMoreProducts}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter}
         style={{ marginTop: 5 }}
       />
 
       {/* check out container */}
       {(cartItems.length > 0) && (
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10, alignItems: 'center' }}>
           {/* select all button */}
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <TouchableOpacity style={{ width: 30 }} onPress={() => selectedAll()}>
@@ -624,16 +678,16 @@ const CartScreen = ({ navigation }) => {
               </Text>
 
               <FlatList
-                data={cartItems.filter(item => item.isSeleted)}
+                data={cartItems.filter(item => item.isSelected)}
                 keyExtractor={item => item.id}
                 horizontal
                 style={{ marginTop: 5 }}
                 renderItem={({ item }) => (
                   <View style={{ alignItems: 'center', marginRight: 5 }}>
-                    <Image source={item.image} style={{ width: 60, height: 60 }} resizeMode="contain" />
+                    <Image source={{ uri: item.color.imageColor }} style={{ width: 60, height: 60 }} resizeMode="cover" />
 
                     <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#737337' }}>
-                      {item.price} {' '}
+                      {SupportFunctions.convertPrice(item.price)} {' '}
                       <Text style={{ color: '#FA7806', fontSize: 8, fontWeight: 'bold' }}>
                         x{item.quantity}
                       </Text>
@@ -651,7 +705,7 @@ const CartScreen = ({ navigation }) => {
 
                 <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#737373' }}>
                   {/* price of cart item selected */}
-                  333.333đ
+                  {SupportFunctions.convertPrice(getOriginalPriceOfSelectedItems())}
                 </Text>
               </View>
 
@@ -662,7 +716,7 @@ const CartScreen = ({ navigation }) => {
 
                 <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#FA7806' }}>
                   {/* price of cart item selected */}
-                  -333.333đ
+                  {SupportFunctions.convertPrice(getDiscountPriceOfSelectedItems())}
                 </Text>
               </View>
 
@@ -675,7 +729,7 @@ const CartScreen = ({ navigation }) => {
 
                 <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                   {/* price of cart item selected */}
-                  333.333đ
+                  {SupportFunctions.convertPrice(getFinalPriceOfSelectedItems())}
                 </Text>
               </View>
 
@@ -731,11 +785,11 @@ const CartScreen = ({ navigation }) => {
                 </Text>
 
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
-                  {color.map((item) => (
-                    <TouchableOpacity style={{ padding: 5, backgroundColor: '#eee', flexDirection: 'row', alignItems: 'center', gap: 5, marginRight: 10, marginBottom: 10 }}>
-                      <Image source={item.image} style={{ width: 30, height: 30 }} resizeMode="contain" />
+                  {selectedCartItem?.productId.color.map((item) => (
+                    <TouchableOpacity onPress={() => setSelectedColor(item)} style={{ padding: 5, backgroundColor: '#eee', flexDirection: 'row', alignItems: 'center', gap: 5, marginRight: 10, marginBottom: 10, borderRadius: 5, borderWidth: item._id == selectedColor?._id ? 1.5 : 1, borderColor: item._id == selectedColor?._id ? '#000' : '#BBBBBB' }}>
+                      <Image source={{ uri: item.imageColor }} style={{ width: 30, height: 30 }} resizeMode="contain" />
                       <Text style={{ fontSize: 12, color: '#737337' }}>
-                        {item.color}
+                        {item.nameColor}
                       </Text>
                     </TouchableOpacity>
                   ))}
@@ -750,8 +804,8 @@ const CartScreen = ({ navigation }) => {
                 </Text>
 
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
-                  {size.map((size) => (
-                    <TouchableOpacity style={{ padding: 5, backgroundColor: '#eee', flexDirection: 'row', alignItems: 'center', gap: 5, marginRight: 10, marginBottom: 10 }}>
+                  {selectedCartItem?.productId.size.map((size) => (
+                    <TouchableOpacity onPress={() => setSelectedSize(size)} style={{ padding: 5, backgroundColor: '#eee', flexDirection: 'row', alignItems: 'center', gap: 5, marginRight: 10, marginBottom: 10, borderRadius: 5, borderWidth: size == selectedSize ? 1.5 : 1, borderColor: size == selectedSize ? '#000' : '#BBBBBB' }}>
                       <Text style={{ fontSize: 12, color: '#737337' }}>
                         {size}
                       </Text>
@@ -768,7 +822,11 @@ const CartScreen = ({ navigation }) => {
                 </Text>
 
                 <View style={{ flexDirection: 'row', alignItems: 'center', borderRadius: 5, borderWidth: 1, borderColor: '#73733760', paddingHorizontal: 5 }}>
-                  <TouchableOpacity style={{ width: 20 }} onPress={() => decreaseQuantity(item._id)}>
+                  <TouchableOpacity
+                    style={{ width: 20, opacity: selectedCartItem.quantity === 1 ? 0.5 : 1 }} // Thay đổi độ trong suốt nếu bị disable
+                    onPress={() => setTempQuantity(tempQuantity - 1)}
+                    disabled={tempQuantity === 1}
+                  >
                     <Image
                       source={require("../../assets/icons/ic_minus.png")}
                       style={{ width: '100%' }}
@@ -777,10 +835,12 @@ const CartScreen = ({ navigation }) => {
                   </TouchableOpacity>
                   <View style={{ height: '100%', borderColor: '#73733760', borderLeftWidth: 1, borderRightWidth: 1, padding: 10, marginHorizontal: 10 }}>
                     <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                      {selectedCartItem.quantity}
+                      {tempQuantity}
                     </Text>
                   </View>
-                  <TouchableOpacity style={{ width: 20 }} onPress={() => increaseQuantity(item._id)}>
+                  <TouchableOpacity
+                    style={{ width: 20 }}
+                    onPress={() => setTempQuantity(tempQuantity + 1)}>
                     <Image
                       source={require("../../assets/icons/ic_plus.png")}
                       style={{ width: '100%' }}
@@ -793,7 +853,7 @@ const CartScreen = ({ navigation }) => {
 
             </ScrollView>
 
-            <FilledButton title={'Confirm'} customStyle={{ width: ScreenSize.width - 40, backgroundColor: '#FA7806', alignSelf: 'center', marginBottom: 20 }} />
+            <FilledButton onPress={handleConfirmPickColorAndSize} title={'Confirm'} customStyle={{ width: ScreenSize.width - 40, backgroundColor: '#FA7806', alignSelf: 'center', marginBottom: 20 }} />
 
           </Animated.View>
 
