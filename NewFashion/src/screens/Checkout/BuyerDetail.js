@@ -1,26 +1,11 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 
-const products = [
-    {
-        id: '1',
-        image: require('../../assets/image/ig_product1.png'), // Thay bằng link ảnh thực tế
-        price: '268.443đ',
-        quantity: 3
-    },
-    {
-        id: '2',
-        image: require('../../assets/image/ig_product1.png'),
-        price: '350.000đ',
-        quantity: 2
-    }
-];
-
 const ProductItem = ({ item }) => {
     return (
         <View style={styles.itemContainer}>
             {/* Hình ảnh sản phẩm */}
-            <Image source={item.image} style={styles.productImage} />
+            <Image source={{ uri: item.color.imageColor }} style={styles.productImage} />
 
             {/* Label "Almost Sold Out" */}
             <View style={styles.badge}>
@@ -33,7 +18,9 @@ const ProductItem = ({ item }) => {
     );
 };
 
-const BuyerDetail = () => {
+const BuyerDetail = ({products}) => {
+    console.log(products);
+    
     return (
         <View style={styles.container}>
             {/* Thông tin thanh toán */}
@@ -65,7 +52,7 @@ const BuyerDetail = () => {
                 {/* Tiêu đề */}
                 <View style={[styles.addressContainer,{paddingHorizontal:0,marginBottom:0,justifyContent:'space-between'}]}>
                     <Text style={[styles.addressText,{fontSize:16}]}>
-                        Ships from New Fashion (3)
+                        Ships from New Fashion ({products.length})
                     </Text>
                     <TouchableOpacity>
                         <Image source={require('../../assets/ic_arrowRight.png')} style={styles.icon}/>
@@ -75,7 +62,7 @@ const BuyerDetail = () => {
                 <FlatList
                     data={products}
                     renderItem={({ item }) => <ProductItem item={item} />}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item._id}
                     horizontal // Vuốt theo chiều ngang
                     showsHorizontalScrollIndicator={false} // Ẩn thanh cuộn ngang
                     contentContainerStyle={styles.listContainer}

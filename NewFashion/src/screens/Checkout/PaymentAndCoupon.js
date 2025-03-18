@@ -1,13 +1,20 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { RadioButton } from "react-native-paper";
+import SupportFunctions from '../../utils/SupportFunctions';
 
-const PaymentAndCoupon = () => {
+const PaymentAndCoupon = ({products}) => {
   const [selectedPayment, setSelectedPayment] = useState(null);
 
-  const totalBeforeDiscount = 1007658;
-  const discount = 202329;
-  const totalAfterDiscount = totalBeforeDiscount - discount;
+  const getFinalPriceOfSelectedItems = () => {
+    return products
+      .filter(item => item.isSelected)
+      .reduce((total, item) => {
+        const discountMultiplier = item.disCountSale > 0 ? (1 - item.disCountSale) : 1;
+        const itemPrice = item.price * discountMultiplier * item.quantity;
+        return total + itemPrice;
+      }, 0);
+  }
 
   return (
     <View style={styles.container}>
@@ -72,17 +79,17 @@ const PaymentAndCoupon = () => {
       <View style={styles.summaryContainer}>
         <View style={styles.summaryRow}>
           <Text style={styles.textBold}>Item(s) total:</Text>
-          <Text style={[styles.textBold,{textDecorationLine:'line-through',color:'#737373'}]}>{totalBeforeDiscount.toLocaleString()}đ</Text>
+          <Text style={[styles.textBold,{textDecorationLine:'line-through',color:'#737373'}]}>{SupportFunctions.convertPrice(getFinalPriceOfSelectedItems())}</Text>
         </View>
 
         <View style={styles.summaryRow}>
           <Text style={styles.textBold}>Item(s) discount:</Text>
-          <Text style={[styles.textBold,{textDecorationLine:'line-through',color:'#D96923'}]}>-{discount.toLocaleString()}đ</Text>
+          <Text style={[styles.textBold,{textDecorationLine:'line-through',color:'#D96923'}]}>-0đ</Text>
         </View>
 
         <View style={styles.summaryRow}>
           <Text style={styles.textBold}>Subtotal:</Text>
-          <Text style={styles.textBold}>{totalAfterDiscount.toLocaleString()}đ</Text>
+          <Text style={styles.textBold}>{SupportFunctions.convertPrice(getFinalPriceOfSelectedItems())}</Text>
         </View>
 
         <View style={[styles.summaryRow,{borderTopWidth:1,borderBottomWidth:1,paddingVertical:15,borderColor:'#D7D7D7'}]}>
@@ -93,7 +100,7 @@ const PaymentAndCoupon = () => {
         <View style={{width:'100%',flexDirection:'column'}}>
           <View style={styles.summaryRow}>
             <Text style={[styles.textBold,{fontSize:20}]}>Order total:</Text>
-            <Text style={[styles.textBold,{fontSize:20}]}>{totalAfterDiscount.toLocaleString()}đ</Text>
+            <Text style={[styles.textBold,{fontSize:20}]}>{SupportFunctions.convertPrice(getFinalPriceOfSelectedItems())}</Text>
           </View>
           <View style={styles.subTextContainer}>
             <Text style={styles.text}>By submitting your order, you agree to our </Text>
