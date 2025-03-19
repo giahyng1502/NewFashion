@@ -5,6 +5,8 @@ import TextField, { TextFieldType } from '../components/TextField'
 import ScreenSize from '../contants/ScreenSize'
 import FilledButton from '../components/FilledButton'
 import OutlinedButton from '../components/OutlinedButton'
+import { useDispatch, useSelector } from 'react-redux'
+import { addInformation } from '../redux/actions/infomationActions'
 
 const addressData = require('../assets/address_local.json')
 
@@ -37,6 +39,9 @@ const AddAddressScreen = ({ navigation }) => {
     //Modal state
     const [modalVisible, setModalVisible] = useState(false);
 
+    const { personalInfo } = useSelector(state => state.personalInfo)
+    const dispatch = useDispatch()
+
     // Bottom sheet functions
     const openBottomSheet = (level) => {
         if (level === 'city') {
@@ -48,7 +53,7 @@ const AddAddressScreen = ({ navigation }) => {
             } else {
                 setCurrentLevel('district');
             }
-        } 
+        }
         if (level === 'ward') {
             if (selectedCity === null) {
                 setCurrentLevel('city');
@@ -220,10 +225,27 @@ const AddAddressScreen = ({ navigation }) => {
         const streetNameErr = validateField('streetName', streetName);
 
         if (!fullnameErr && !phoneErr && !cityErr && !districtErr && !wardErr && !streetNameErr) {
-            console.log('Save information');
             setModalVisible(true);
         }
     };
+
+    const confirmInformation = () => {
+        const information = {
+            name: fullname,
+            address: `${streetName}, ${selectedWard?.name}, ${selectedDistrict?.name}, ${selectedCity?.name}`,
+            phone: phoneNumber,
+        };
+
+        dispatch(addInformation(information))
+            .then(() => {
+                console.log('Information: ', information);
+                setModalVisible(false);
+                navigation.navigate("CheckOut")
+            })
+            .catch((error) => {
+                console.log('Add information failed: ', error);
+            });
+    }
 
 
     return (
@@ -553,7 +575,7 @@ const AddAddressScreen = ({ navigation }) => {
                         </View>
 
                         <FilledButton title="Edit my address" customStyle={{ backgroundColor: '#EE640F', width: '100%', marginTop: 20 }} onPress={() => setModalVisible(false)} />
-                        <OutlinedButton title="It is correct" customStyle={{ width: '100%', marginTop: 10 }} onPress={() => { console.log('go to next') }} />
+                        <OutlinedButton title="It is correct" customStyle={{ width: '100%', marginTop: 10 }} onPress={confirmInformation} />
                     </View>
                 </View>
             </Modal>

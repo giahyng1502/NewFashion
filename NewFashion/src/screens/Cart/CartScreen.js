@@ -15,10 +15,7 @@ import { fetchProducts } from '../../redux/actions/productActions';
 const CartScreen = ({ navigation }) => {
   const [title, setTitle] = React.useState('Cart')
   const [showDeleteButton, setShowDeleteButton] = React.useState(false)
-  const [isLogin, setIsLogin] = React.useState(true)
   const categories = useSelector(state => state.category.categories);
-  const [selectedCategory, setSelectedCategory] = React.useState(null);
-  const categoryFlatlistRef = useRef(null)
   const [isSelectedAll, setIsSelectedAll] = React.useState(false)
   const [checkOutTitleButton, setCheckOutTitleButton] = React.useState('Checkout')
   const [selectedCartItem, setSelectedCartItem] = React.useState(null)
@@ -37,14 +34,15 @@ const CartScreen = ({ navigation }) => {
   const { carts } = useSelector(state => state.cart);
   const [cartItems, setCartItems] = React.useState(carts);
   const { products, loading, page, hasMore } = useSelector(state => state.product);
+  const { personalInfo } = useSelector(state => state.personalInfo);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setSelectedCategory(categories[0]);
     setCartItems(carts);
-    setTitle( carts.length > 0 ? `Cart (${carts.length})` : 'Cart' );
-    setCheckOutTitleButton( carts.length > 0 ? `Checkout (${carts.length})` : 'Checkout' );
+    setTitle(carts.length > 0 ? `Cart (${carts.length})` : 'Cart');
+    setCheckOutTitleButton(carts.length > 0 ? `Checkout (${carts.length})` : 'Checkout');
+    setShowDeleteButton(carts.filter(item => item.isSelected).length > 0);
   }, []);
 
   const loadMoreProducts = () => {
@@ -364,7 +362,11 @@ const CartScreen = ({ navigation }) => {
 
   const handleCheckOut = () => {
     if (AppManager.shared.isUserLoggedIn()) {
-      navigation.navigate('CheckOut');
+      if (personalInfo.information.length == 0) {
+        navigation.navigate('AddAddress');
+      } else {
+        navigation.navigate('CheckOut');
+      }
     } else {
       navigation.navigate('Login');
     }
@@ -600,7 +602,7 @@ const CartScreen = ({ navigation }) => {
             </View>
           </>
         )}
-        renderItem={({ item }) => <ProductCard item={item} onSelected={() => {handleSelectedItem(item)}} />}
+        renderItem={({ item }) => <ProductCard item={item} onSelected={() => { handleSelectedItem(item) }} />}
         showsVerticalScrollIndicator={false}
         onEndReached={loadMoreProducts}
         onEndReachedThreshold={0.5}

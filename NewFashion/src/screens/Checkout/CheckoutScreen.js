@@ -3,18 +3,13 @@ import React from 'react'
 import BuyerDetail from './BuyerDetail'
 import PaymentAnhCoupon from './PaymentAndCoupon'
 import SubInfor from './SubInfor'
+import BaseHeader from '../../components/BaseHeader'
 
-const CheckoutScreen = () => {
+const CheckoutScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
         {/* header */}
-        <View style={styles.headerContainer}>
-            <TouchableOpacity>
-                <Image source={require("../../assets/ic_arrowLeft.png")} style={styles.arrowButton} />
-            </TouchableOpacity>
-            <Text style={styles.totalPrice}>Checkout</Text>
-            <Text />          
-        </View>
+        <BaseHeader title="Checkout" showLeftButton={true} onLeftButtonPress={() => { navigation.goBack() }} />
 
         {/* body */}
         <ScrollView>
@@ -49,7 +44,7 @@ export default CheckoutScreen
 const styles = StyleSheet.create({
     container:{
         flex:1,
-        backgroundColor:'#eee',
+        backgroundColor:'#fff',
         position:'relative'
     },
     headerContainer: {

@@ -33,7 +33,7 @@ const ProductItem = ({ item }) => {
     );
 };
 
-const BuyerDetail = () => {
+const BuyerDetail = ({personalInfo}) => {
     return (
         <View style={styles.container}>
             {/* Thông tin thanh toán */}
