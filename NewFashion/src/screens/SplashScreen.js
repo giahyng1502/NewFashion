@@ -1,10 +1,11 @@
-import { StyleSheet, Image, View, Animated } from 'react-native'
+import { StyleSheet, Image, View, Animated, Alert } from 'react-native'
 import React, { useEffect, useRef } from 'react'
 import { fetchCategories } from '../redux/actions/categoryActions';
 import { useDispatch, useSelector } from 'react-redux';
 import AppManager from '../utils/AppManager';
 import { fetchProducts } from '../redux/actions/productActions';
 import { fetchOrders } from '../redux/actions/orderActions';
+import { fetchInformation } from '../redux/actions/infomationActions';
 
 const SplashScreen = ({ navigation }) => {
     const fadeAnimLogo = useRef(new Animated.Value(1)).current;
@@ -30,23 +31,30 @@ const SplashScreen = ({ navigation }) => {
 
             // Gọi và unwrap fetchCategories
             const fetchResult = await dispatch(fetchCategories()).unwrap();
-            console.log('Fetch categories success:', fetchResult);
+            if (!fetchResult) {
+                throw new Error('Fetch categories failed');
+            }
 
             // Gọi và unwrap fetchProducts
             const fetchProduct = await dispatch(fetchProducts(1)).unwrap();
-            // console.log('Fetch products success:', fetchProduct);
+            if (!fetchProduct) {
+                throw new Error('Fetch products failed');
+            }
 
-            // Load user info và dừng lại nếu gặp lỗi
             await AppManager.shared.loadUserInfo();
 
             const token = await AppManager.shared.getToken();
             console.log('Token:', token);
-            
+
+            if (token) {
+                const fetchPersonalInfo = await dispatch(fetchInformation()).unwrap();
+                console.log('Fetch personal info success:', fetchPersonalInfo);
+            }
 
             navigation.replace('Main');
         } catch (error) {
             console.log('Load data error: ', error);
-            // Bạn có thể hiển thị thông báo lỗi hoặc xử lý lỗi tại đây nếu cần
+            Alert.alert('Error', 'Load data error');
         }
     };
 
