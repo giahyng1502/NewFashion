@@ -3,11 +3,14 @@ import React, { useEffect, useRef, useState } from 'react'
 import SearchBar from '../components/SearchBar';
 import { useFocusEffect } from '@react-navigation/native';
 
-const SearchScreen = ({ onSearch }) => {
+const SearchScreen = ({ navigation, onSearch }) => {
   const [searchText, setSearchText] = useState('');
   const [searchHistory, setSearchHistory] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const inputRef = useRef(null);
+
+  const [dataSearch, setDataSearch] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
 
   const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
 
@@ -70,6 +73,30 @@ const SearchScreen = ({ onSearch }) => {
       sold: "2,5K+ sold",
     },
   ];
+
+  const DataSearch = [
+    { id: '1', title: 'Áo thun nam cổ tròn' },
+    { id: '2', title: 'Áo thun nữ form rộng' },
+    { id: '3', title: 'Áo sơ mi caro nam' },
+    { id: '4', title: 'Áo sơ mi trắng nữ' },
+    { id: '5', title: 'Quần jeans nam rách gối' },
+    { id: '6', title: 'Quần jeans nữ skinny' },
+    { id: '7', title: 'Áo hoodie nam basic' },
+    { id: '8', title: 'Áo hoodie nữ croptop' },
+    { id: '9', title: 'Váy công sở tay dài' },
+    { id: '10', title: 'Váy dạ hội sang trọng' },
+    { id: '11', title: 'Quần short nam thể thao' },
+    { id: '12', title: 'Quần short nữ lưng cao' },
+    { id: '13', title: 'Bộ đồ thể thao nam adidas' },
+    { id: '14', title: 'Bộ đồ thể thao nữ nike' },
+    { id: '15', title: 'Áo khoác bomber nam' },
+    { id: '16', title: 'Áo khoác jean nữ' },
+    { id: '17', title: 'Đầm maxi đi biển' },
+    { id: '18', title: 'Áo len nam cổ lọ' },
+    { id: '19', title: 'Áo len nữ oversize' },
+    { id: '20', title: 'Quần jogger nam streetwear' }
+  ];
+
   useEffect(() => {
     const handler = setTimeout(() => {
       // onSearch(debouncedSearchText);
@@ -125,76 +152,113 @@ const SearchScreen = ({ onSearch }) => {
     </View>
   );
 
+  const DataSearchRender = ({ title, image }) => (
+    <View style={styles.itemSearchList}>
+      <Image source={require('../assets/icons/ic_search_black_2x.png')} style={styles.imageSearchList} />
+      <Text style={styles.text}> {title}</Text>
+    </View>
+  );
+
+  // Hàm xử lý khi nhập dữ liệu
+  const handleSearch = (text) => {
+    setSearchText(text);
+    if (text.length > 0) {
+      const filteredData = DataSearch.filter(item =>
+        item.title && item.title.toLowerCase().includes(text.toLowerCase()) // Kiểm tra item.title tồn tại
+      );
+      setDataSearch(filteredData);
+    } else {
+      setDataSearch([]);
+    }
+  };
+
   return (
     <View>
-      <View style={styles.searchContainer}>
-        <TextInput
-          value={searchText}
-          style={styles.searchInput}
-          placeholder="Search something..."
-          onChangeText={handleTextChange}
-          onSubmitEditing={handleSubmitEditing}
-          autoFocus={true}
-        />
-        {searchText.length > 0 && (
-          <TouchableOpacity style={styles.clearButton} onPress={handleClearText}>
-            <Image source={require('../assets/bt_clearText.png')} style={styles.icon} />
-          </TouchableOpacity>
-        )}
-        <TouchableOpacity style={styles.searchButton} onPress={handleSearchButtonPress}>
-          <Image source={require('../assets/icons/ic_search.png')} style={styles.searchIcon} />
+      {/* Header */}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16 }}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Image source={require('../assets/icons/ic_row_left_2x.png')} style={{ width: 20, height: 20 }} />
         </TouchableOpacity>
+
+        <View style={styles.searchContainer}>
+          <TextInput
+            value={searchText}
+            style={styles.searchInput}
+            placeholder="Search something..."
+            onChangeText={handleSearch}
+            autoFocus={true}
+          />
+          {searchText.length > 0 && (
+            <TouchableOpacity style={styles.clearButton} onPress={handleClearText}>
+              <Image source={require('../assets/bt_clearText.png')} style={styles.icon} />
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity style={styles.searchButton}>
+            <Image source={require('../assets/icons/ic_search.png')} style={styles.searchIcon} />
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16 }} >
-        <Text style={{ fontFamily: 'Inter', fontWeight: '800', fontSize: 18 }}>Recent searched</Text>
-        <Image
-          source={require('../assets/icons/ic_trash_2x.png')}
-          style={{ width: 20, height: 20 }}
+
+      {/* Hiển thị DataSearch khi có nội dung tìm kiếm */}
+      {searchText.length > 0 ? (
+        <FlatList
+          data={dataSearch}
+          renderItem={({ item }) => <DataSearchRender title={item.title} image={item.image} />}
+          keyExtractor={(item) => item.id}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.list}
         />
-      </View>
-      <FlatList
-        data={recentlySearched}
-        renderItem={({ item }) => <Item title={item.title} image={item.image} />}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.list}
-      />
+      ) : (
+        <>
+          {/* Recently Searched */}
+          <View style={{ paddingHorizontal: 16, marginBottom: 10 }}>
+            <View style={[styles.sectionHeader, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 5 }]}>
+              <Text style={styles.sectionTitle}>Recent searched</Text>
+              <Image source={require('../assets/icons/ic_trash_2x.png')} style={styles.icon} />
+            </View>
+            <FlatList
+              data={recentlySearched}
+              renderItem={({ item }) => <Item title={item.title} image={item.image} />}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.list}
+            />
+          </View>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16 }} >
-        <Text style={{ fontFamily: 'Inter', fontWeight: '800', fontSize: 18 }}>Popular right now</Text>
+          {/* Popular Right Now */}
+          <View style={{ paddingHorizontal: 16, marginBottom: 10 }}>
+            <Text style={styles.sectionTitle}>Popular right now</Text>
+            <FlatList
+              data={PopularRightRow}
+              renderItem={({ item }) => <Item title={item.title} image={item.image} />}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.list}
+            />
+          </View>
 
-      </View>
-      <FlatList
-        data={PopularRightRow}
-        renderItem={({ item }) => <Item title={item.title} image={item.image} />}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.list}
-      />
-
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16 }} >
-        <Text style={{ fontFamily: 'Inter', fontWeight: '800', fontSize: 18 }}>Browsing history <Image
-          source={require('../assets/icons/icon-right-2x.png')}
-          style={{ width: 20, height: 20 }}
-        /></Text>
-
-      </View>
-
-      <FlatList
-        data={BrowsingHistory}
-        renderItem={({ item }) => <BrowsingHistoryRender {...item} />}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.list}
-      />
-
+          {/* Browsing History */}
+          <View style={{ paddingHorizontal: 16 }}>
+            <View style={[styles.sectionHeader, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 5, paddingBottom: 5 }]}>
+              <Text style={styles.sectionTitle}>Browsing history</Text>
+              <Image source={require('../assets/icons/icon-right-2x.png')} style={{ width: 20, height: 20 }} />
+            </View>
+            <FlatList
+              data={BrowsingHistory}
+              renderItem={({ item }) => <BrowsingHistoryRender {...item} />}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.list}
+            />
+          </View>
+        </>
+      )}
     </View>
-
-  )
-}
+  );
+};
 
 export default SearchScreen
 
@@ -253,6 +317,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     fontWeight: '600',
+    color: '#000',
   },
 
 
@@ -292,4 +357,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#777",
   },
+  // màn hình search
+
+  imageSearchList: {
+    width: 20,
+    height: 20,
+  },
+  itemSearchList: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    marginBottom: 10, // Khoảng cách giữa các item
+    borderBottomWidth: 1, // Đường viền dưới
+    borderBottomColor: '#747474',
+  },
+
 })

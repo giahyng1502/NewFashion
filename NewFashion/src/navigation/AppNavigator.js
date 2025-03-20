@@ -14,11 +14,8 @@ import ChatDetail from "../screens/Chatdetail/ChatDetail";
 import CartScreen from '../screens/Cart/CartScreen'
 import DetailPostScreen from "../screens/Post/DetailPostScreen";
 import ImagePreview from '../screens/ImagePreview'
+import SearchScreen from '../screens/SearchScreen'
 import OrderScreen from '../screens/Order/OrderScreen'
-import SettingsScreen from '../screens/You/Settings/SettingsScreen'
-import LanguageScreen from '../screens/You/Settings/LanguageScreen'
-import AddAddressScreen from '../screens/AddAddressScreen'
-import CheckoutScreen from '../screens/Checkout/CheckoutScreen'
 
 const Stack = createStackNavigator()
 
@@ -37,12 +34,9 @@ const AppNavigator = () => {
           <Stack.Screen name="ChatDetail" component={ChatDetail} />
           <Stack.Screen name="PostDetail" component={DetailPostScreen} />
           <Stack.Screen name="Cart" component={CartScreen} />
-          <Stack.Screen name="AddAddress" component={AddAddressScreen} />
           <Stack.Screen name="ImagePreview" component={ImagePreview} options={{ presentation: 'modal' }} />
           <Stack.Screen name="Your orders" component={OrderScreen} />
-          <Stack.Screen name="Settings" component={SettingsScreen} />
-          <Stack.Screen name="Language" component={LanguageScreen} />
-          <Stack.Screen name="CheckOut" component={CheckoutScreen} />
+          <Stack.Screen name="Search" component={SearchScreen} />
         </Stack.Navigator>
       </NavigationContainer>
   )
