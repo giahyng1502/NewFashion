@@ -5,13 +5,8 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const SearchScreen = ({ navigation, onSearch }) => {
   const [searchText, setSearchText] = useState('');
-  const [searchHistory, setSearchHistory] = useState([]);
-  const [suggestions, setSuggestions] = useState([]);
   const inputRef = useRef(null);
-
   const [dataSearch, setDataSearch] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-
   const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
 
   const popularRightNow = [
@@ -112,27 +107,6 @@ const SearchScreen = ({ navigation, onSearch }) => {
     }
   }, [])
   )
-
-  const handleTextChange = (text) => {
-    setSearchText(text);
-    setDebouncedSearchText(text);
-  };
-
-  const handleClearText = () => {
-    setSearchText('');
-    setDebouncedSearchText('');
-  };
-
-  const handleSearchButtonPress = () => {
-    onSearch(searchText);
-    Keyboard.dismiss();
-  };
-
-  const handleSubmitEditing = () => {
-    onSearch(searchText);
-    Keyboard.dismiss();
-  };
-
   const Item = ({ title, image }) => (
     <View style={styles.item}>
       <Image source={{ uri: image }} style={styles.image} />
@@ -179,24 +153,8 @@ const SearchScreen = ({ navigation, onSearch }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image source={require('../assets/icons/ic_row_left_2x.png')} style={{ width: 20, height: 20 }} />
         </TouchableOpacity>
+        <SearchBar disable={true} onSearch={handleSearch} />
 
-        <View style={styles.searchContainer}>
-          <TextInput
-            value={searchText}
-            style={styles.searchInput}
-            placeholder="Search something..."
-            onChangeText={handleSearch}
-            autoFocus={true}
-          />
-          {searchText.length > 0 && (
-            <TouchableOpacity style={styles.clearButton} onPress={handleClearText}>
-              <Image source={require('../assets/bt_clearText.png')} style={styles.icon} />
-            </TouchableOpacity>
-          )}
-          <TouchableOpacity style={styles.searchButton}>
-            <Image source={require('../assets/icons/ic_search.png')} style={styles.searchIcon} />
-          </TouchableOpacity>
-        </View>
       </View>
 
       {/* Hiển thị DataSearch khi có nội dung tìm kiếm */}

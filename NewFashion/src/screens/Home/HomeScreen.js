@@ -9,7 +9,7 @@ import ScreenSize from '../../contants/ScreenSize';
 import AppManager from '../../utils/AppManager';
 import SearchBar from '../../components/SearchBar';
 import { fetchProducts } from '../../redux/actions/productActions';
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { fetchCart } from '../../redux/actions/cartActions';
 
 const saleProducts = [
@@ -60,11 +60,11 @@ const HomeScreen = ({ navigation }) => {
   const [selectedTitleCategory, setSelectedTitleCategory] = useState(null);
   const [searchText, setSearchText] = useState('');
   const dispatch = useDispatch();
-  const {products, loading, page, hasMore} = useSelector(state => state.product);
-  const {carts} = useSelector(state => state.cart);
+  const { products, loading, page, hasMore } = useSelector(state => state.product);
+  const { carts } = useSelector(state => state.cart);
 
   useEffect(() => {
-    setSelectedTitleCategory(titleCategories[0]);    
+    setSelectedTitleCategory(titleCategories[0]);
     dispatch(fetchCart())
   }, []);
 
@@ -90,7 +90,7 @@ const HomeScreen = ({ navigation }) => {
   const handleSelectedItem = (item) => {
     navigation.navigate("ProductDetail", { item });
   }
-  
+
   const renderItemTitleCategory = ({ index, item }) => {
     const isSelected = item === selectedTitleCategory;
     return (
@@ -148,8 +148,9 @@ const HomeScreen = ({ navigation }) => {
               )}
             </TouchableOpacity>
           </View>
-          
-          <SearchBar onSearch={() => { }} />
+          <TouchableOpacity style={{paddingLeft: 10}} onPress={() => {navigation.navigate('Search')}}>
+            <SearchBar disable={false} onSearch={() => {  }} />
+          </TouchableOpacity>
 
           {/* Discount */}
           <View style={st.discountContainer}>
@@ -227,11 +228,11 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
       )}
-      renderItem={({ item }) => <ProductCard item={item} onSelected={() => {handleSelectedItem(item)}} />}
+      renderItem={({ item }) => <ProductCard item={item} onSelected={() => { handleSelectedItem(item) }} />}
       onEndReached={loadMoreProducts}
       onEndReachedThreshold={0.5}
       ListFooterComponent={renderFooter}
-      contentContainerStyle={{paddingHorizontal: 3,backgroundColor: '#fff'}}
+      contentContainerStyle={{ paddingHorizontal: 3, backgroundColor: '#fff' }}
     />
   );
 };

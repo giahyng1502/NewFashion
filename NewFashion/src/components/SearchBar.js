@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Image, StyleSheet, Keyboard } from 'react-native';
 
-const SearchBar = ({ onSearch }) => {
+const SearchBar = ({ disable, onSearch }) => {
   const [searchText, setSearchText] = useState('');
   const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
 
@@ -35,13 +35,15 @@ const SearchBar = ({ onSearch }) => {
   };
 
   return (
-    <View style={styles.searchContainer}>
+    <View style={[styles.searchContainer]}>
       <TextInput
         value={searchText}
         style={styles.searchInput}
         placeholder="Search something..."
         onChangeText={handleTextChange}
         onSubmitEditing={handleSubmitEditing}
+        editable={disable}
+        
       />
       {searchText.length > 0 && (
         <TouchableOpacity style={styles.clearButton} onPress={handleClearText}>
@@ -56,7 +58,9 @@ const SearchBar = ({ onSearch }) => {
 };
 
 const styles = StyleSheet.create({
+
   searchContainer: {
+  
     flexDirection: 'row',
     margin: 10,
     alignItems: 'center',
