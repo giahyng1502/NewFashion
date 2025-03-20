@@ -55,7 +55,6 @@ const MainScreen = () => {
                 <Tab.Screen name="News" component={NewScreen} />
                 <Tab.Screen name="Notification" component={NotificationScreen} />
                 <Tab.Screen name="You" component={YouScreen} />
-                <Tab.Screen name="Search" component={SearchScreen} />
             </Tab.Navigator>
         </View>
     )

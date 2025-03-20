@@ -6,14 +6,12 @@ import ScreenSize from '../../contants/ScreenSize';
 import { products } from '../Home/HomeScreen';
 import StarRating from '../../components/StarRating';
 import SearchBar from '../../components/SearchBar';
-import { useNavigation } from '@react-navigation/native';
 
-const CategoryScreen = () => {
+const CategoryScreen = ({navigation}) => {
   const [searchText, setSearchText] = useState('');
   const categories = useSelector(state => state.category.categories);
   const subCategoriesByCategory = useSelector(state => state.subCategory.subCategoriesByCategory);
   const dispatch = useDispatch();
-  const navigation = useNavigation();
 
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [loading, setLoading] = useState(true);

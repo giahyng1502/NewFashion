@@ -15,6 +15,7 @@ import CartScreen from '../screens/Cart/CartScreen'
 import homeScreen from "../screens/Home/HomeScreen";
 import DetailPostScreen from "../screens/Post/DetailPostScreen";
 import ImagePreview from '../screens/ImagePreview'
+import SearchScreen from '../screens/SearchScreen'
 
 const Stack = createStackNavigator()
 
@@ -34,6 +35,7 @@ const AppNavigator = () => {
         <Stack.Screen name="PostDetail" component={DetailPostScreen} />
         <Stack.Screen name="Cart" component={CartScreen} />
         <Stack.Screen name="ImagePreview" component={ImagePreview} options={{presentation: 'modal'}} />
+        <Stack.Screen name="Search" component={SearchScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>
