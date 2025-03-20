@@ -1,11 +1,11 @@
 import { Image, LayoutAnimation, Platform, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const DetailProduct = () => {
+const DetailProduct = ({ item }) => {
     const [expanded, setExpanded] = useState(false);
 
     const [saved, setSaved] = useState(false)
@@ -15,85 +15,91 @@ const DetailProduct = () => {
         setExpanded(!expanded);
     };
 
-    const toggleSaved=()=>{
-        setSaved(!saved);
+    const [imageAspectRatio, setImageAspectRatio] = useState({});
+
+    const handleImageLoad = (index, width, height) => {
+        setImageAspectRatio(prevState => ({
+            ...prevState,
+            [index]: width / height
+        }));
     };
+
+    useEffect(() => {
+        console.log("DetailProduct: ", item);
+    }
+        , [item])
+
 
     return (
         <View style={st.container}>
-            <View style={st.custitle}>
-                <Text style={st.title}>Product details</Text>
-                <TouchableOpacity onPress={toggleSaved}>
-                    <Image 
-                      source={
-                        saved 
-                        ? require('../assets/icons/ic_redheart.png') 
-                        : require('../assets/icons/ic_heart.png')}
-                        style={{marginLeft:200}}/>
-                </TouchableOpacity>
-                <Text>Saved</Text>
-            </View>
-            <View style={st.line} />
             <View style={st.cusinfoproduct}>
                 <Text style={st.namedata}>Material:</Text>
-                <Text style={st.infodata}>Polyester</Text>
+                <Text style={st.infodata}>{item.description.material}</Text>
             </View>
             <View style={st.cusinfoproduct}>
                 <Text style={st.namedata}>Composition:</Text>
-                <Text style={st.infodata}>100% Polyester</Text>
+                <Text style={st.infodata}>{item.description.composition}</Text>
             </View>
             <View style={st.cusinfoproduct}>
                 <Text style={st.namedata}>Sleeve Length:</Text>
-                <Text style={st.infodata}>Long Sleeve</Text>
+                <Text style={st.infodata}>{item.description.sleeveLength}</Text>
             </View>
 
             {expanded && (
                 <View>
                     <View style={st.cusinfoproduct}>
                         <Text style={st.namedata}>Pattern:</Text>
-                        <Text style={st.infodata}>Geometric-pattern</Text>
+                        <Text style={st.infodata}>{item.description.pattern}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
                         <Text style={st.namedata}>Applicable People:</Text>
-                        <Text style={st.infodata}>Adult</Text>
+                        <Text style={st.infodata}>{item.description.applicablePeople}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
                         <Text style={st.namedata}>Sheer:</Text>
-                        <Text style={st.infodata}>No</Text>
+                        <Text style={st.infodata}>{item.description.sheer}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
                         <Text style={st.namedata}>Type:</Text>
-                        <Text style={st.infodata}>Coat</Text>
+                        <Text style={st.infodata}>{item.description.type}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
                         <Text style={st.namedata}>Season:</Text>
-                        <Text style={st.infodata}>Fall/Winter</Text>
+                        <Text style={st.infodata}>{item.description.season.join('/')}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
                         <Text style={st.namedata}>Operation Instruction:</Text>
-                        <Text style={st.infodata}>Machine wash, do not dry clean</Text>
+                        <Text style={st.infodata}>{item.description.operationInstruction}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
                         <Text style={st.namedata}>Style:</Text>
-                        <Text style={st.infodata}>Casual</Text>
+                        <Text style={st.infodata}>{item.description.style}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
                         <Text style={st.namedata}>Fabric Elasticity:</Text>
-                        <Text style={st.infodata}>Micro elasticity</Text>
+                        <Text style={st.infodata}>{item.description.fabricElasticity}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
                         <Text style={st.namedata}>Weaving Method:</Text>
-                        <Text style={st.infodata}>Woven</Text>
+                        <Text style={st.infodata}>{item.description.weavingMethod}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
                         <Text style={st.namedata}>Origin:</Text>
-                        <Text style={st.infodata}>Hubei, China</Text>
+                        <Text style={st.infodata}>{item.description.origin}</Text>
                     </View>
                     <View style={st.cusimg}>
-                        <Image source={require('../assets/image/img_product1.png')} />
-                        <Image source={require('../assets/image/img_product2.png')} />
-                        <Image source={require('../assets/image/img_product3.png')} />
-                        <Image source={require('../assets/image/img_product4.png')} />
+                        {item.image.map((img, index) => (
+                            <Image
+                                key={index}
+                                source={{ uri: img }}
+                                style={{ width: '100%', aspectRatio: imageAspectRatio[index] || 1 }}
+                                resizeMode="contain"
+                                onLoad={(event) => {
+                                    const { width, height } = event.nativeEvent.source;
+                                    handleImageLoad(index, width, height);
+                                }}
+                            />
+                        ))}
                     </View>
                 </View>
             )}
@@ -109,11 +115,7 @@ export default DetailProduct
 
 const st = StyleSheet.create({
     container: {
-        padding: 12,
-        backgroundColor: "#fff",
-        elevation: 3,
-        borderBottomWidth: 5,
-        borderColor: "#EEEEEE"
+        paddingVertical: 10
     },
     title: {
         fontSize: 18,
@@ -150,20 +152,21 @@ const st = StyleSheet.create({
         marginBottom: 10,
     },
     cusinfoproduct: {
+        paddingHorizontal: 20,
         flexDirection: "row",
         gap: 5,
     },
     namedata: {
-        fontWeight: "bold",
+        fontWeight: "semibold",
+        fontSize: 14,
         color: "#737373",
     },
     infodata: {
-        fontWeight: "bold",
+        fontWeight: "semibold",
+        fontSize: 14,
         color: "#000000",
     },
     cusimg: {
-        marginTop: 10,
-        alignItems:"center",
-        gap: 10,
+        alignItems: "center",
     },
 })

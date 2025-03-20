@@ -7,8 +7,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "../service/userService";
 import { jwtDecode } from "jwt-decode";
 import BenefitsInfoBox from '../components/BenefitsInfoBox';
-import { checkEmail } from '../redux/actions/userActions';
+import { checkEmail, loginWithEmail, register } from '../redux/actions/userActions';
 import PasswordStrengthBar from '../components/PasswordStrengthBar';
+import AppManager from '../utils/AppManager'
 
 const LoginWithEmailScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -46,13 +47,18 @@ const LoginWithEmailScreen = ({ navigation }) => {
   };
 
   const handleCheckEmail = () => {
+    const emailError = validateField('email', email);
+    if (emailError) {
+      console.log('Check email failed');
+      return
+    }
+
     let emailObj = {
       email: email
     }
 
     dispatch(checkEmail(emailObj))
       .then((result) => {
-        console.log('result: ', result);
         if (result.meta.requestStatus === 'fulfilled') {
           runAnimation(false);
         } else {
@@ -134,14 +140,13 @@ const LoginWithEmailScreen = ({ navigation }) => {
     }
   }
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const emailError = validateField('email', email);
-
     const passwordError = validateField('password', password);
 
 
     if (emailError || passwordError) {
-      console.log('Register failed');
+      console.log('Login failed');
       return
     }
 
@@ -150,22 +155,80 @@ const LoginWithEmailScreen = ({ navigation }) => {
       password: password
     }
 
-    dispatch(login(user))
+    dispatch(loginWithEmail(user))
       .then((result) => {
         console.log('result: ', result);
-        // if (result.meta.requestStatus === 'fulfilled') {
-        //   let token = result.payload.data.token;
-        //   let user = jwtDecode(token);
-        //   console.log('User: ', user);
-        // }
-      }).catch((err) => {
+        console.log('token: ', result.payload.token);
+
+        // Lưu token
+        AppManager.shared.saveUserInfo(result.payload.token)
+          .then(() => {
+            // Lấy lại token đã lưu và log ra
+            return AppManager.shared.getToken();
+          })
+          .then((token) => {
+            console.log('token: ', token); // Token thực tế
+            navigation.replace('Main');
+          })
+          .catch((err) => {
+            console.log('Error in token processing: ', err);
+          });
+      })
+      .catch((err) => {
         console.log("Login error: ", err);
       });
+
+  }
+
+  const handleRegister = () => {
+    const emailError = validateField('email', email);
+    const passwordError = validateField('password', password);
+
+    if (emailError || passwordError) {
+      console.log('Register failed');
+      return
+    }
+
+    let name = email.split('@')[0];
+
+    let user = {
+      email: email,
+      name: name,
+      password: password
+    }
+    console.log(user);
+
+    dispatch(register(user))
+      .then((result) => {
+        console.log('Register successful', result);
+
+        // Lưu token
+        AppManager.shared.saveUserInfo(result.payload.token)
+          .then(() => {
+            // Lấy token đã lưu
+            return AppManager.shared.getToken();
+          })
+          .then((token) => {
+            console.log('token: ', token); // Token thực tế
+            navigation.replace('Main');
+          })
+          .catch((err) => {
+            console.log('Error in saving or retrieving token: ', err);
+          });
+      })
+      .catch((err) => {
+        console.log("Register error: ", err);
+      });
+
   }
 
   const handleContinue = () => {
     if (isContinue) {
-      handleLogin()
+      if (isRegister) {
+        handleRegister()
+      } else {
+        handleLogin()
+      }
     } else {
       handleCheckEmail()
     }
@@ -233,11 +296,15 @@ const LoginWithEmailScreen = ({ navigation }) => {
               <Text style={st.errorLabel} numberOfLines={0}>{passwordError}</Text>
             </View>
           }
-          <PasswordStrengthBar password={password} customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onChangeText={setStrengLabel} />
-          <Text style={{ fontWeight: 'bold', fontSize: 14, marginTop: 8, alignSelf: 'flex-start', marginVertical: 5 }}>Password quality: {strengLabel}</Text>
+          {(isContinue && isRegister) &&
+            <>
+              <PasswordStrengthBar password={password} customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onChangeText={setStrengLabel} />
+              <Text style={{ fontWeight: 'bold', fontSize: 14, marginTop: 8, alignSelf: 'flex-start', marginVertical: 5 }}>Password quality: {strengLabel}</Text>
+            </>
+
+          }
         </Animated.View>
       )}
-
       <FilledButton
         onPress={handleContinue}
         title="Continue"

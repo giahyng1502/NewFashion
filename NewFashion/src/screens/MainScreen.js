@@ -5,9 +5,7 @@ import HomeScreen from './Home/HomeScreen'
 import CategoryScreen from './Category/CategoryScreen'
 import NotificationScreen from './Notification/notification-screen'
 import YouScreen from './You/YouScreen'
-import CartScreen from './Cart/CartScreen'
 import NewScreen from "./Post/NewScreen";
-import SearchScreen from './SearchScreen'
 
 const Tab = createBottomTabNavigator()
 

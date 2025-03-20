@@ -31,7 +31,7 @@ const RegisterWithEmailScreen = () => {
       </View>
 
       <Text style={st.label}>Email *</Text>
-      <TextField placeholder="Enter your email" customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }} />
+      <TextField placeholder="Enter your email" customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }} value={email} onChangeText={setEmail}/>
       <Text style={st.label}>Password *</Text>
       <TextField type={TextFieldType.PASSWORD} placeholder="Enter your password" customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }} onChangeText={setPassword} />
       <PasswordStrengthBar password={password} customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onChangeText={setStrengLabel} />
@@ -41,7 +41,7 @@ const RegisterWithEmailScreen = () => {
         Don't use a password from another site, or something too obvious like your pet's name.
       </Text>
 
-      <FilledButton title="Register" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} />
+      <FilledButton title="Register" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }}/>
 
 
       <Text style={st.termsText}>
