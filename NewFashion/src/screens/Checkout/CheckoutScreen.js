@@ -9,16 +9,21 @@ import BaseHeader from '../../components/BaseHeader'
 
 const CheckoutScreen = ({ navigation }) => {
     const { carts } = useSelector(state => state.cart);
-    const [cartItems, setCartItems] = useState(carts);
+    const { personalInfo } = useSelector(state => state.personalInfo);
 
     const [isShowPriceBottomSheet, setIsShowPriceBottomSheet] = useState(false)
     const animatedValue = useRef(new Animated.Value(0)).current;
     const bottomSheetHeight = 500
+    const [isShowAdressSheet, setIsShowAdressSheet] = useState(false)
 
     useEffect(() => {
-        setCartItems(carts);
-    }, []);
-
+        console.log(personalInfo);
+        console.log('default',getDefaultInformation());
+        
+        setDefaultAddress(getDefaultInformation())
+    }, [])
+    
+    //mở sheet chi tiết đơn hàng
     const toggleBottomSheet = () => {
         if (!isShowPriceBottomSheet) {
             openPriceBottomSheet()
@@ -46,6 +51,34 @@ const CheckoutScreen = ({ navigation }) => {
         });
     }
 
+    //mở sheet địa chỉ
+    const toggleAdressSheet = () => {
+        if (!isShowAdressSheet) {
+            openAdressSheet()
+        } else {
+            closeAdressSheet()
+        }
+    }
+
+    const openAdressSheet = () => {
+        setIsShowAdressSheet(true);
+        Animated.timing(animatedValue, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true
+        }).start();
+    }
+
+    const closeAdressSheet = () => {
+        Animated.timing(animatedValue, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true
+        }).start(() => {
+            setIsShowAdressSheet(false);
+        });
+    }
+
     const backdropOpacity = animatedValue.interpolate({
         inputRange: [0, 1],
         outputRange: [0, 0.5]
@@ -56,15 +89,63 @@ const CheckoutScreen = ({ navigation }) => {
         outputRange: [bottomSheetHeight, 0]
     });
 
-
     const getFinalPriceOfSelectedItems = () => {
-        return cartItems
+        return carts
             .filter(item => item.isSelected)
             .reduce((total, item) => {
                 const discountMultiplier = item.disCountSale > 0 ? (1 - item.disCountSale) : 1;
                 const itemPrice = item.price * discountMultiplier * item.quantity;
                 return total + itemPrice;
             }, 0);
+    }
+
+    const [defaultAddress, setDefaultAddress] = useState(null);
+
+    const addresses = [
+        {
+            id: "1",
+            name: "Đỗ Minh Hiếu",
+            phone: "+84 975 953 696",
+            address: "Thạch Xá, Thạch Thất, Hà Nội",
+            fullAddress: "Thạch Xá, Huyện Thạch Thất, Thành Phố Hà Nội",
+            isDefault: true,
+        },
+        {
+            id: "2",
+            name: "Đỗ Minh Hiếu",
+            phone: "+84 975 953 696",
+            address: "Thạch Xá, Thạch Thất, Hà Nội",
+            fullAddress: "Thạch Xá, Huyện Thạch Thất, Thành Phố Hà Nội",
+            isDefault: false,
+        },
+        {
+            id: "3",
+            name: "Đỗ Minh Hiếu",
+            phone: "+84 975 953 696",
+            address: "Thạch Xá, Thạch Thất, Hà Nội",
+            fullAddress: "Thạch Xá, Huyện Thạch Thất, Thành Phố Hà Nội",
+            isDefault: false,
+        },
+        {
+            id: "4",
+            name: "Đỗ Minh Hiếu",
+            phone: "+84 975 953 696",
+            address: "Thạch Xá, Thạch Thất, Hà Nội",
+            fullAddress: "Thạch Xá, Huyện Thạch Thất, Thành Phố Hà Nội",
+            isDefault: false,
+        },
+    ];
+    const [selectedAddress, setSelectedAddress] = useState(addresses[0])
+    const getDefaultInformation = () => {
+        const defaultInformation = personalInfo.information.filter(infor => infor.isDefault);
+
+        if (defaultInformation.length === 0) {
+            // Nếu không có địa chỉ mặc định, trả về địa chỉ đầu tiên
+            return personalInfo.information[0];
+        } else {
+            // Trả về địa chỉ mặc định đầu tiên
+            return defaultInformation[0];
+        }
     }
 
   return (
@@ -74,8 +155,8 @@ const CheckoutScreen = ({ navigation }) => {
 
         {/* body */}
         <ScrollView>
-            <BuyerDetail products={cartItems}/>
-            <PaymentAnhCoupon products={cartItems}/>
+            <BuyerDetail products={carts} onClickShowPopup={[toggleAdressSheet,toggleBottomSheet]} information={defaultAddress}/>
+            <PaymentAnhCoupon products={carts}/>
             <SubInfor />
         </ScrollView>
 
@@ -120,7 +201,7 @@ const CheckoutScreen = ({ navigation }) => {
                               </Text>
 
                               <FlatList
-                                  data={cartItems.filter(item => item.isSelected)}
+                                  data={carts.filter(item => item.isSelected)}
                                   keyExtractor={item => item._id}
                                   horizontal
                                   style={{ marginTop: 5 }}
@@ -181,6 +262,124 @@ const CheckoutScreen = ({ navigation }) => {
                   </View>
               )}
         </View>
+
+        {isShowAdressSheet && (
+            <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, top: 0, justifyContent: 'flex-end', overflow: 'hidden' }}>
+                {/* background */}
+                <TouchableOpacity style={{ ...StyleSheet.absoluteFillObject }} onPress={closeAdressSheet} >
+                    <Animated.View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'black', opacity: backdropOpacity }} />
+                </TouchableOpacity>
+
+                {/* content */}
+                <Animated.View style={{ transform: [{ translateY: sheetTranslateY }], backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomWidth: 1, borderBottomColor: '#BBB' }}>
+                    <BaseHeader
+                        title="Addresses"
+                        showRightButton={true}
+                        rightIcon={require('../../assets/bt_exit.png')}
+                        onRightButtonPress={closeAdressSheet}
+                    />
+
+                      <View style={{ backgroundColor: "#F5F5F5", maxHeight:500,borderTopColor:'#BBBBBB',borderTopWidth:0.5 }}>
+                        <FlatList
+                            data={addresses}
+                            keyExtractor={(item) => item.id}
+                            renderItem={({ item }) => (
+                                <View style={{backgroundColor: "#fff",padding: 15,marginBottom: 15}}>
+                                    <View style={{flexDirection:'row',justifyContent:'flex-start',alignItems:'center'}}>
+                                        <Text style={{ color:'#000',fontWeight: "bold", fontSize: 16 }}>{item.name}</Text>
+                                        <Text style={{ color: "#737373",fontWeight: "bold", fontSize: 14,marginLeft:10 }}>{item.phone}</Text>
+                                    </View>
+
+                                    <View style={{width:'100%',flexDirection:'row',justifyContent:'space-between'}}>
+                                        <View>
+                                            <Text style={{ color:'#000',fontWeight: "bold", fontSize: 13,marginTop:5 }}>{item.address}</Text>
+                                            <Text style={{ color:'#000',fontWeight: "bold", fontSize: 13,marginTop:5 }}>{item.fullAddress}</Text>
+                                        </View>
+                                        <View>
+                                            {item.id === selectedAddress.id ? (
+                                                <Image style={{width:25,height:25}} source={require('../../assets/icons/ic_orangeCheck.png')} resizeMode='cover'/>
+                                            ) : (
+                                                <TouchableOpacity onPress={()=>setSelectedAddress(item)} 
+                                                style={{ backgroundColor: "#ff7f00", paddingVertical: 8, paddingHorizontal: 18, alignItems: "center", borderRadius: 30 }}>
+                                                    <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 12 }}>
+                                                        Use
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            )}
+                                        </View>
+                                    </View>
+
+
+                                    <View style={{marginTop:15,borderTopColor:'#BBBBBB',borderTopWidth:0.5,flexDirection:'row',justifyContent:'space-between'}}>
+                                        {item.id === defaultAddress ? (
+                                            <TouchableOpacity style={{marginTop: 10,flexDirection: "row",alignItems: "center"}}>
+                                                <View style={{width: 18,height: 18,borderRadius: 9,borderWidth: 2,borderColor: "#000",alignItems: "center",justifyContent: "center" }}>
+                                                    <View
+                                                        style={{
+                                                            width: 9,
+                                                            height: 9,
+                                                            borderRadius: 5,
+                                                            backgroundColor: "#000",
+                                                        }}
+                                                    />
+                                                </View>
+                                                <Text style={{ marginLeft: 8, color: "#737373",fontWeight:'bold' }}>Default</Text>
+                                            </TouchableOpacity>
+                                        ) : (
+                                            <TouchableOpacity
+                                                style={{
+                                                    marginTop: 10,
+                                                    flexDirection: "row",
+                                                    alignItems: "center",
+                                                }}
+                                                onPress={() => setDefaultAddress(item.id)}
+                                            >
+                                                <View
+                                                    style={{
+                                                        width: 18,
+                                                        height: 18,
+                                                        borderRadius: 9,
+                                                        borderWidth: 2,
+                                                        borderColor: "#000",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                    }}
+                                                />
+                                                <Text style={{ marginLeft: 8, color: "#737373",fontWeight:'bold' }}>Set as default</Text>
+                                            </TouchableOpacity>
+                                        )}
+
+                                        <View
+                                            style={{
+                                                flexDirection: "row",
+                                                justifyContent: "space-between",
+                                                marginTop: 12,
+                                            }}
+                                        >
+                                            <TouchableOpacity>
+                                                <Text style={{ marginRight: 5, color: "#737373",fontWeight:'bold' }}>Delete</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity>
+                                                <Text style={{ marginLeft: 5, color: "#737373",fontWeight:'bold' }}>Edit</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                  </View>
+                            )}
+                        />
+
+                        <View style={{width:'100%',backgroundColor:'#fff',padding:15,borderTopColor:'#BBBBBB',borderTopWidth:0.5}}>
+                            <TouchableOpacity style={{backgroundColor: "#ff7f00",padding: 12,borderRadius: 40,alignItems: "center"}} onPress={()=>navigation.navigate('AddAddress')}>
+                                <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 18 }}>
+                                    Add a new address
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+
+                      </View>
+                </Animated.View>
+            </View>
+        )}
     </View>
   )
 }

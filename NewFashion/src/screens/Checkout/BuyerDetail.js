@@ -18,33 +18,33 @@ const ProductItem = ({ item }) => {
     );
 };
 
-const BuyerDetail = ({products}) => {
-    console.log(products);
-    
+const BuyerDetail = ({products,onClickShowPopup,information}) => {
     return (
         <View style={styles.container}>
             {/* Thông tin thanh toán */}
             <View style={styles.buyerContainer}>
-                {/* Địa chỉ giao hàng */}
-                <View style={styles.addressContainer}>
-                    <View style={[styles.nameAndPhone,{margin:0}]}>
-                        <Image source={require('../../assets/icons/ic_location.png')} style={[styles.icon,{alignSelf:'flex-start',marginRight:10}]}/>
-                        <View>
-                            <View style={styles.nameAndPhone}> 
-                                <Text style={[styles.addressText,{marginRight:10,fontSize:18}]}>Đỗ Minh Hiếu</Text>
-                                <Text style={styles.addressText}>+84 975 953 696</Text>
+                <TouchableOpacity onPress={onClickShowPopup[0]}>
+                    {/* Địa chỉ giao hàng */}
+                    <View style={styles.addressContainer}>
+                        <View style={[styles.nameAndPhone, { margin: 0 }]}>
+                            <Image source={require('../../assets/icons/ic_location.png')} style={[styles.icon, { alignSelf: 'flex-start', marginRight: 10 }]} />
+                            <View>
+                                <View style={styles.nameAndPhone}>
+                                    <Text style={[styles.addressText, { marginRight: 10, fontSize: 18 }]}>{information.name}</Text>
+                                    <Text style={styles.addressText}>{information.phoneNumber}</Text>
+                                </View>
+                                <Text style={[styles.addressText, { color: '#D96923', marginVertical: 5 }]}>{information.address}</Text>
+                                <Text style={styles.addressText}>{information.address}</Text>
                             </View>
-                            <Text style={[styles.addressText,{color:'#D96923',marginVertical:5}]}>Thạch Xá, Thạch Thất, Hà Nội</Text>
-                            <Text style={styles.addressText}>Thạch Xá, huyện Thạch Thất, thành phố Hà Nội</Text>
                         </View>
+                        <TouchableOpacity>
+                            <Image source={require('../../assets/ic_arrowRight.png')} style={styles.icon} />
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity>
-                        <Image source={require('../../assets/ic_arrowRight.png')} style={styles.icon}/>
-                    </TouchableOpacity>
-                </View>
 
-                {/* Dải phân cách dạng đường kẻ */}
-                <Image source={require('../../assets/ig_line.png')} resizeMode='cover' style={styles.line}/>
+                    {/* Dải phân cách dạng đường kẻ */}
+                    <Image source={require('../../assets/ig_line.png')} resizeMode='cover' style={styles.line} />
+                </TouchableOpacity>
             </View>
 
             {/* Thông tin sản phẩm */}
@@ -54,7 +54,7 @@ const BuyerDetail = ({products}) => {
                     <Text style={[styles.addressText,{fontSize:16}]}>
                         Ships from New Fashion ({products.length})
                     </Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={onClickShowPopup[1]}>
                         <Image source={require('../../assets/ic_arrowRight.png')} style={styles.icon}/>
                     </TouchableOpacity>
                 </View>
