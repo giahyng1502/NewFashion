@@ -752,7 +752,7 @@ const CartScreen = ({ navigation }) => {
           {/* content */}
           <Animated.View style={{ transform: [{ translateY: pickColorAndSizeBottomSheetTranslateY }], backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
             <View style={{ flexDirection: 'row', padding: 20 }}>
-              <TouchableOpacity style={{ width: 150 }} onPress={() => navigation.navigate('ImagePreview', { images: selectedCartItem.image })}>
+              <TouchableOpacity style={{ width: 150 }} onPress={() => navigation.navigate('ImagePreview', { images: selectedCartItem.productId.image })}>
                 <Image source={{ uri: selectedCartItem.color.imageColor }} style={{ width: 150, height: 150 }} resizeMode="cover" />
 
                 <Image source={require('../../assets/icons/ic_zoom.png')} style={{ width: 20, height: 20, position: 'absolute', top: 5, right: 5 }} />

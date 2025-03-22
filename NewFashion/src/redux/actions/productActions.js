@@ -14,3 +14,15 @@ export const fetchProducts = createAsyncThunk(
     }
 );
 
+export const fetchSaleProducts = createAsyncThunk(
+    'products/fetchSaleProducts',
+    async (page, thunkAPI) => {
+        try {
+            const response = await axios.get(`/saleProduct/all`, {params: {page: page}});            
+            return response.data;
+        } catch (error) {            
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+

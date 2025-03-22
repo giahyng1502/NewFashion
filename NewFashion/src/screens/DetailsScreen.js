@@ -1,4 +1,4 @@
-import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect } from 'react'
 import ImageDetailProduct from '../components/ImageDetailProduct'
 import BannerAdsProduct from '../components/BannerAdsProduct'
@@ -18,6 +18,7 @@ import StarRating from '../components/StarRating'
 import SupportFunctions from '../utils/SupportFunctions'
 import AppManager from '../utils/AppManager'
 import { addToCart } from '../redux/actions/cartActions'
+import CountdownTimer from '../components/CountdownTimer'
 
 const reviews = [
     {
@@ -45,7 +46,7 @@ const reviews = [
 ];
 
 const DetailsScreen = ({ navigation, route }) => {
-    const { item } = route.params;
+    const { item, discount, expire } = route.params;
     const { products, loading, page, hasMore } = useSelector(state => state.product);
     const [currentIndex, setCurrentIndex] = React.useState(0);
     const [selectedColor, setSelectedColor] = React.useState(null);
@@ -89,6 +90,36 @@ const DetailsScreen = ({ navigation, route }) => {
     const handleSelectCartButton = () => {
         navigation.navigate('Cart');
     }
+
+    const getOriginalPrice = (item) => {
+        return SupportFunctions.convertPrice(item.price);
+    }
+
+    const getDiscountPrice = (item) => {
+        if (discount) {
+            return SupportFunctions.convertPrice(discount > 0 ? item.price * (1 - discount / 100) : item.price);
+        }
+        return SupportFunctions.convertPrice(item.price);
+    }
+
+    const onExpire = () => {
+        console.log('Flash sale has ended');
+
+        // Hiển thị thông báo
+        Alert.alert(
+            "Flash Sale Ended",
+            "The flash sale has ended.",
+            [
+                {
+                    text: "OK",
+                    onPress: () => {
+                        // Quay lại màn hình trước đó
+                        navigation.goBack();
+                    }
+                }
+            ]
+        );
+    };
 
     return (
         <View style={st.container}>
@@ -146,6 +177,18 @@ const DetailsScreen = ({ navigation, route }) => {
                             </View>
                         </View>
 
+                        {/* Hiển thị thời gian đếm ngược */}
+                        {expire &&
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: "#ff5722", paddingHorizontal: 10, paddingVertical: 5 }}>
+                                <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
+                                    Flash sale
+                                </Text>
+
+                                <CountdownTimer expire={expire} onExpire={onExpire} />
+
+                            </View>
+                        }
+
                         <Text style={{ marginHorizontal: 20, marginTop: 10, fontSize: 16, fontWeight: 'medium' }} numberOfLines={2}>{item.name}</Text>
 
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginTop: 10 }}>
@@ -158,12 +201,18 @@ const DetailsScreen = ({ navigation, route }) => {
 
                         <View style={{ flexDirection: 'row', marginHorizontal: 20, marginTop: 10, alignItems: 'center' }}>
                             <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#000' }}>
-                                {SupportFunctions.convertPrice(item.price)}
+                                {getDiscountPrice(item)}
                             </Text>
-                            <View style={{ paddingHorizontal: 10, paddingVertical: 3, marginLeft: 8, backgroundColor: '#FE7018', borderRadius: 3 }}>
-                                <Text style={{ fontSize: 12, fontWeight: 'medium', color: 'white' }}>1% OFF</Text>
-                            </View>
-                            <Text style={{ fontSize: 14, fontWeight: 'medium', color: '#737373', marginLeft: 8, textDecorationLine: 'line-through' }}>600.000đ</Text>
+                            {discount &&
+                                <>
+                                    <View style={{ paddingHorizontal: 10, paddingVertical: 3, marginLeft: 8, backgroundColor: '#FE7018', borderRadius: 3 }}>
+                                        <Text style={{ fontSize: 12, fontWeight: 'medium', color: 'white' }}>{discount}% OFF</Text>
+                                    </View>
+
+                                    <Text style={{ fontSize: 14, fontWeight: 'medium', color: '#737373', marginLeft: 8, textDecorationLine: 'line-through' }}>{getOriginalPrice(item)}</Text>
+                                </>
+                            }
+
                         </View>
 
                         {/* color */}

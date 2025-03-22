@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react'
 import { fetchCategories } from '../redux/actions/categoryActions';
 import { useDispatch, useSelector } from 'react-redux';
 import AppManager from '../utils/AppManager';
-import { fetchProducts } from '../redux/actions/productActions';
+import { fetchProducts, fetchSaleProducts } from '../redux/actions/productActions';
 import { fetchOrders } from '../redux/actions/orderActions';
 import { fetchInformation } from '../redux/actions/infomationActions';
 
@@ -39,6 +39,11 @@ const SplashScreen = ({ navigation }) => {
             const fetchProduct = await dispatch(fetchProducts(1)).unwrap();
             if (!fetchProduct) {
                 throw new Error('Fetch products failed');
+            }
+
+            const fetchSaleProduct = await dispatch(fetchSaleProducts(1)).unwrap();
+            if (!fetchSaleProduct) {
+                throw new Error('Fetch sale products failed');
             }
 
             await AppManager.shared.loadUserInfo();
