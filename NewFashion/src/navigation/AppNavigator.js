@@ -15,13 +15,14 @@ import CartScreen from '../screens/Cart/CartScreen'
 import DetailPostScreen from "../screens/Post/DetailPostScreen";
 import ImagePreview from '../screens/ImagePreview'
 import OrderScreen from '../screens/Order/OrderScreen'
+import CouponScreen from '../screens/Coupon/CouponScreen'
 
 const Stack = createStackNavigator()
 
 const AppNavigator = () => {
   return (
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={'Splash'}>
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={'Coupon'}>
           <Stack.Screen name="Splash" component={SplashScreen} />
           <Stack.Screen name="Login" component={LoginScreen} options={{ presentation: 'modal' }} />
           <Stack.Screen name="RegisterWithEmail" component={RegisterWithEmailScreen} />
@@ -35,6 +36,7 @@ const AppNavigator = () => {
           <Stack.Screen name="Cart" component={CartScreen} />
           <Stack.Screen name="ImagePreview" component={ImagePreview} options={{ presentation: 'modal' }} />
           <Stack.Screen name="Your orders" component={OrderScreen} />
+          <Stack.Screen name="Coupon" component={CouponScreen}/>
         </Stack.Navigator>
       </NavigationContainer>
   )

@@ -788,7 +788,7 @@ const CartScreen = ({ navigation }) => {
                     />
                   </TouchableOpacity>
                 </View>
-
+                
               </View>
 
             </ScrollView>
