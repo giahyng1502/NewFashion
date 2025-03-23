@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { addInformation, fetchInformation } from '../actions/infomationActions';
+import { addInformation, fetchInformation, updateInformation } from '../actions/infomationActions';
 
 
 const initialState = {
@@ -25,6 +25,14 @@ const personalInfoSlice = createSlice({
             })
             .addCase(addInformation.rejected, (state, action) => {
                 console.log('Add personal info failed: ', action.payload);
+            })
+
+            .addCase(updateInformation.fulfilled, (state, action) => {
+                const index = state.personalInfo.information.findIndex(info => info._id === action.payload._id);
+                state.personalInfo.information[index] = action.payload;
+            })
+            .addCase(updateInformation.rejected, (state, action) => {
+                console.log('Update personal info failed: ', action.payload);
             })
     },
 });

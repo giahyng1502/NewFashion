@@ -388,7 +388,7 @@ const DetailsScreen = ({ navigation, route }) => {
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 20, marginVertical: 10 }}>
                             <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
-                            <Text style={{ marginHorizontal: 10, fontWeight: 'semibold', fontSize: 14, color: '#000' }}>Có thể bạn sẽ thích</Text>
+                            <Text style={{ marginHorizontal: 10, fontWeight: 'semibold', fontSize: 14, color: '#000' }}>Maybe you will also like</Text>
                             <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
                         </View>
                     </>

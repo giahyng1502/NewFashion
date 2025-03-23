@@ -6,7 +6,7 @@ import ScreenSize from '../contants/ScreenSize'
 import FilledButton from '../components/FilledButton'
 import OutlinedButton from '../components/OutlinedButton'
 import { useDispatch, useSelector } from 'react-redux'
-import { addInformation } from '../redux/actions/infomationActions'
+import { addInformation, updateInformation } from '../redux/actions/infomationActions'
 
 const addressData = require('../assets/address_local.json')
 
@@ -283,7 +283,18 @@ const AddAddressScreen = ({ navigation, route }) => {
             phoneNumber: phoneNumber,
         };
 
-        dispatch(addInformation(information))
+        if (info) {
+            dispatch(updateInformation({id: info._id, data: information}))
+            .then(() => {
+                console.log('Information: ', information);
+                setModalVisible(false);
+                navigation.goBack();
+            })
+            .catch((error) => {
+                console.log('Update information failed: ', error);
+            });
+        } else {
+            dispatch(addInformation(information))
             .then(() => {
                 console.log('Information: ', information);
                 setModalVisible(false);
@@ -296,6 +307,7 @@ const AddAddressScreen = ({ navigation, route }) => {
             .catch((error) => {
                 console.log('Add information failed: ', error);
             });
+        }
     }
 
 

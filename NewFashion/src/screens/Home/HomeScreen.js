@@ -34,7 +34,7 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     setSelectedTitleCategory(titleCategories[0]);
     dispatch(fetchCart())
-    
+
   }, []);
 
   const loadMoreProducts = () => {
@@ -58,7 +58,7 @@ const HomeScreen = ({ navigation }) => {
 
   const handleSelectedItem = (item, discount, expire) => {
     console.log('Selected item:', item);
-    
+
     navigation.navigate("ProductDetail", { item, discount, expire });
   }
 
@@ -146,26 +146,28 @@ const HomeScreen = ({ navigation }) => {
           <View style={{ height: 6, backgroundColor: '#eee', width: '100%' }} />
 
           {/* Lightning Deals */}
-          <View style={st.lightningDealContainer}>
-            <View style={st.header}>
-              <View style={st.subHeader}>
-                <Image source={require('../../assets/icons/ic_lightning.png')} style={st.headerImage} />
-                <Text style={st.headerTitle}>Lightning deals</Text>
-                <Image source={require('../../assets/icons/ic_arrow1.png')} style={st.headerImage} />
+          {saleProducts.length > 0 && (
+            <View style={st.lightningDealContainer}>
+              <View style={st.header}>
+                <View style={st.subHeader}>
+                  <Image source={require('../../assets/icons/ic_lightning.png')} style={st.headerImage} />
+                  <Text style={st.headerTitle}>Lightning deals</Text>
+                  <Image source={require('../../assets/icons/ic_arrow1.png')} style={st.headerImage} />
+                </View>
+                <Text style={st.headerOffer}>Limited time offer</Text>
               </View>
-              <Text style={st.headerOffer}>Limited time offer</Text>
-            </View>
-            {/*  */}
+              {/*  */}
 
-            <FlatList
-              data={saleProducts}
-              horizontal
-              keyExtractor={(item) => item._id}
-              renderItem={({ item }) => <LightningDealItem item={item} onPress={() => { handleSelectedItem(item.productId, item.discount, item.expireAt) }} />}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={st.listContainer}
-            />
-          </View>
+              <FlatList
+                data={saleProducts}
+                horizontal
+                keyExtractor={(item) => item._id}
+                renderItem={({ item }) => <LightningDealItem item={item} onPress={() => { handleSelectedItem(item.productId, item.discount, item.expireAt) }} />}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={st.listContainer}
+              />
+            </View>
+          )}
 
           <View style={{ height: 6, backgroundColor: '#eee', width: '100%' }} />
 

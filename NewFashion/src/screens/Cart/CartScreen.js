@@ -364,8 +364,11 @@ const CartScreen = ({ navigation }) => {
     if (AppManager.shared.isUserLoggedIn()) {
       if (personalInfo.information.length == 0) {
         navigation.navigate('AddAddress');
-      } else {
+      } else if (cartItems.filter(item => item.isSelected).length > 0) {
         navigation.navigate('CheckOut');
+      } else {
+        //show alert
+        Alert.alert('Warning', 'Please select at least one item to checkout');
       }
     } else {
       navigation.navigate('Login');
@@ -376,7 +379,7 @@ const CartScreen = ({ navigation }) => {
     return cartItems
       .filter(item => item.isSelected)
       .reduce((total, item) => {
-        const discountMultiplier = item.disCountSale > 0 ? (1 - item.disCountSale) : 1;
+        const discountMultiplier = item.disCountSale > 0 ? (1 - item.disCountSale / 100) : 1;
         const itemPrice = item.price * discountMultiplier * item.quantity;
         return total + itemPrice;
       }, 0);
@@ -433,6 +436,14 @@ const CartScreen = ({ navigation }) => {
       .catch((error) => {
         console.error("Error updating cart:", error);
       });
+  }
+
+  const getOriginalPrice = (item) => {
+    return SupportFunctions.convertPrice(item.price);
+  }
+
+  const getDiscountPrice = (item) => {
+    return SupportFunctions.convertPrice(item.disCountSale > 0 ? item.price * (1 - item.disCountSale/100) : item.price);
   }
 
   const handleSelectedItem = (item) => {
@@ -518,7 +529,7 @@ const CartScreen = ({ navigation }) => {
 
                       <View style={{ flex: 1, height: 100, justifyContent: 'space-between' }}>
                         <View>
-                          <Text style={{ fontSize: 14, fontWeight: 'bold' }} numberOfLines={1}>
+                          <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'black' }} numberOfLines={1}>
                             {item.productId.name}
                           </Text>
 
@@ -533,10 +544,10 @@ const CartScreen = ({ navigation }) => {
 
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                           <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#FA7806' }}>
-                            {SupportFunctions.convertPrice(item.disCountSale !== 0 ? (item.price - (item.price * item.disCountSale)) : item.price)} {' '}
+                            {getDiscountPrice(item)} {' '}
                             {item.disCountSale !== 0 && (
                               <Text style={{ marginLeft: 5, fontSize: 10, fontWeight: 'medium', color: '#737373', textDecorationLine: 'line-through' }}>
-                                {SupportFunctions.convertPrice(item.price)}
+                                {getOriginalPrice(item)}
                               </Text>
                             )}
                           </Text>
@@ -597,7 +608,7 @@ const CartScreen = ({ navigation }) => {
 
             <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 20, marginVertical: 10 }}>
               <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
-              <Text style={{ marginHorizontal: 10, fontWeight: 'semibold', fontSize: 14, color: '#000' }}>Có thể bạn sẽ thích</Text>
+              <Text style={{ marginHorizontal: 10, fontWeight: 'semibold', fontSize: 14, color: '#000' }}>Maybe you will also like</Text>
               <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
             </View>
           </>

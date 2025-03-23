@@ -19,6 +19,7 @@ const CheckoutScreen = ({ navigation }) => {
     const [defaultAddress, setDefaultAddress] = useState(null);
     const [selectedAddress, setSelectedAddress] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
+    const [isEnabled, setIsEnabled] = useState(false);
 
     useEffect(() => {
         console.log('personalInfo:', personalInfo);
@@ -104,10 +105,23 @@ const CheckoutScreen = ({ navigation }) => {
         return carts
             .filter(item => item.isSelected)
             .reduce((total, item) => {
-                const discountMultiplier = item.disCountSale > 0 ? (1 - item.disCountSale) : 1;
+                const discountMultiplier = item.disCountSale > 0 ? (1 - item.disCountSale / 100) : 1;
                 const itemPrice = item.price * discountMultiplier * item.quantity;
                 return total + itemPrice;
             }, 0);
+    }
+
+    const getOriginalPriceOfSelectedItems = () => {
+        return carts
+            .filter(item => item.isSelected)
+            .reduce((total, item) => {
+                const itemPrice = item.price * item.quantity;
+                return total + itemPrice;
+            }, 0);
+    }
+
+    const getDiscountPriceOfSelectedItems = () => {
+        return getOriginalPriceOfSelectedItems() - getFinalPriceOfSelectedItems();
     }
 
     const getDefaultInformation = () => {
@@ -137,7 +151,7 @@ const CheckoutScreen = ({ navigation }) => {
             {/* body */}
             <ScrollView>
                 <BuyerDetail products={carts} onClickShowPopup={[toggleAdressSheet, toggleBottomSheet]} information={selectedAddress} />
-                <PaymentAnhCoupon products={carts} />
+                <PaymentAnhCoupon products={carts} personalInfo={personalInfo} onSwitch={setIsEnabled} />
                 <SubInfor />
             </ScrollView>
 
@@ -209,7 +223,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#737373' }}>
                                         {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice(getFinalPriceOfSelectedItems())}
+                                        {SupportFunctions.convertPrice(getOriginalPriceOfSelectedItems())}
                                     </Text>
                                 </View>
 
@@ -220,7 +234,29 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#FA7806' }}>
                                         {/* price of cart item selected */}
-                                        0đ
+                                        {SupportFunctions.convertPrice(getDiscountPriceOfSelectedItems())}
+                                    </Text>
+                                </View>
+
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
+                                    <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
+                                        Points:
+                                    </Text>
+
+                                    <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#FA7806' }}>
+                                        {/* price of cart item selected */}
+                                        {SupportFunctions.convertPrice(isEnabled ? personalInfo.point : 0)}
+                                    </Text>
+                                </View>
+
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
+                                    <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
+                                        Subtotal:
+                                    </Text>
+
+                                    <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#FA7806' }}>
+                                        {/* price of cart item selected */}
+                                        {SupportFunctions.convertPrice(getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))}
                                     </Text>
                                 </View>
 

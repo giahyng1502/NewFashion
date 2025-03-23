@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import SupportFunctions from '../../utils/SupportFunctions';
 
 const ProductItem = ({ item }) => {
     return (
@@ -8,7 +9,9 @@ const ProductItem = ({ item }) => {
             <Image source={{ uri: item.color.imageColor }} style={styles.productImage} />
 
             {/* Giá tiền và số lượng */}
-            <Text style={styles.priceText}>{item.price} x{item.quantity}</Text>
+            <Text style={styles.priceText}>
+                {SupportFunctions.convertPrice(item.price)} x{item.quantity}
+            </Text>
         </View>
     );
 };

@@ -16,6 +16,8 @@ import DetailPostScreen from "../screens/Post/DetailPostScreen";
 import ImagePreview from '../screens/ImagePreview'
 import SearchScreen from '../screens/SearchScreen'
 import OrderScreen from '../screens/Order/OrderScreen'
+import CheckoutScreen from '../screens/Checkout/CheckoutScreen'
+import AddAddressScreen from '../screens/AddAddressScreen'
 
 const Stack = createStackNavigator()
 
@@ -37,6 +39,8 @@ const AppNavigator = () => {
           <Stack.Screen name="ImagePreview" component={ImagePreview} options={{ presentation: 'modal' }} />
           <Stack.Screen name="Your orders" component={OrderScreen} />
           <Stack.Screen name="Search" component={SearchScreen} />
+          <Stack.Screen name="CheckOut" component={CheckoutScreen} />
+          <Stack.Screen name="AddAddress" component={AddAddressScreen} />
         </Stack.Navigator>
       </NavigationContainer>
   )
