@@ -18,6 +18,7 @@ import SearchScreen from '../screens/SearchScreen'
 import OrderScreen from '../screens/Order/OrderScreen'
 import CheckoutScreen from '../screens/Checkout/CheckoutScreen'
 import AddAddressScreen from '../screens/AddAddressScreen'
+import CouponScreen from '../screens/Coupon/CouponScreen'
 
 const Stack = createStackNavigator()
 
@@ -41,6 +42,7 @@ const AppNavigator = () => {
           <Stack.Screen name="Search" component={SearchScreen} />
           <Stack.Screen name="CheckOut" component={CheckoutScreen} />
           <Stack.Screen name="AddAddress" component={AddAddressScreen} />
+          <Stack.Screen name="Coupon" component={CouponScreen}/>
         </Stack.Navigator>
       </NavigationContainer>
   )
