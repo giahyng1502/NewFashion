@@ -3,7 +3,7 @@ import { addInformation, fetchInformation } from '../actions/infomationActions';
 
 
 const initialState = {
-    personalInfo: {},
+    personalInfo: null,
 };
 
 // Tạo slice cho categories
