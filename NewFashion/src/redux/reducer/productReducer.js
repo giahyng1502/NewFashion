@@ -1,8 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchProducts } from "../actions/productActions";
+import { fetchProducts, fetchSaleProducts } from "../actions/productActions";
 
 const initialState = {
     products: [],
+    saleProducts: [],
     page: 1,
     loading: false,
     hasMore: true
@@ -29,7 +30,21 @@ const productSlice = createSlice({
             .addCase(fetchProducts.rejected, (state, action) => {
                 console.log('Fetch products failed: ', action.payload);
                 state.loading = false;
-            });
+            })
+
+            .addCase(fetchSaleProducts.pending, (state, action) => {
+                state.loading = true;
+            })
+            .addCase(fetchSaleProducts.fulfilled, (state, action) => {
+                state.saleProducts = [...state.saleProducts, ...action.payload];
+                state.page += 1;
+                state.hasMore = action.payload.length > 0
+                state.loading = false;
+            })
+            .addCase(fetchSaleProducts.rejected, (state, action) => {
+                console.log('Fetch sale products failed: ', action.payload);
+                state.loading = false;
+            })
     }
 });
 
