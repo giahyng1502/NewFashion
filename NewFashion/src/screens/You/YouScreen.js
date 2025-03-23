@@ -258,7 +258,7 @@ const YouScreen = ({ navigation }) => {
                     </View>
                   </View>
                   {menuItems.slice(0, 2).map(item => (
-                    <MenuItem key={item.id} item={item} />
+                    <MenuItem key={item.id} item={item} onPress={item => handleNavigate(item)} />
                   ))}
                   <View style={st.bottomMenu}>
                     {bottomMenuItems.map(item => (

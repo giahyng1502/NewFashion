@@ -3,7 +3,7 @@ import { addInformation, fetchInformation } from '../actions/infomationActions';
 
 
 const initialState = {
-    personalInfo: {},
+    personalInfo: null,
 };
 
 // Tạo slice cho categories
@@ -22,6 +22,9 @@ const personalInfoSlice = createSlice({
 
             .addCase(addInformation.fulfilled, (state, action) => {
                 state.personalInfo.information.push(action.payload);
+            })
+            .addCase(addInformation.rejected, (state, action) => {
+                console.log('Add personal info failed: ', action.payload);
             })
     },
 });

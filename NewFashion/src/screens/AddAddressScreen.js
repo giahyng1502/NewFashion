@@ -10,7 +10,9 @@ import { addInformation } from '../redux/actions/infomationActions'
 
 const addressData = require('../assets/address_local.json')
 
-const AddAddressScreen = ({ navigation }) => {
+const AddAddressScreen = ({ navigation, route }) => {
+    const { isFromCheckout, info } = route.params
+
     //fields
     const [fullname, setFullname] = useState('')
     const [phoneNumber, setPhoneNumber] = useState('')
@@ -41,6 +43,44 @@ const AddAddressScreen = ({ navigation }) => {
 
     const { personalInfo } = useSelector(state => state.personalInfo)
     const dispatch = useDispatch()
+
+    useEffect(() => {
+        if (info) {
+            const { address } = info;
+
+            // Giả sử address là "So 16, to 8, Pho Chu Huy Man, Phường Phúc Đồng, Quận Long Biên, Thành phố Hà Nội"
+            const addressParts = address.split(',').map(part => part.trim());
+
+            // Tìm thành phố, quận, và phường
+            const cityName = addressParts[addressParts.length - 1];
+            const districtName = addressParts[addressParts.length - 2];
+            const wardName = addressParts[addressParts.length - 3];
+            const street = addressParts.slice(0, addressParts.length - 3).join(', ');
+
+            // Cập nhật thông tin ban đầu
+            setStreetName(street);
+            setFullname(info.name);
+            setPhoneNumber(info.phoneNumber);
+
+            // Tìm thành phố
+            const city = addressData.cities.find(city => city.name === cityName);
+            if (city) {
+                setSelectedCity(city);
+
+                // Tìm quận
+                const district = city.districts.find(district => district.name === districtName);
+                if (district) {
+                    setSelectedDistrict(district);
+
+                    // Tìm phường
+                    const ward = district.wards.find(ward => ward.name === wardName);
+                    if (ward) {
+                        setSelectedWard(ward);
+                    }
+                }
+            }
+        }
+    }, [info]);
 
     // Bottom sheet functions
     const openBottomSheet = (level) => {
@@ -226,6 +266,13 @@ const AddAddressScreen = ({ navigation }) => {
 
         if (!fullnameErr && !phoneErr && !cityErr && !districtErr && !wardErr && !streetNameErr) {
             setModalVisible(true);
+
+            const information = {
+                name: fullname,
+                address: `${streetName}, ${selectedWard?.name}, ${selectedDistrict?.name}, ${selectedCity?.name}`,
+                phoneNumber: phoneNumber,
+            };
+            console.log('Information: ', information);
         }
     };
 
@@ -233,14 +280,18 @@ const AddAddressScreen = ({ navigation }) => {
         const information = {
             name: fullname,
             address: `${streetName}, ${selectedWard?.name}, ${selectedDistrict?.name}, ${selectedCity?.name}`,
-            phone: phoneNumber,
+            phoneNumber: phoneNumber,
         };
 
         dispatch(addInformation(information))
             .then(() => {
                 console.log('Information: ', information);
                 setModalVisible(false);
-                navigation.navigate("CheckOut")
+                if (isFromCheckout) {
+                    navigation.goBack();
+                } else {
+                    navigation.navigate("CheckOut")
+                }
             })
             .catch((error) => {
                 console.log('Add information failed: ', error);
@@ -281,6 +332,7 @@ const AddAddressScreen = ({ navigation }) => {
                     {' '}(First and last name)
                 </Text>
                 <TextField
+                    value={fullname}
                     placeholder="Enter a fullname"
                     customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }}
                     onChangeText={(text) => {
@@ -303,6 +355,7 @@ const AddAddressScreen = ({ navigation }) => {
                     <Text style={{ color: '#F91616' }}>*</Text>
                 </Text>
                 <TextField
+                    value={phoneNumber}
                     type={TextFieldType.PHONENUMBER}
                     placeholder="Enter a phone number"
                     customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }}
@@ -386,6 +439,7 @@ const AddAddressScreen = ({ navigation }) => {
                     <Text style={{ color: '#F91616' }}>*</Text>
                 </Text>
                 <TextField
+                    value={streetName}
                     placeholder="Enter street name, building, house no., unit, floor, etc"
                     customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }}
                     onChangeText={(text) => {
