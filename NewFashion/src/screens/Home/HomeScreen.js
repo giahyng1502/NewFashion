@@ -282,9 +282,6 @@ const st = StyleSheet.create({
   },
 
   //categories
-  listContainer: {
-    padding: 5,
-  },
   categoryItem: {
     alignItems: 'center',
     marginHorizontal: 10,

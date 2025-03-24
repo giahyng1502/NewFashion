@@ -1,26 +1,44 @@
 {
   "project_info": {
-    "project_number": "168486739454",
-    "project_id": "new-fashion-66c41",
-    "storage_bucket": "new-fashion-66c41.firebasestorage.app"
+    "project_number": "992734735800",
+    "project_id": "newfashion-ee113",
+    "storage_bucket": "newfashion-ee113.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:168486739454:android:0ee3284761d88dde79b4af",
+        "mobilesdk_app_id": "1:992734735800:android:cc6ce95c0747e2bd92734d",
         "android_client_info": {
           "package_name": "com.newfashion"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "992734735800-gs293137hjiqq66r6gtjjg4d7emv3ct0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.newfashion",
+            "certificate_hash": "4072225df32f7c5f3529fe73740151a9bea4397a"
+          }
+        },
+        {
+          "client_id": "992734735800-k5foef7j2vkd0l9segpogtc99siinq8g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyCyL90kBCMmmknIy-R7cyNM6uwgWgcSupk"
+          "current_key": "AIzaSyC8GAwP9K0OjSjRexfThxrpWX7B0OUN7Jo"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "992734735800-k5foef7j2vkd0l9segpogtc99siinq8g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

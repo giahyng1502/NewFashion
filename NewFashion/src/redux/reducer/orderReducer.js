@@ -17,7 +17,7 @@ const orderSlice = createSlice({
         // console.log('Fetch orders successfully: ', action.payload);
       })
       .addCase(fetchOrders.rejected, (state, action) => {
-        console.log('Fetch categories failed: ', action.payload);
+        // console.log('Fetch categories failed: ', action.payload);
       });
   },
 });

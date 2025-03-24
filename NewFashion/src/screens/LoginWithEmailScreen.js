@@ -4,8 +4,6 @@ import TextField, { TextFieldType } from '../components/TextField';
 import ScreenSize from '../contants/ScreenSize';
 import FilledButton from '../components/FilledButton';
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../service/userService";
-import { jwtDecode } from "jwt-decode";
 import BenefitsInfoBox from '../components/BenefitsInfoBox';
 import { checkEmail, loginWithEmail, register } from '../redux/actions/userActions';
 import PasswordStrengthBar from '../components/PasswordStrengthBar';

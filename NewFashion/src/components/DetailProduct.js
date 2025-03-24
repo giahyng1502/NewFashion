@@ -25,7 +25,7 @@ const DetailProduct = ({ item }) => {
     };
 
     useEffect(() => {
-        console.log("DetailProduct: ", item);
+        // console.log("DetailProduct: ", item);
     }
         , [item])
 
