@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import BenefitsInfoBox from '../../components/BenefitsInfoBox';
 import FilledButton from '../../components/FilledButton';
 import ProductCard from '../../components/ProductCard';
 import AppManager from '../../utils/AppManager'
+import { useSelector } from 'react-redux';
 
 const browsingHistory = [
   {
@@ -153,9 +154,16 @@ const bottomMenuItems = [
   },
 ];
 
-const YouScreen = ({navigation}) => {
+const YouScreen = ({ navigation }) => {
   const [isLogin, setIsLogin] = useState(true);
   const handleNavigate = item => navigation.navigate(item.text);
+  const { personalInfo } = useSelector(state => state.personalInfo);
+
+  useEffect(() => {
+    console.log('personalInfo:', personalInfo);
+  }
+    , [personalInfo]);
+
 
   return (
     <View style={st.container}>
@@ -164,7 +172,7 @@ const YouScreen = ({navigation}) => {
         data={browsingHistory}
         keyExtractor={item => item.id}
         numColumns={2}
-        renderItem={({item}) => <ProductCard item={item} />}
+        renderItem={({ item }) => <ProductCard item={item} />}
         contentContainerStyle={st.list}
         ListHeaderComponent={
           <View>
@@ -209,7 +217,7 @@ const YouScreen = ({navigation}) => {
                   ))}
                   <View style={st.historyItem}>
                     <Text style={st.sectionTitle}>Browsing history</Text>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{ flexDirection: 'row' }}>
                       <Text
                         style={{
                           fontSize: 13,
@@ -221,7 +229,7 @@ const YouScreen = ({navigation}) => {
                       </Text>
                       <Image
                         source={require('../../assets/icons/ic_next.png')}
-                        style={{height: 15, width: 15}}
+                        style={{ height: 15, width: 15 }}
                         resizeMode="contain"
                       />
                     </View>
@@ -234,21 +242,23 @@ const YouScreen = ({navigation}) => {
               <>
                 <View>
                   <View style={st.userInfo}>
-                    <Image source={{uri: userData.avatar}} style={st.avatar} />
-                    <Text style={st.userName}>{userData.name}</Text>
+                    <Image source={{ uri: personalInfo.avatar }} style={st.avatar} />
+                    <Text style={st.userName}>{personalInfo.name}</Text>
                     <View style={st.headerIcons}>
                       <Image
                         source={require('../../assets/icons/ic_support.png')}
                         style={st.icon}
                       />
-                      <Image
-                        source={require('../../assets/icons/ic_settings.png')}
-                        style={st.icon}
-                      />
+                      <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+                        <Image
+                          source={require('../../assets/icons/ic_settings.png')}
+                          style={st.icon}
+                        />
+                      </TouchableOpacity>
                     </View>
                   </View>
                   {menuItems.slice(0, 2).map(item => (
-                    <MenuItem key={item.id} item={item} />
+                    <MenuItem key={item.id} item={item} onPress={item => handleNavigate(item)} />
                   ))}
                   <View style={st.bottomMenu}>
                     {bottomMenuItems.map(item => (
@@ -259,7 +269,7 @@ const YouScreen = ({navigation}) => {
                     ))}
                   </View>
                   <Text
-                    style={[st.sectionTitle, {marginLeft: 15, marginTop: 5}]}>
+                    style={[st.sectionTitle, { marginLeft: 15, marginTop: 5 }]}>
                     Browsing history
                   </Text>
                 </View>
@@ -272,7 +282,7 @@ const YouScreen = ({navigation}) => {
   );
 };
 
-const MenuItem = ({item, onPress}) => (
+const MenuItem = ({ item, onPress }) => (
   <TouchableOpacity
     style={st.menuItem}
     onPress={() => {
@@ -282,7 +292,7 @@ const MenuItem = ({item, onPress}) => (
     <Text style={st.menuText}>{item.text}</Text>
     <Image
       source={require('../../assets/icons/ic_next.png')}
-      style={{height: 15, width: 15}}
+      style={{ height: 15, width: 15 }}
       resizeMode="contain"
     />
   </TouchableOpacity>

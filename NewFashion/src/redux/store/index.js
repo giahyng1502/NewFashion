@@ -4,6 +4,7 @@ import categoryReducer from '../reducer/categoryReducer'
 import subCategoryReducer from '../reducer/subCategoryReducer'
 import productReducer from '../reducer/productReducer'
 import cartReducer from '../reducer/cartReducer'
+import personalInfoReducer from '../reducer/informationReducer'
 
 
 export default configureStore({
@@ -12,6 +13,7 @@ export default configureStore({
         category: categoryReducer,
         subCategory: subCategoryReducer,
         product: productReducer,
-        cart: cartReducer
+        cart: cartReducer,
+        personalInfo: personalInfoReducer,
     }
 })

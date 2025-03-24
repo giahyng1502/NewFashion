@@ -1,6 +1,7 @@
 class SupportFunctions {
     static convertPrice = (price) => {
-        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "đ";
+        const roundedPrice = Math.round(price);
+        return roundedPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "đ";
     }
 }
 

@@ -9,43 +9,11 @@ import ScreenSize from '../../contants/ScreenSize';
 import AppManager from '../../utils/AppManager';
 import SearchBar from '../../components/SearchBar';
 import { fetchProducts } from '../../redux/actions/productActions';
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { fetchCart } from '../../redux/actions/cartActions';
+import SupportFunctions from '../../utils/SupportFunctions';
+import LightningDealItem from '../../components/LightningDealItem';
 
-const saleProducts = [
-  {
-    id: '1',
-    image: require('../../assets/img_banner1.png'),
-    label: 'Almost sold out',
-    price: '506.136đ',
-    sold: '180 sold',
-    progress: 0.6,
-  },
-  {
-    id: '2',
-    image: require('../../assets/img_banner1.png'),
-    label: 'Almost sold out',
-    price: '368.764đ',
-    sold: '165 sold',
-    progress: 0.85,
-  },
-  {
-    id: '3',
-    image: require('../../assets/img_banner1.png'),
-    label: 'Only 7 left',
-    price: '236.446đ',
-    sold: '833 sold',
-    progress: 0.2,
-  },
-  {
-    id: '4',
-    image: require('../../assets/img_banner1.png'),
-    label: 'Only 1 left',
-    price: '126.920đ',
-    sold: '444 sold',
-    progress: 0.98,
-  },
-];
 
 const titleCategories = [
   { id: "1", name: "All", image: null },
@@ -60,12 +28,13 @@ const HomeScreen = ({ navigation }) => {
   const [selectedTitleCategory, setSelectedTitleCategory] = useState(null);
   const [searchText, setSearchText] = useState('');
   const dispatch = useDispatch();
-  const {products, loading, page, hasMore} = useSelector(state => state.product);
-  const {carts} = useSelector(state => state.cart);
+  const { products, saleProducts, loading, page, hasMore } = useSelector(state => state.product);
+  const { carts } = useSelector(state => state.cart);
 
   useEffect(() => {
-    setSelectedTitleCategory(titleCategories[0]);    
+    setSelectedTitleCategory(titleCategories[0]);
     dispatch(fetchCart())
+
   }, []);
 
   const loadMoreProducts = () => {
@@ -78,7 +47,7 @@ const HomeScreen = ({ navigation }) => {
     if (!loading) return null;
     return (
       <View style={{ padding: 10 }}>
-        <ActivityIndicator size="small" color="#0000ff" />
+        <ActivityIndicator size="small" color="#FA7806" />
       </View>
     )
   }
@@ -87,10 +56,12 @@ const HomeScreen = ({ navigation }) => {
     navigation.navigate('Cart');
   }
 
-  const handleSelectedItem = (item) => {
-    navigation.navigate("ProductDetail", { item });
+  const handleSelectedItem = (item, discount, expire) => {
+    console.log('Selected item:', item);
+
+    navigation.navigate("ProductDetail", { item, discount, expire });
   }
-  
+
   const renderItemTitleCategory = ({ index, item }) => {
     const isSelected = item === selectedTitleCategory;
     return (
@@ -110,22 +81,6 @@ const HomeScreen = ({ navigation }) => {
       </TouchableOpacity>
     );
   };
-
-  const renderItemLightningDeal = ({ item }) => (
-    <View style={st.productItem}>
-      <Image source={item.image} style={st.productImage} />
-      <View style={st.labelContainer}>
-        <Text style={st.labelText}>{item.label}</Text>
-      </View>
-      <Text style={st.priceText}>{item.price}</Text>
-      <Text style={st.soldText}>{item.sold}</Text>
-      <View style={st.progressBarBackground}>
-        <View style={[st.progressBarFill, { width: `${item.progress * 100}%` }]}>
-          <Image source={require('../../assets/icons/ic_clock.png')} style={{ width: 14, height: 14, position: 'absolute', right: -7, top: -4.5 }} />
-        </View>
-      </View>
-    </View>
-  );
 
   return (
     <FlatList
@@ -148,8 +103,11 @@ const HomeScreen = ({ navigation }) => {
               )}
             </TouchableOpacity>
           </View>
-          
-          <SearchBar onSearch={() => { }} />
+
+          <TouchableOpacity style={{paddingLeft: 10}} onPress={() => {navigation.navigate('Search')}}>
+            <SearchBar disable={false} onSearch={() => {  }} />
+          </TouchableOpacity>
+
 
           {/* Discount */}
           <View style={st.discountContainer}>
@@ -191,30 +149,32 @@ const HomeScreen = ({ navigation }) => {
           <View style={{ height: 6, backgroundColor: '#eee', width: '100%' }} />
 
           {/* Lightning Deals */}
-          <View style={st.lightningDealContainer}>
-            <View style={st.header}>
-              <View style={st.subHeader}>
-                <Image source={require('../../assets/icons/ic_lightning.png')} style={st.headerImage} />
-                <Text style={st.headerTitle}>Lightning deals</Text>
-                <Image source={require('../../assets/icons/ic_arrow1.png')} style={st.headerImage} />
+          {saleProducts.length > 0 && (
+            <View style={st.lightningDealContainer}>
+              <View style={st.header}>
+                <View style={st.subHeader}>
+                  <Image source={require('../../assets/icons/ic_lightning.png')} style={st.headerImage} />
+                  <Text style={st.headerTitle}>Lightning deals</Text>
+                  <Image source={require('../../assets/icons/ic_arrow1.png')} style={st.headerImage} />
+                </View>
+                <Text style={st.headerOffer}>Limited time offer</Text>
               </View>
-              <Text style={st.headerOffer}>Limited time offer</Text>
-            </View>
-            {/*  */}
+              {/*  */}
 
-            <FlatList
-              data={saleProducts}
-              horizontal
-              keyExtractor={(item) => item.id}
-              renderItem={renderItemLightningDeal}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={st.listContainer}
-            />
-          </View>
+              <FlatList
+                data={saleProducts}
+                horizontal
+                keyExtractor={(item) => item._id}
+                renderItem={({ item }) => <LightningDealItem item={item} onPress={() => { handleSelectedItem(item.productId, item.discount, item.expireAt) }} />}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={st.listContainer}
+              />
+            </View>
+          )}
 
           <View style={{ height: 6, backgroundColor: '#eee', width: '100%' }} />
 
-          <View>
+          {/* <View>
             <FlatList
               data={titleCategories}
               ref={titleCategoryFlatlistRef}
@@ -224,14 +184,15 @@ const HomeScreen = ({ navigation }) => {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={st.listContainer}
             />
-          </View>
+          </View> */}
         </View>
       )}
-      renderItem={({ item }) => <ProductCard item={item} onSelected={() => {handleSelectedItem(item)}} />}
+      renderItem={({ item }) => <ProductCard item={item} onSelected={() => { handleSelectedItem(item) }} />}
       onEndReached={loadMoreProducts}
       onEndReachedThreshold={0.5}
       ListFooterComponent={renderFooter}
-      contentContainerStyle={{paddingHorizontal: 3,backgroundColor: '#fff'}}
+      contentContainerStyle={{ paddingHorizontal: 3, backgroundColor: '#fff' }}
+      showsVerticalScrollIndicator={false}
     />
   );
 };
@@ -371,6 +332,7 @@ const st = StyleSheet.create({
   //item
   listContainer: {
     paddingVertical: 5,
+    overflow: 'visible'
   },
   productItem: {
     width: 100,

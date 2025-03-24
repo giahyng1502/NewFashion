@@ -43,6 +43,7 @@ const LoginScreen = ({navigation}) => {
     const newValues = [...values];
     newValues[index] = text;
     setValues(newValues);
+    
   };
   const handleLoginWithGoogle = async ()=> {
     const data = await onGoogleButtonPress();

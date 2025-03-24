@@ -5,12 +5,10 @@ const options = [
   {
     id: '1',
     title: 'English',
-    icon: require('../../../assets/icons/ic_arrowRight.png'),
   },
   {
     id: '2',
     title: 'Tiếng Việt',
-    icon: require('../../../assets/icons/ic_arrowRight.png'),
   },
 ];
 
