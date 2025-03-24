@@ -1,15 +1,16 @@
 import * as React from 'react';
 import { useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Pressable } from 'react-native';
-import BenefitsInfoBox from '../components/BenefitsInfoBox';
-import OutlinedButton from '../components/OutlinedButton';
-import ScreenSize from '../contants/ScreenSize';
+import BenefitsInfoBox from '../../../components/BenefitsInfoBox';
+import OutlinedButton from '../../../components/OutlinedButton';
+import ScreenSize from '../../../contants/ScreenSize';
 import { Modal } from 'react-native-paper';
-import FilledButton from '../components/FilledButton';
+import FilledButton from '../../../components/FilledButton';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
-import TextField, { TextFieldType } from '../components/TextField';
-import PasswordStrengthBar from '../components/PasswordStrengthBar';
+import TextField, { TextFieldType } from '../../../components/TextField';
+import PasswordStrengthBar from '../../../components/PasswordStrengthBar';
+import {signInWithGoogle} from "./signInWithGoogle";
 
 const LoginScreen = ({navigation}) => {
 
@@ -47,26 +48,26 @@ const LoginScreen = ({navigation}) => {
         <View style={st.header}>
           <TouchableOpacity style={st.iconContainer} onPress={() => setModalVisible(true)}>
             <Image
-              source={require('../assets/bt_exit.png')}
+              source={require('../../../assets/bt_exit.png')}
               style={st.closeIcon}
             />
           </TouchableOpacity>
 
           <Image
-            source={require('../assets/img_logo.png')}
+            source={require('../../../assets/img_logo.png')}
             style={st.logo}
           />
         </View>
 
         <View style={st.infoContainer}>
-          <BenefitsInfoBox icon={require('../assets/icons/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
-          <BenefitsInfoBox icon={require('../assets/icons/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
+          <BenefitsInfoBox icon={require('../../../assets/icons/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
+          <BenefitsInfoBox icon={require('../../../assets/icons/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
         </View>
 
-        <OutlinedButton icon={require('../assets/bt_google.png')} title="Continue with Google" customStyle={{ width: ScreenSize.width - 40, marginTop: 40 }} />
-        <OutlinedButton icon={require('../assets/bt_facebook.png')} title="Continue with Facebook" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} />
-        <OutlinedButton icon={require('../assets/bt_email.png')} title="Continue with Email" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onPress={() => {navigation.navigate('LoginWithEmail')}} />
-        <OutlinedButton icon={require('../assets/bt_phone.png')} title="Continue with phone number" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} />
+        <OutlinedButton onPress={signInWithGoogle} icon={require('../../../assets/bt_google.png')} title="Continue with Google" customStyle={{ width: ScreenSize.width - 40, marginTop: 40 }} />
+        <OutlinedButton icon={require('../../../assets/bt_facebook.png')} title="Continue with Facebook" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} />
+        <OutlinedButton icon={require('../../../assets/bt_email.png')} title="Continue with Email" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onPress={() => {navigation.navigate('LoginWithEmail')}} />
+        <OutlinedButton icon={require('../../../assets/bt_phone.png')} title="Continue with phone number" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} />
 
         <TouchableOpacity style={st.troubleContainer} onPress={() => openBottomSheet()} >
           <Text style={st.troubleText}>Trouble signing in?</Text>
@@ -89,8 +90,8 @@ const LoginScreen = ({navigation}) => {
               <Text style={st.title}>Enjoy these special offers after signing in! Are you sure you want to leave now?</Text>
 
               <View style={st.benefitsContainer}>
-                <BenefitsInfoBox icon={require('../assets/icons/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
-                <BenefitsInfoBox icon={require('../assets/icons/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
+                <BenefitsInfoBox icon={require('../../../assets/icons/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
+                <BenefitsInfoBox icon={require('../../../assets/icons/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
               </View>
 
               <FilledButton title="Continue" customStyle={{ backgroundColor: 'black', width: '100%', marginVertical: 10 }} onPress={() => {setModalVisible(false)}} />
@@ -115,7 +116,7 @@ const LoginScreen = ({navigation}) => {
                 <View style={st.modalHeader}>
                   <Text style={st.troubleTitle}>Trouble signing in?</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
-                    <Image source={require('../assets/bt_exit.png')} style={st.closeIcon1} />
+                    <Image source={require('../../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
@@ -130,7 +131,7 @@ const LoginScreen = ({navigation}) => {
                 <View style={st.modalHeader}>
                   <Text style={st.troubleTitle}>Trouble signing in?</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
-                    <Image source={require('../assets/bt_exit.png')} style={st.closeIcon1} />
+                    <Image source={require('../../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
@@ -144,11 +145,11 @@ const LoginScreen = ({navigation}) => {
               <>
                 <View style={st.modalHeader}>
                   <TouchableOpacity onPress={() => setCurrentSheet('sheet2')}>
-                    <Image source={require('../assets/ic_back.png')} style={st.closeIcon1} />
+                    <Image source={require('../../../assets/ic_back.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                   <Text style={st.troubleTitle}>Enter the password reset code</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
-                    <Image source={require('../assets/bt_exit.png')} style={st.closeIcon1} />
+                    <Image source={require('../../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
@@ -188,11 +189,11 @@ const LoginScreen = ({navigation}) => {
               <>
                 <View style={st.modalHeader}>
                   <TouchableOpacity onPress={() => setCurrentSheet('sheet3')}>
-                    <Image source={require('../assets/ic_back.png')} style={st.closeIcon1} />
+                    <Image source={require('../../../assets/ic_back.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                   <Text style={st.troubleTitle}>Create a new password</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
-                    <Image source={require('../assets/bt_exit.png')} style={st.closeIcon1} />
+                    <Image source={require('../../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
@@ -212,7 +213,7 @@ const LoginScreen = ({navigation}) => {
             {currentSheet === 'sheet5' && (
               <>
                 <View style={st.modalDone}>
-                  <Image source={require('../assets/ic_done.png')} style={st.doneIcon} />
+                  <Image source={require('../../../assets/ic_done.png')} style={st.doneIcon} />
 
                   <Text style={st.doneTitle}>Your password has been reset</Text>
                   <Text style={st.doneText}>
@@ -229,11 +230,11 @@ const LoginScreen = ({navigation}) => {
               <>
                 <View style={st.modalHeader}>
                   <TouchableOpacity onPress={() => setCurrentSheet('sheet3')}>
-                    <Image source={require('../assets/ic_back.png')} style={st.closeIcon1} />
+                    <Image source={require('../../../assets/ic_back.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                   <Text style={st.troubleTitle}>Verify your identity</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
-                    <Image source={require('../assets/bt_exit.png')} style={st.closeIcon1} />
+                    <Image source={require('../../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
@@ -246,7 +247,7 @@ const LoginScreen = ({navigation}) => {
                       <Text style={st.verifySubtitle}>We will send an SMS verification code to +84 975****96</Text>
                     </View>
                     {/* Icon mũi tên bên phải */}
-                    <Image source={require('../assets/ic_arrowRight.png')} style={st.closeIcon} />
+                    <Image source={require('../../../assets/ic_arrowRight.png')} style={st.closeIcon} />
                   </TouchableOpacity>
                 </View>
               </>
@@ -256,11 +257,11 @@ const LoginScreen = ({navigation}) => {
               <>
                 <View style={st.modalHeader}>
                   <TouchableOpacity onPress={() => setCurrentSheet('sheet6')}>
-                    <Image source={require('../assets/ic_back.png')} style={st.closeIcon1} />
+                    <Image source={require('../../../assets/ic_back.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                   <Text style={st.troubleTitle}>Enter the verification code</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
-                    <Image source={require('../assets/bt_exit.png')} style={st.closeIcon1} />
+                    <Image source={require('../../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
