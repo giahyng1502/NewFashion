@@ -1,80 +1,83 @@
-import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Button} from "react-native-paper";
 import ImageSlider from "../../components/ImageSlider";
+import {getTimeAgoText} from "../../until/getDaysAgoNext";
+import imageSlider from "../../components/ImageSlider";
 
-function ItemPost({ post ,navigation }) {
-    const [islike, setIslike] = useState(false)
-    const handleLike = () => {
-        setIslike(!islike);
-    }
+function ItemPost({ posts ,navigation,handleLike }) {
 
     const handleDetail = () => {
-        navigation.navigate('PostDetail')
+        navigation.navigate('PostDetail');
     }
-    return (
+    const renderItem = ({item : post}) => {
+        if (!post) return null;
+      return (
         <View style={styles.item}>
-            <View style={styles.admin}>
-                <View style={styles.infor}>
-                    <Image style={styles.avatar} source={require('../../assets/img_logo.png')} />
+          <View style={styles.admin}>
+            <View style={styles.infor}>
+              <Image style={styles.avatar} src={post.user?.avatar} />
 
-                <View style={styles.column}>
-                    <Text style={{fontWeight : 'bold',fontSize : 16}}>
-                        New Fashion Shop
-                    </Text>
-                    <Text style={{color : 'rgb(115,115,115)',fontSize : 14}} >
-                        2 hours ago
-                    </Text>
-                </View>
-                </View>
-                <View style={{
-                    borderWidth : 2,
-                    width : 40,
-                    height : 40,
-                    borderRadius : 50,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderStyle: 'dashed',
-                    borderColor: '#1E1E1E',
-                }}>
-                    <Image style={styles.cart} source={require('../../assets/icons/ic_cart_post.png')} />
-                </View>
+              <View style={styles.column}>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>
+                    {post.user?.name}
+                </Text>
+                <Text style={{color: 'rgb(115,115,115)', fontSize: 14}}>
+                  {getTimeAgoText(post.createdAt)}
+                </Text>
+              </View>
             </View>
-                <ImageSlider images={post.imageUrl} />
-                <TouchableOpacity onPress={handleDetail}>
-                    <Text
-                        style={styles.content}
-                        numberOfLines={5}
-                        ellipsizeMode="tail"
-                    >
-                        {post.content}
-                    </Text>
-                </TouchableOpacity>
+          </View>
+            {post.images?.length > 0 && (<ImageSlider images={post.images} />)}
+          <TouchableOpacity onPress={handleDetail}>
+            <Text style={styles.content} numberOfLines={5} ellipsizeMode="tail">
+              {post.content}
+            </Text>
+              <Text style={[styles.hashtag,styles.content]} numberOfLines={5} ellipsizeMode="tail">
+                  {post.hashtag}
+              </Text>
+          </TouchableOpacity>
 
-                <View style={{flexDirection : 'row',marginTop : 10,display : 'flex', justifyContent : 'space-between'}}>
-
-                <TouchableOpacity style={styles.button} onPress={() => {handleLike()}} activeOpacity={1}>
-                    <Image style={styles.likeBtn} source={islike ? require('../../assets/icons/ic_select_like.png') : require('../../assets/icons/ic_like.png')} />
-                    <Text style={{fontSize : 16, fontWeight: 'bold'}}>
-                        {post.likeCount}
-                    </Text>
-                </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => {}}>
-                        <Image style={styles.likeBtn} source={require('../../assets/icons/ic_comment.png')} />
-                        <Text style={{fontSize : 16, fontWeight: 'bold'}}>
-                            {post.commentCount}
-                        </Text>
-                    </TouchableOpacity>
-                    <View style={styles.button} onPress={() => {}}>
-                        <Image style={styles.likeBtn} source={require('../../assets/icons/ic_sold.png')} />
-                        <Text style={{fontSize : 16, fontWeight: 'bold'}}>
-                            {post.commentCount} sold
-                        </Text>
-                    </View>
-                </View>
-
-            </View>
+          <View
+            style={{
+              borderBottomWidth: 1,
+              borderColor: 'gray',
+              flexDirection: 'row',
+              marginTop: 10,
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                handleLike(post._id);
+              }}
+              activeOpacity={1}>
+              <Image
+                style={styles.likeBtn}
+                source={
+                  post.isLike
+                    ? require('../../assets/icons/ic_select_like.png')
+                    : require('../../assets/icons/ic_like.png')
+                }
+              />
+              <Text style={{fontSize: 16, fontWeight: 'bold'}}>{post.likes}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => {}}>
+              <Image
+                style={styles.likeBtn}
+                source={require('../../assets/icons/ic_comment.png')}
+              />
+              <Text style={{fontSize: 16, fontWeight: 'bold'}}>{post.comments}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    };
+    return (
+        <View style={styles.container}>
+            <FlatList showsVerticalScrollIndicator={false} data={posts} renderItem={renderItem} keyExtractor={(item,index) => `${item._id.toString()} posts ${index}}`} />
+        </View>
     );
 }
 
@@ -111,14 +114,16 @@ const styles = StyleSheet.create({
         paddingVertical : 8,
         paddingHorizontal : 16,
         borderRadius: 30,
-        borderWidth: 2,
-        borderStyle: 'dashed',
-        borderColor: '#1E1E1E',
+        flex : 1,
         display: 'flex',
         alignContent : 'center',
         justifyContent : 'center',
         alignItems: 'center',
-      flexDirection : 'row',
+        flexDirection : 'row',
+    },
+    hashtag : {
+        fontStyle : 'italic',
+        color : 'gray',
     },
     likeBtn : {
         width : 32,
@@ -131,13 +136,9 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 'bold',
     },
-    item: {
-        borderRadius: 16,
-        borderWidth: 2,
-        padding : 15,
-        borderStyle: 'dashed',
-        borderColor: '#1E1E1E'
-    },
+    item:{
+        marginTop : 10
+    }
 });
 
 export default ItemPost;
