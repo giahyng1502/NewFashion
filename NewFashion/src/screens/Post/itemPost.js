@@ -7,8 +7,8 @@ import imageSlider from "../../components/ImageSlider";
 
 function ItemPost({ posts ,navigation,handleLike }) {
 
-    const handleDetail = () => {
-        navigation.navigate('PostDetail');
+    const handleDetail = (_id) => {
+        navigation.navigate('PostDetail', {_id});
     }
     const renderItem = ({item : post}) => {
         if (!post) return null;
@@ -19,24 +19,25 @@ function ItemPost({ posts ,navigation,handleLike }) {
               <Image style={styles.avatar} src={post.user?.avatar} />
 
               <View style={styles.column}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>
-                    {post.user?.name}
-                </Text>
-                <Text style={{color: 'rgb(115,115,115)', fontSize: 14}}>
+                  <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
+                      {post?.user?.name ?? 'New Fashion'}
+                  </Text>
+
+                  <Text style={{color: 'rgb(115,115,115)', fontSize: 14}}>
                   {getTimeAgoText(post.createdAt)}
                 </Text>
               </View>
             </View>
           </View>
             {post.images?.length > 0 && (<ImageSlider images={post.images} />)}
-          <TouchableOpacity onPress={handleDetail}>
+          <View>
             <Text style={styles.content} numberOfLines={5} ellipsizeMode="tail">
               {post.content}
             </Text>
               <Text style={[styles.hashtag,styles.content]} numberOfLines={5} ellipsizeMode="tail">
                   {post.hashtag}
               </Text>
-          </TouchableOpacity>
+          </View>
 
           <View
             style={{
@@ -63,12 +64,12 @@ function ItemPost({ posts ,navigation,handleLike }) {
               />
               <Text style={{fontSize: 16, fontWeight: 'bold'}}>{post.likes}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => {}}>
+            <TouchableOpacity style={styles.button} onPress={() => {handleDetail(post._id)}}>
               <Image
                 style={styles.likeBtn}
                 source={require('../../assets/icons/ic_comment.png')}
               />
-              <Text style={{fontSize: 16, fontWeight: 'bold'}}>{post.comments}</Text>
+              <Text style={{fontSize: 16, fontWeight: 'bold'}}>{post.commentCount}</Text>
             </TouchableOpacity>
           </View>
         </View>

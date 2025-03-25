@@ -15,6 +15,7 @@ function NewScreen({ navigation }) {
     const handleLike = (_id) => {
         dispatch(toggleLikePost(_id));
     };
+
     return (
         <View style={styles.container}>
             {isLoading ? (
