@@ -363,7 +363,7 @@ const CartScreen = ({ navigation }) => {
   const handleCheckOut = () => {
     if (AppManager.shared.isUserLoggedIn()) {
       if (personalInfo.information.length == 0) {
-        navigation.navigate('AddAddress');
+        navigation.navigate('AddAddress',{ isFromCheckout: true });
       } else if (cartItems.filter(item => item.isSelected).length > 0) {
         navigation.navigate('CheckOut');
       } else {
@@ -475,7 +475,7 @@ const CartScreen = ({ navigation }) => {
         </Text>
 
         {AppManager.shared.isUserLoggedIn() && (
-          <Text style={{ fontSize: 10, fontWeight: 'semibold', color: '555' }} >
+          <Text style={{ fontSize: 10, fontWeight: 'semibold', color: '#555' }} >
             Exclusive offer
           </Text>
         )}
@@ -583,9 +583,7 @@ const CartScreen = ({ navigation }) => {
 
                     {item.disCountSale !== 0 && (
                       <Text style={{ marginLeft: 150, fontSize: 10, color: '#FA7806', marginTop: 5, fontStyle: 'italic', fontWeight: 'bold' }}>
-                        Big sale {' '}
-                        <Text style={{ fontStyle: 'normal' }}>|</Text>
-                        {' '} Limited time
+                        Big sale | Limited time
                       </Text>
                     )}
 

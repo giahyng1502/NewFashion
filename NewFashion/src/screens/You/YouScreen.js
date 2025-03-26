@@ -6,7 +6,6 @@ import {
   Image,
   FlatList,
   StyleSheet,
-  ScrollView,
 } from 'react-native';
 import BenefitsInfoBox from '../../components/BenefitsInfoBox';
 import FilledButton from '../../components/FilledButton';
@@ -262,7 +261,7 @@ const YouScreen = ({ navigation }) => {
                   ))}
                   <View style={st.bottomMenu}>
                     {bottomMenuItems.map(item => (
-                      <TouchableOpacity key={item.id} style={st.bottomMenuItem}>
+                      <TouchableOpacity key={item.id} style={st.bottomMenuItem} onPress={()=>navigation.navigate(item.title)}>
                         <Image source={item.icon} style={st.menuIcon} />
                         <Text style={st.menuText}>{item.title}</Text>
                       </TouchableOpacity>

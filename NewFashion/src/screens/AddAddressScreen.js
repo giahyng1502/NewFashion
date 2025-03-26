@@ -11,7 +11,7 @@ import { addInformation, updateInformation } from '../redux/actions/infomationAc
 const addressData = require('../assets/address_local.json')
 
 const AddAddressScreen = ({ navigation, route }) => {
-    const { isFromCheckout, info } = route.params
+    const { isFromCheckout,info } = route.params
 
     //fields
     const [fullname, setFullname] = useState('')

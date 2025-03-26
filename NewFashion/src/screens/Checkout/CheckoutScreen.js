@@ -1,20 +1,27 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, Animated, FlatList, ActivityIndicator } from 'react-native'
+import { StyleSheet,Alert, Text, View, TouchableOpacity, Image, ScrollView, Animated, FlatList, ActivityIndicator, TextInput } from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import BuyerDetail from './BuyerDetail'
 import PaymentAnhCoupon from './PaymentAndCoupon'
 import SubInfor from './SubInfor'
 import SupportFunctions from '../../utils/SupportFunctions';
 import BaseHeader from '../../components/BaseHeader'
+import { deleteInformation, updateDefaultInformation } from '../../redux/actions/infomationActions'
+import { fetchCoupon } from '../../redux/actions/voucherAction'
+import { createOrder } from '../../redux/actions/orderActions'
 
 const CheckoutScreen = ({ navigation }) => {
     const { carts } = useSelector(state => state.cart);
     const { personalInfo } = useSelector(state => state.personalInfo);
+    const { coupons } = useSelector(state => state.coupons);
+    const [addresses, setAddresses] = useState(null)
 
     const [isShowPriceBottomSheet, setIsShowPriceBottomSheet] = useState(false)
     const animatedValue = useRef(new Animated.Value(0)).current;
     const bottomSheetHeight = 500
     const [isShowAdressSheet, setIsShowAdressSheet] = useState(false)
+    const [isShowCouponSheet, setIsShowCouponSheet] = useState(false)
+    const dispatch = useDispatch()
 
     const [defaultAddress, setDefaultAddress] = useState(null);
     const [selectedAddress, setSelectedAddress] = useState(null)
@@ -22,18 +29,45 @@ const CheckoutScreen = ({ navigation }) => {
     const [isEnabled, setIsEnabled] = useState(false);
 
     useEffect(() => {
+        dispatch(fetchCoupon());
+    }, []);
+
+    useEffect(() => {
         console.log('personalInfo:', personalInfo);
 
         if (personalInfo && personalInfo.information) {
-            console.log('default', getDefaultInformation());
             setDefaultAddress(getDefaultInformation());
             setSelectedAddress(getDefaultInformation());
             setIsLoading(false);
+            setAddresses(personalInfo.information)
         } else {
             console.log('No personalInfo data or empty information array');
         }
     }, [personalInfo]);
 
+    function formatDate(isoString) {
+        const date = new Date(isoString);
+        
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng tính từ 0 nên +1
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+
+    const createAnOrder = ()=>{
+        dispatch(createOrder(selectedAddress))
+            .then(() => {
+                console.log('Tạo đơn thành công'); 
+                navigation.replace('OrderDone')               
+            })
+            .catch((error) => {
+                console.log('Create order failed: ', error);
+            });
+    }
 
     //mở sheet chi tiết đơn hàng
     const toggleBottomSheet = () => {
@@ -91,6 +125,34 @@ const CheckoutScreen = ({ navigation }) => {
         });
     }
 
+    //mở sheet coupon
+    const toggleCouponSheet = () => {
+        if (!isShowCouponSheet) {
+            openCouponSheet()
+        } else {
+            closeCouponSheet()
+        }
+    }
+
+    const openCouponSheet = () => {
+        setIsShowCouponSheet(true);
+        Animated.timing(animatedValue, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true
+        }).start();
+    }
+
+    const closeCouponSheet = () => {
+        Animated.timing(animatedValue, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true
+        }).start(() => {
+            setIsShowCouponSheet(false);
+        });
+    }
+
     const backdropOpacity = animatedValue.interpolate({
         inputRange: [0, 1],
         outputRange: [0, 0.5]
@@ -134,6 +196,43 @@ const CheckoutScreen = ({ navigation }) => {
         }
     }
 
+    const handleDeleteItem = (id) => {
+        Alert.alert(
+          "Confirm Delete",
+          "Are you sure you want to delete this address?",
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "Delete",
+              style: "destructive",
+              onPress: () => {
+                  const updateAddress = addresses.filter(item => item._id != id);
+                  setAddresses(updateAddress);
+
+                  // Gửi yêu cầu xóa lên server với các sản phẩm được chọn
+                  dispatch(deleteInformation(id))
+                      .then((result) => {
+                          console.log(result);
+                      })
+                      .catch((error) => {
+                          console.error("Error deleting address:", error);
+                      });
+              },
+            },
+          ],
+          { cancelable: true }
+        );
+    };
+
+    const handleDefaultAddress = (item) => {
+        setDefaultAddress(item)
+
+        dispatch(updateDefaultInformation(item._id))
+    }
+
     if (isLoading) {
         return (
             <View style={styles.loadingContainer}>
@@ -151,7 +250,7 @@ const CheckoutScreen = ({ navigation }) => {
             {/* body */}
             <ScrollView>
                 <BuyerDetail products={carts} onClickShowPopup={[toggleAdressSheet, toggleBottomSheet]} information={selectedAddress} />
-                <PaymentAnhCoupon products={carts} personalInfo={personalInfo} onSwitch={setIsEnabled} />
+                <PaymentAnhCoupon products={carts} personalInfo={personalInfo} onSwitch={setIsEnabled} onClickShowPopup={toggleCouponSheet}/>
                 <SubInfor />
             </ScrollView>
 
@@ -165,10 +264,10 @@ const CheckoutScreen = ({ navigation }) => {
                             <Image source={require('../../assets/icons/ic_arrowUp.png')} resizeMode='cover' style={styles.arrowButton} />
                         </TouchableOpacity>
                     </View>
-                    <Text style={styles.savedAmount}>Saved 0đ</Text>
+                    <Text style={styles.savedAmount}>Saved {SupportFunctions.convertPrice(getDiscountPriceOfSelectedItems())}</Text>
                 </View>
                 {/* Nút Submit Order */}
-                <TouchableOpacity style={styles.submitButton}>
+                <TouchableOpacity style={styles.submitButton} onPress={()=>createAnOrder()}>
                     <Text style={styles.buttonText}>Submit order</Text>
                 </TouchableOpacity>
 
@@ -304,7 +403,7 @@ const CheckoutScreen = ({ navigation }) => {
                                     <View style={{ backgroundColor: "#fff", padding: 15, marginBottom: 15 }}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
                                             <Text style={{ color: '#000', fontWeight: "bold", fontSize: 16 }}>{item.name}</Text>
-                                            <Text style={{ color: "#737373", fontWeight: "bold", fontSize: 14, marginLeft: 10 }}>{item.phone}</Text>
+                                            <Text style={{ color: "#737373", fontWeight: "bold", fontSize: 14, marginLeft: 10 }}>+84 {item.phoneNumber}</Text>
                                         </View>
 
                                         <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -332,8 +431,6 @@ const CheckoutScreen = ({ navigation }) => {
                                             </View>
                                         </View>
 
-
-
                                         <View style={{ marginTop: 15, borderTopColor: '#BBBBBB', borderTopWidth: 0.5, flexDirection: 'row', justifyContent: 'space-between' }}>
                                             {item._id === defaultAddress._id ? (
                                                 <TouchableOpacity style={{ marginTop: 10, flexDirection: "row", alignItems: "center" }}>
@@ -356,7 +453,7 @@ const CheckoutScreen = ({ navigation }) => {
                                                         flexDirection: "row",
                                                         alignItems: "center",
                                                     }}
-                                                    onPress={() => setDefaultAddress(item)}
+                                                    onPress={() => handleDefaultAddress(item)}
                                                 >
                                                     <View
                                                         style={{
@@ -380,9 +477,13 @@ const CheckoutScreen = ({ navigation }) => {
                                                     marginTop: 12,
                                                 }}
                                             >
-                                                <TouchableOpacity>
-                                                    <Text style={{ marginRight: 5, color: "#737373", fontWeight: 'bold' }}>Delete</Text>
-                                                </TouchableOpacity>
+                                                {item._id === defaultAddress._id ? (
+                                                    <View></View>
+                                                ):(
+                                                    <TouchableOpacity onPress={() => handleDeleteItem(item._id)}>
+                                                        <Text style={{ marginRight: 5, color: "#737373", fontWeight: 'bold' }}>Delete</Text>
+                                                    </TouchableOpacity>
+                                                )}
                                                 <TouchableOpacity onPress={() => navigation.navigate('AddAddress', { isFromCheckout: true, info: item })}>
                                                     <Text style={{ marginLeft: 5, color: "#737373", fontWeight: 'bold' }}>Edit</Text>
                                                 </TouchableOpacity>
@@ -400,6 +501,81 @@ const CheckoutScreen = ({ navigation }) => {
                                 </TouchableOpacity>
                             </View>
 
+                        </View>
+                    </Animated.View>
+                </View>
+            )}
+
+            {isShowCouponSheet && (
+                <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, top: 0, justifyContent: 'flex-end', overflow: 'hidden' }}>
+                    {/* background */}
+                    <TouchableOpacity style={{ ...StyleSheet.absoluteFillObject }} onPress={closeCouponSheet} >
+                        <Animated.View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'black', opacity: backdropOpacity }} />
+                    </TouchableOpacity>
+
+                    {/* content */}
+                    <Animated.View style={{ transform: [{ translateY: sheetTranslateY }], backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomWidth: 1, borderBottomColor: '#BBB' }}>
+                        <BaseHeader
+                            title="Apply coupon"
+                            showRightButton={true}
+                            rightIcon={require('../../assets/bt_exit.png')}
+                            onRightButtonPress={closeCouponSheet}
+                        />
+
+                        <View style={{ backgroundColor: "#FFF", maxHeight: 500, borderTopColor: '#BBBBBB', borderTopWidth: 0.5 }}>
+                            {/* Ô nhập code voucher */}
+                            <View style={{ flexDirection: "row", alignItems: "center", padding: 10 }}>
+                                <TextInput placeholder="Enter coupon code" style={{ flex: 1, height: 40, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, paddingHorizontal: 10 }} />
+                                <TouchableOpacity style={{ borderColor: "#000000", borderWidth: 1, height: 40, width: 80, borderRadius: 40, justifyContent: "center", marginLeft: 10 }}>
+                                    <Text style={{ textAlign: "center", color: "#000000", fontWeight: "bold" }}>Apply</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            {/* Ghi chú */}
+                            <Text style={{ fontSize: 14, marginVertical: 5, marginHorizontal: 15,color:'#000',fontWeight:'bold' }}>
+                                Limit 1 coupon per purchase. Coupon cannot be applied to shipping fees.
+                            </Text>
+
+                            <View style={{height:400}}>
+                                {coupons.length === 0 ? (
+                                    <View style={{flexDirection:'column',alignItems:'center',padding:10,justifyContent:'center',marginBottom:20,height:"100%"}}>
+                                        <Image source={require("../../assets/icons/ic_nonvoucher.png")} style={{ width: 120, height: 120 }} />
+                                        <Text style={{ fontWeight: "800", fontSize: 18, color:'#000'}}>It's empty</Text>
+                                        <Text style={{ fontSize: 14, marginTop:5, color:'#737373',fontWeight:'bold' }}>There is no coupons here</Text>
+                                    </View>
+                                ): (
+                                    <FlatList
+                                        data={coupons}
+                                        keyExtractor={(item) => item.id}
+                                        style={{marginBottom:5}}
+                                        renderItem={({ item }) => (
+                                            <View style={{ borderTopWidth: 3, marginVertical: 10, marginHorizontal: 12, borderTopColor: '#FA7806', borderRadius: 2, backgroundColor: "#F0FFEB", height: 150, gap: 5 }}>
+                                                <View style={{ backgroundColor: '#FA7806', width: 30, borderBottomLeftRadius: 3, borderBottomRightRadius: 3 }}>
+                                                  <Text style={{ fontWeight: "bold", color: "#fff", textAlign: "center", fontSize: 10 }}>NEW</Text>
+                                                </View>
+                                                <View style={{ paddingHorizontal: 15 }}>
+                                                  <View style={{ flexDirection: "row", justifyContent:'space-between' }}>
+                                                    <View style={{ width: 250 }}>
+                                                      <Text style={{ fontSize: 18, fontWeight: "bold" }}>{item.voucherName}</Text>
+                                                      <Text style={{ fontWeight: "bold", fontSize: 12 }}>{item.voucherDetail}</Text>
+                                                      <Text style={{ fontWeight: "bold", fontSize: 12, marginTop: 30 }}>
+                                                        {formatDate(item.startDate)} - {formatDate(item.endDate)}
+                                                        </Text>
+                                                    </View>
+                                                    <TouchableOpacity style={{ backgroundColor: '#FA7806', height: 25, width: 54, borderRadius: 15, justifyContent: "center" }}>
+                                                      <Text style={{ color: "#fff", fontWeight: "bold", textAlign: "center" }}>Use</Text>
+                                                    </TouchableOpacity>
+                                                  </View>
+                                                  <View style={{ flexDirection: "row", justifyContent: "space-between",marginTop:10 }}>
+                                                    <Text style={{ color: "#737373" , fontWeight:"bold", fontSize: 12}}>For all items</Text>
+                                                    <Text style={{ fontWeight: "bold" }}><Text style={{ color: "#737373", fontSize: 12 }}>Code: </Text>{item._id}</Text>
+                                                  </View>
+                                                </View>
+                                            </View>
+                                        )}
+                                    />
+                                )}
+                            </View>
                         </View>
                     </Animated.View>
                 </View>

@@ -1,83 +1,53 @@
-import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator} from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { FlatList, StyleSheet, Text, View, ActivityIndicator,TouchableOpacity} from 'react-native'
+import React, { useEffect } from 'react'
 import BaseHeader from '../../components/BaseHeader'
 import { fetchProducts } from '../../redux/actions/productActions';
 import ProductCard from '../../components/ProductCard';
 import { useDispatch, useSelector } from "react-redux";
+import { fetchCoupon } from '../../redux/actions/voucherAction'
 
 const CouponScreen = ({ navigation }) => {
-  const tabs = ["All", "Free Shipping", "Discount"];
   const {products, loading, page, hasMore} = useSelector(state => state.product);
+  const { coupons } = useSelector(state => state.coupons);
   const dispatch = useDispatch();
-
-  const coupon = [
-    {
-      id: "1",
-      type: "discount",
-      amount: "70.000₫ DISCOUNT",
-      condition: "Applicable to orders over 750.000₫",
-      date: "05:07 3/11/2025 - 23:59 4/11/2025",
-      usedtype: "For all items",
-      code: "vnpromo001",
-      colorborder: "#FA7806"
-    },
-    {
-      id: "2",
-      type: "discount",
-      amount: "170.000₫ DISCOUNT",
-      condition: "Applicable to orders over 1.250.000₫",
-      date: "05:07 3/11/2025 - 23:59 4/11/2025",
-      usedtype: "For all items",
-      code: "vnpromo002",
-      colorborder: "#FA7806"
-    },
-    {
-      id: "3",
-      type: "free_shipping",
-      amount: "FREE SHIPPING",
-      condition: "Reduce 30.000₫ shipping charges for orders worth 1.000₫ or higher",
-      date: "05:07 3/11/2025 - 23:59 4/11/2025",
-      usedtype: "For all items",
-      code: "vnpromo003",
-      colorborder: "#078809"
-    },
-  ]
-  const [selecttabs, setSelecttabs] = useState("All")
-  const [title, setTitle] = useState("Coupons & offers")
   const [showHelpButton, setshowHelpButton] = React.useState(false)
-  const [filteredCoupons, setFilteredCoupons] = useState(coupon)
 
-   const loadMoreProducts = () => {
-      if (!loading && hasMore) {
-        dispatch(fetchProducts(page));
-      }
-    };
+  function formatDate(isoString) {
+    const date = new Date(isoString);
+    
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng tính từ 0 nên +1
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
 
-    const renderFooter = () => {
-        if (!loading) return null;
-        return (
-          <View style={{ padding: 10 }}>
-            <ActivityIndicator size="small" color="#0000ff" />
-          </View>
-        )
-      }
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
 
-  //Hàm đọc lọc coupon
-  useEffect(()=>{
-    if(selecttabs === "All"){
-      setFilteredCoupons(coupon);
-    }else if(selecttabs === "Free Shipping"){
-      setFilteredCoupons(coupon.filter(item=>item.type === "free_shipping"));
-    }else if(selecttabs === "Discount"){
-      setFilteredCoupons(coupon.filter(item=>item.type === "discount"));
+  const loadMoreProducts = () => {
+    if (!loading && hasMore) {
+      dispatch(fetchProducts(page));
     }
-  },[selecttabs])
+  };
 
+  const renderFooter = () => {
+    if (!loading) return null;
+      return (
+        <View style={{ padding: 10 }}>
+          <ActivityIndicator size="small" color="#0000ff" />
+        </View>
+    )
+  }
+
+  useEffect(() => {
+    dispatch(fetchCoupon());
+  }, []);
 
   return (
     <View style={st.container}>
       <BaseHeader
-        title={title}
+        title="Coupons & offers"
         showLeftButton={true}
         onLeftButtonPress={() => navigation.goBack()}
         showRightButton={setshowHelpButton}
@@ -86,29 +56,15 @@ const CouponScreen = ({ navigation }) => {
       />
      <FlatList
       ListHeaderComponent={
-        <>
-           {/* Thanh chọn thể loại voucher */}
-      <FlatList
-        data={tabs}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item}
-        contentContainerStyle={{ paddingVertical: 10 }}
-        style={{ flexGrow: 0 }}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => setSelecttabs(item)} style={{ paddingHorizontal: 30, marginRight: 30 }}>
-            <Text style={[st.tab, selecttabs === item && st.activetab]}>{item}</Text>
-          </TouchableOpacity>
-        )}
-      />
+      <>
 
       {/* Ô nhập code voucher */}
-      <View style={{ flexDirection: "row", alignItems: "center", marginTop: 15, marginBottom: 10 }}>
-        <TextInput placeholder="Enter coupon code" style={{ flex: 1, height: 40, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, paddingHorizontal: 5, marginHorizontal: 15 }} />
+      {/* <View style={{ flexDirection: "row", alignItems: "center", marginTop: 15, marginBottom: 10 }}>
+        <TextInput placeholder="Enter coupon code" style={{ flex: 1, height: 40, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, paddingHorizontal: 10, marginHorizontal: 15 }} />
         <TouchableOpacity style={{ borderColor: "#000000", borderWidth: 1, height: 40, width: 80, borderRadius: 40, justifyContent: "center", marginRight: 10 }}>
           <Text style={{ textAlign: "center", color: "#000000", fontWeight: "bold" }}>Apply</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* Ghi chú */}
       <Text style={{ fontSize: 12, marginBottom: 12, marginHorizontal: 15 }}>
@@ -118,37 +74,39 @@ const CouponScreen = ({ navigation }) => {
 
       {/* Danh sách coupon */}
       <FlatList
-        data={filteredCoupons}
-        keyExtractor={(item) => item.id}
+        data={coupons}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <View style={{ borderTopWidth: 3, marginVertical: 10, marginHorizontal: 12, borderTopColor: item.colorborder, borderRadius: 2, backgroundColor: "#F0FFEB", height: 150, gap: 5 }}>
-            <View style={{ backgroundColor: item.colorborder, width: 30, borderBottomLeftRadius: 3, borderBottomRightRadius: 3 }}>
+          <View style={{ borderTopWidth: 3, marginVertical: 10, marginHorizontal: 12, borderTopColor: '#FA7806', borderRadius: 2, backgroundColor: "#F0FFEB", height: 150, gap: 5 }}>
+            <View style={{ backgroundColor: '#FA7806', width: 30, borderBottomLeftRadius: 3, borderBottomRightRadius: 3 }}>
               <Text style={{ fontWeight: "bold", color: "#fff", textAlign: "center", fontSize: 10 }}>NEW</Text>
             </View>
-            <View style={{ paddingHorizontal: 10 }}>
-              <View style={{ flexDirection: "row", gap: 60 }}>
+            <View style={{ paddingHorizontal: 15 }}>
+              <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
                 <View style={{ width: 250 }}>
-                  <Text style={{ fontSize: 18, fontWeight: "bold" }}>{item.amount}</Text>
-                  <Text style={{ fontWeight: "bold", fontSize: 12 }}>{item.condition}</Text>
-                  <Text style={{ fontWeight: "bold", fontSize: 12, marginTop: 30 }}>{item.date}</Text>
+                  <Text style={{ fontSize: 18, fontWeight: "bold" }}>{item.voucherName}</Text>
+                  <Text style={{ fontWeight: "bold", fontSize: 12 }}>{item.voucherDetail}</Text>
+                  <Text style={{ fontWeight: "bold", fontSize: 12, marginTop: 30 }}>
+                    {formatDate(item.startDate)} - {formatDate(item.endDate)}
+                  </Text>
                 </View>
-                <TouchableOpacity style={{ backgroundColor: item.colorborder, height: 25, width: 54, borderRadius: 15, justifyContent: "center" }}>
-                  <Text style={{ color: "#fff", fontWeight: "bold", textAlign: "center" }}>Use</Text>
+                <TouchableOpacity style={{ backgroundColor: '#FA7806', height: 25, width: 54, borderRadius: 15, justifyContent: "center" }}>
+                  <Text style={{ color: "#fff", fontWeight: "bold", textAlign: "center" }}>Copy</Text>
                 </TouchableOpacity>
               </View>
-              <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                <Text style={{ color: "#737373" , fontWeight:"bold", fontSize: 12}}>{item.usedtype}</Text>
-                <Text style={{ fontWeight: "bold" }}><Text style={{ color: "#737373", fontSize: 12 }}>Code: </Text>{item.code}</Text>
+              <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
+                <Text style={{ color: "#737373", fontWeight: "bold", fontSize: 12 }}>For all items</Text>
+                <Text style={{ fontWeight: "bold" }}><Text style={{ color: "#737373", fontSize: 12 }}>Code: </Text>{item._id}</Text>
               </View>
             </View>
           </View>
         )}
       />
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 20, marginVertical: 10 }}>
-                    <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
-                    <Text style={{ marginHorizontal: 10, fontWeight: 'semibold', fontSize: 14, color: '#000' }}>Có thể bạn sẽ thích</Text>
-                    <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
-                  </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 20, marginVertical: 10 }}>
+              <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
+              <Text style={{ marginHorizontal: 10, fontWeight: 'semibold', fontSize: 14, color: '#000' }}>Có thể bạn sẽ thích</Text>
+              <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
+            </View>
         </>
       }
       data={products} // Danh sách sản phẩm chính

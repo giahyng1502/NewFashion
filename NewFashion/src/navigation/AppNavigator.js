@@ -1,4 +1,3 @@
-import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native'
@@ -20,6 +19,8 @@ import CheckoutScreen from '../screens/Checkout/CheckoutScreen'
 import AddAddressScreen from '../screens/AddAddressScreen'
 import CouponScreen from '../screens/Coupon/CouponScreen'
 import LightningScreen from '../screens/Lightning/LightningScreen'
+import AddressesScreen from '../screens/Adresses/AdressesScreen'
+import OrderDoneScreen from '../screens/Order/OrderDoneScreen'
 
 const Stack = createStackNavigator()
 
@@ -43,13 +44,13 @@ const AppNavigator = () => {
           <Stack.Screen name="Search" component={SearchScreen} />
           <Stack.Screen name="CheckOut" component={CheckoutScreen} />
           <Stack.Screen name="AddAddress" component={AddAddressScreen} />
-          <Stack.Screen name="Coupon" component={CouponScreen}/>
+          <Stack.Screen name="Coupons & offers" component={CouponScreen}/>
           <Stack.Screen name="Lightning" component={LightningScreen} />
+          <Stack.Screen name="Addresses" component={AddressesScreen} />
+          <Stack.Screen name="OrderDone" component={OrderDoneScreen} />
         </Stack.Navigator>
       </NavigationContainer>
   )
 }
 
 export default AppNavigator
-
-const styles = StyleSheet.create({})

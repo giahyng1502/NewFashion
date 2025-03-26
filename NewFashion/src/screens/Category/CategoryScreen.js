@@ -125,11 +125,6 @@ const CategoryScreen = ({navigation}) => {
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
               <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Related products</Text>
-              {/* sort by button */}
-              <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ fontSize: 14, color: '#000' }}>Sort by</Text>
-                <Image source={require('../../assets/icons/ic_arrowDown.png')} style={{ width: 14, height: 14, marginLeft: 5 }} resizeMethod='contain' />
-              </TouchableOpacity>
             </View>
           </>
         )}
