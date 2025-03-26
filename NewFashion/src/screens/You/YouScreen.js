@@ -102,6 +102,7 @@ const YouScreen = ({ navigation }) => {
       setLoading(false);
     } else {
       console.log('No personalInfo data or empty information array');
+      setLoading(false);
     }
   }, [personalInfo]);
 

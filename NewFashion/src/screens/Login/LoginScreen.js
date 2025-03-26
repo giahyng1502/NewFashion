@@ -63,7 +63,7 @@ const LoginScreen = ({ navigation }) => {
         });
     }
   }
-  
+
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: isOpen ? '#fff' : 'rgba(128, 128, 128, 0.7)' }} >
       <View style={st.container}>
@@ -87,7 +87,7 @@ const LoginScreen = ({ navigation }) => {
         </View>
 
         <OutlinedButton onPress={handleLoginWithGoogle} icon={require('../../assets/bt_google.png')} title="Continue with Google" customStyle={{ width: ScreenSize.width - 40, marginTop: 40 }} />
-        <OutlinedButton icon={require('../assets/bt_email.png')} title="Continue with Email" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onPress={() => { navigation.navigate('LoginWithEmail') }} />
+        <OutlinedButton icon={require('../../assets/bt_email.png')} title="Continue with Email" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onPress={() => { navigation.navigate('LoginWithEmail') }} />
         {/* <OutlinedButton icon={require('../assets/bt_phone.png')} title="Continue with phone number" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} /> */}
 
 
