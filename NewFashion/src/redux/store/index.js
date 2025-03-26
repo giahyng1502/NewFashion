@@ -5,6 +5,7 @@ import subCategoryReducer from '../reducer/subCategoryReducer'
 import productReducer from '../reducer/productReducer'
 import cartReducer from '../reducer/cartReducer'
 import personalInfoReducer from '../reducer/informationReducer'
+import postReducer from "../reducer/postReducer";
 import voucherReducer from '../reducer/voucherReducer'
 
 
@@ -16,6 +17,7 @@ export default configureStore({
         product: productReducer,
         cart: cartReducer,
         personalInfo: personalInfoReducer,
+        post: postReducer,
         coupons: voucherReducer
     }
 })

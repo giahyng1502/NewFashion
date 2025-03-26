@@ -3,7 +3,7 @@ import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native'
 import SplashScreen from '../screens/SplashScreen'
-import LoginScreen from '../screens/LoginScreen'
+import LoginScreen from '../screens/Login/LoginScreen'
 import RegisterWithEmailScreen from '../screens/RegisterWithEmailScreen'
 import LoginWithEmailScreen from '../screens/LoginWithEmailScreen'
 import MainScreen from '../screens/MainScreen'
@@ -12,7 +12,7 @@ import DetailsScreen from '../screens/DetailsScreen'
 import ChatScreen from "../screens/Chat/ChatScreen";
 import ChatDetail from "../screens/Chatdetail/ChatDetail";
 import CartScreen from '../screens/Cart/CartScreen'
-import DetailPostScreen from "../screens/Post/DetailPostScreen";
+import CommentScreen from "../screens/Post/CommentScreen";
 import ImagePreview from '../screens/ImagePreview'
 import SearchScreen from '../screens/SearchScreen'
 import OrderScreen from '../screens/Order/OrderScreen'
@@ -41,7 +41,7 @@ const AppNavigator = () => {
           <Stack.Screen name="LoginWithPhoneNumber" component={LoginWithPhoneNumber} />
           <Stack.Screen name="Chat" component={ChatScreen} />
           <Stack.Screen name="ChatDetail" component={ChatDetail} />
-          <Stack.Screen name="PostDetail" component={DetailPostScreen} />
+          <Stack.Screen name="PostDetail" component={CommentScreen} />
           <Stack.Screen name="Cart" component={CartScreen} />
           <Stack.Screen name="ImagePreview" component={ImagePreview} options={{ presentation: 'modal' }} />
           <Stack.Screen name="Your orders" component={OrderScreen} />

@@ -1,18 +1,32 @@
 import React, {useEffect, useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import axios from "../service/axios";
 
 
 
-function LikePost({count,isLike}) {
-    const [like, setLike] = useState(isLike);
+function LikePost({likeCount,isLike,commentId}) {
+    const [count, setCount] = useState(likeCount)
+    const [like, setLike] = useState(isLike)
+    const handleLikeComment = async () => {
+        try {
+            const res = await axios.post(`/comment/like/${commentId}`);
+            if (res.isLike !== isLike) {
+                setLike(!like);
+                if (res.isLike === false) {
+                    setCount(count - 1);
+                }else{
+                    setCount(count + 1);
+                }
+            }
+        }catch(err) {
+
+        }
+    }
 
     return (
-            <TouchableOpacity style={styles.button} onPress={() => {
-                setLike(!isLike)
-                console.log(like)
-            }} activeOpacity={1}>
+            <TouchableOpacity style={styles.button} onPress={handleLikeComment} activeOpacity={1}>
 
-                <Image style={styles.likeBtn} source={isLike ? require('../assets/icons/ic_select_like.png') : require('../assets/icons/ic_like.png')} />
+                <Image style={styles.likeBtn} source={like ? require('../assets/icons/ic_select_like.png') : require('../assets/icons/ic_like.png')} />
                 <Text style={{fontSize : 16, fontWeight: 'bold'}}>
                     {count}
                 </Text>

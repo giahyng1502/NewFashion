@@ -1,23 +1,28 @@
 import * as React from 'react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Pressable } from 'react-native';
-import BenefitsInfoBox from '../components/BenefitsInfoBox';
-import OutlinedButton from '../components/OutlinedButton';
-import ScreenSize from '../contants/ScreenSize';
+import BenefitsInfoBox from '../../components/BenefitsInfoBox';
+import OutlinedButton from '../../components/OutlinedButton';
+import ScreenSize from '../../contants/ScreenSize';
 import { Modal } from 'react-native-paper';
-import FilledButton from '../components/FilledButton';
+import FilledButton from '../../components/FilledButton';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
-import TextField, { TextFieldType } from '../components/TextField';
-import PasswordStrengthBar from '../components/PasswordStrengthBar';
+import TextField, { TextFieldType } from '../../components/TextField';
+import PasswordStrengthBar from '../../components/PasswordStrengthBar';
+import onGoogleButtonPress from './signInWithGoogle';
+import { useDispatch } from "react-redux";
+import { loginWithGoogle } from "../../service/userService";
+import AppManager from "../../utils/AppManager";
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = ({ navigation }) => {
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState(true);
   const [currentSheet, setCurrentSheet] = useState('sheet1');
-  const [password, setPassword] = useState("");
-  const [strengLabel, setStrengLabel] = useState("");
+  const [password, setPassword] = useState('');
+  const [strengLabel, setStrengLabel] = useState('');
+  const dispatch = useDispatch();
 
 
   const bottomSheetRef = useRef();
@@ -25,48 +30,67 @@ const LoginScreen = ({navigation}) => {
   // Hàm mở Bottom Sheet
   const openBottomSheet = () => {
     bottomSheetRef.current?.snapToIndex(0);
-    setIsOpen(false)
+    setIsOpen(false);
   };
   // Đóng BottomSheet
   const closeBottomSheet = () => {
     bottomSheetRef.current?.close();
-    setIsOpen(true)
+    setIsOpen(true);
   };
 
-  const [values, setValues] = useState(Array(6).fill(""));
+  const [values, setValues] = useState(Array(6).fill(''));
   const handleChange = (index, text) => {
     const newValues = [...values];
     newValues[index] = text;
     setValues(newValues);
-    
+
   };
-
-
+  const handleLoginWithGoogle = async () => {
+    const data = await onGoogleButtonPress();
+    const res = await loginWithGoogle(data.user);
+    if (res.token) {
+      AppManager.shared.saveUserInfo(res.token)
+        .then(() => {
+          // Lấy lại token đã lưu và log ra
+          return AppManager.shared.getToken();
+        })
+        .then((token) => {
+          console.log('token: ', token); // Token thực tế
+          navigation.replace('Main');
+        })
+        .catch((err) => {
+          console.log('Error in token processing: ', err);
+        });
+    }
+  }
+  
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: isOpen ? '#fff' : 'rgba(128, 128, 128, 0.7)' }} >
       <View style={st.container}>
         <View style={st.header}>
           <TouchableOpacity style={st.iconContainer} onPress={() => setModalVisible(true)}>
             <Image
-              source={require('../assets/bt_exit.png')}
+              source={require('../../assets/bt_exit.png')}
               style={st.closeIcon}
             />
           </TouchableOpacity>
 
           <Image
-            source={require('../assets/img_logo.png')}
+            source={require('../../assets/img_logo.png')}
             style={st.logo}
           />
         </View>
 
         <View style={st.infoContainer}>
-          <BenefitsInfoBox icon={require('../assets/icons/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
-          <BenefitsInfoBox icon={require('../assets/icons/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
+          <BenefitsInfoBox icon={require('../../assets/icons/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
+          <BenefitsInfoBox icon={require('../../assets/icons/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
         </View>
 
-        <OutlinedButton icon={require('../assets/bt_google.png')} title="Continue with Google" customStyle={{ width: ScreenSize.width - 40, marginTop: 40 }} />
-        <OutlinedButton icon={require('../assets/bt_email.png')} title="Continue with Email" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onPress={() => {navigation.navigate('LoginWithEmail')}} />
+        <OutlinedButton onPress={handleLoginWithGoogle} icon={require('../../assets/bt_google.png')} title="Continue with Google" customStyle={{ width: ScreenSize.width - 40, marginTop: 40 }} />
+        <OutlinedButton icon={require('../assets/bt_email.png')} title="Continue with Email" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onPress={() => { navigation.navigate('LoginWithEmail') }} />
         {/* <OutlinedButton icon={require('../assets/bt_phone.png')} title="Continue with phone number" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} /> */}
+
+
 
         <TouchableOpacity style={st.troubleContainer} onPress={() => openBottomSheet()} >
           <Text style={st.troubleText}>Trouble signing in?</Text>
@@ -89,12 +113,12 @@ const LoginScreen = ({navigation}) => {
               <Text style={st.title}>Enjoy these special offers after signing in! Are you sure you want to leave now?</Text>
 
               <View style={st.benefitsContainer}>
-                <BenefitsInfoBox icon={require('../assets/icons/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
-                <BenefitsInfoBox icon={require('../assets/icons/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
+                <BenefitsInfoBox icon={require('../../assets/icons/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
+                <BenefitsInfoBox icon={require('../../assets/icons/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
               </View>
 
-              <FilledButton title="Continue" customStyle={{ backgroundColor: 'black', width: '100%', marginVertical: 10 }} onPress={() => {setModalVisible(false)}} />
-              <OutlinedButton title="Leave" customStyle={{ width: "100%" }} onPress={() => {navigation.goBack()}} />
+              <FilledButton title="Continue" customStyle={{ backgroundColor: 'black', width: '100%', marginVertical: 10 }} onPress={() => { setModalVisible(false); }} />
+              <OutlinedButton title="Leave" customStyle={{ width: '100%' }} onPress={() => { navigation.goBack(); }} />
             </View>
           </View>
         </Modal>
@@ -105,8 +129,8 @@ const LoginScreen = ({navigation}) => {
           snapPoints={['30%', '85%']}
           enablePanDownToClose={true}
           onClose={() => {
-            setIsOpen(true)
-            setCurrentSheet('sheet1')
+            setIsOpen(true);
+            setCurrentSheet('sheet1');
           }}
         >
           <BottomSheetView style={{ flex: 1, alignItems: 'center', backgroundColor: '#fff' }}>
@@ -115,11 +139,11 @@ const LoginScreen = ({navigation}) => {
                 <View style={st.modalHeader}>
                   <Text style={st.troubleTitle}>Trouble signing in?</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
-                    <Image source={require('../assets/bt_exit.png')} style={st.closeIcon1} />
+                    <Image source={require('../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
-                <View style={{marginHorizontal:8}}>
+                <View style={{ marginHorizontal: 8 }}>
                   <Text style={st.troubleSubtitle}>If you registered an account with your email address, but forgot your password, you can reset your password.</Text>
                 </View>
                 <OutlinedButton title="Reset your password" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onPress={() => setCurrentSheet('sheet2')} />
@@ -130,7 +154,7 @@ const LoginScreen = ({navigation}) => {
                 <View style={st.modalHeader}>
                   <Text style={st.troubleTitle}>Trouble signing in?</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
-                    <Image source={require('../assets/bt_exit.png')} style={st.closeIcon1} />
+                    <Image source={require('../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
@@ -144,18 +168,18 @@ const LoginScreen = ({navigation}) => {
               <>
                 <View style={st.modalHeader}>
                   <TouchableOpacity onPress={() => setCurrentSheet('sheet2')}>
-                    <Image source={require('../assets/ic_back.png')} style={st.closeIcon1} />
+                    <Image source={require('../../assets/ic_back.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                   <Text style={st.troubleTitle}>Enter the password reset code</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
-                    <Image source={require('../assets/bt_exit.png')} style={st.closeIcon1} />
+                    <Image source={require('../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
                 <Text style={[st.troubleSubtitle, { paddingHorizontal: 10 }]}>Please check your mailbox now! Enter the 6-digit password
                   reset code sent to dominhhieuhn01@gmail.com. The code expires after 2 hours.</Text>
 
-                <View style={{ flexDirection: "row", justifyContent: "center", padding: 10, }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'center', padding: 10 }}>
                   {values.map((value, index) => (
                     <TextInput
                       key={index}
@@ -171,14 +195,14 @@ const LoginScreen = ({navigation}) => {
                   <FilledButton title="Submit" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} onPress={() => setCurrentSheet('sheet4')} />
                 </View>
                 <View style={{ marginTop: 60, alignSelf: 'flex-start', padding: 10 }} >
-                  <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8, }}>
+                  <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8 }}>
                     Didn’t receive the email?</Text>
                   <Text style={st.text}>1. Make sure your email address is correct.</Text>
                   <Text style={st.text}>2. Please check your spam folder.</Text>
                   <Text style={st.text}>
                     3. If you still don’t see the code,{' '}
                     <TouchableOpacity onPress={() => setCurrentSheet('sheet6')}>
-                      <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#000', }}>try another way to verify your identity &gt;</Text>
+                      <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#000' }}>try another way to verify your identity &gt;</Text>
                     </TouchableOpacity>
                   </Text>
                 </View>
@@ -188,15 +212,15 @@ const LoginScreen = ({navigation}) => {
               <>
                 <View style={st.modalHeader}>
                   <TouchableOpacity onPress={() => setCurrentSheet('sheet3')}>
-                    <Image source={require('../assets/ic_back.png')} style={st.closeIcon1} />
+                    <Image source={require('../../assets/ic_back.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                   <Text style={st.troubleTitle}>Create a new password</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
-                    <Image source={require('../assets/bt_exit.png')} style={st.closeIcon1} />
+                    <Image source={require('../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
-                <View style={{ padding: 10, }} >
+                <View style={{ padding: 10 }} >
                   <Text style={st.troubleSubtitle}>Enter a new password you would like to associate with
                     your account below.</Text>
                   <TextField type={TextFieldType.PASSWORD} placeholder="Enter your password" customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }} onChangeText={setPassword} />
@@ -212,7 +236,7 @@ const LoginScreen = ({navigation}) => {
             {currentSheet === 'sheet5' && (
               <>
                 <View style={st.modalDone}>
-                  <Image source={require('../assets/ic_done.png')} style={st.doneIcon} />
+                  <Image source={require('../../assets/ic_done.png')} style={st.doneIcon} />
 
                   <Text style={st.doneTitle}>Your password has been reset</Text>
                   <Text style={st.doneText}>
@@ -229,11 +253,11 @@ const LoginScreen = ({navigation}) => {
               <>
                 <View style={st.modalHeader}>
                   <TouchableOpacity onPress={() => setCurrentSheet('sheet3')}>
-                    <Image source={require('../assets/ic_back.png')} style={st.closeIcon1} />
+                    <Image source={require('../../assets/ic_back.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                   <Text style={st.troubleTitle}>Verify your identity</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
-                    <Image source={require('../assets/bt_exit.png')} style={st.closeIcon1} />
+                    <Image source={require('../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
@@ -246,7 +270,7 @@ const LoginScreen = ({navigation}) => {
                       <Text style={st.verifySubtitle}>We will send an SMS verification code to +84 975****96</Text>
                     </View>
                     {/* Icon mũi tên bên phải */}
-                    <Image source={require('../assets/ic_arrowRight.png')} style={st.closeIcon} />
+                    <Image source={require('../../assets/ic_arrowRight.png')} style={st.closeIcon} />
                   </TouchableOpacity>
                 </View>
               </>
@@ -256,18 +280,18 @@ const LoginScreen = ({navigation}) => {
               <>
                 <View style={st.modalHeader}>
                   <TouchableOpacity onPress={() => setCurrentSheet('sheet6')}>
-                    <Image source={require('../assets/ic_back.png')} style={st.closeIcon1} />
+                    <Image source={require('../../assets/ic_back.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                   <Text style={st.troubleTitle}>Enter the verification code</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
-                    <Image source={require('../assets/bt_exit.png')} style={st.closeIcon1} />
+                    <Image source={require('../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
                 <Text style={[st.troubleSubtitle, { paddingHorizontal: 10 }]}>To continue, complete this verification step. We’ve sent a
                   verification code to the phone number +84 0975 953 696.
                   Please enter it below.</Text>
-                <View style={{ flexDirection: "row", justifyContent: "center", padding: 10, }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'center', padding: 10 }}>
                   {values.map((value, index) => (
                     <TextInput
                       key={index}
@@ -305,7 +329,7 @@ const st = StyleSheet.create({
     paddingLeft: 0,
     position: 'absolute',
     top: 0,
-    left: 0
+    left: 0,
   },
   closeIcon: {
     width: 24,
@@ -314,7 +338,7 @@ const st = StyleSheet.create({
   logo: {
     width: 60,
     height: 60,
-    marginTop: 10
+    marginTop: 10,
   },
   // Info
   infoContainer: {
@@ -378,7 +402,7 @@ const st = StyleSheet.create({
     fontSize: 14,
     color: '#1E1E1E',
     marginBottom: 10,
-    fontWeight: '700'
+    fontWeight: '700',
   },
   resetButton: {
     backgroundColor: 'white',
@@ -418,7 +442,7 @@ const st = StyleSheet.create({
     height: 1,
     backgroundColor: '#ccc',
     marginVertical: 10,
-    width: '100%'
+    width: '100%',
   },
   closeIcon1: {
     width: 18,
@@ -427,7 +451,7 @@ const st = StyleSheet.create({
   input: {
     width: 56,
     height: 56,
-    textAlign: "center",
+    textAlign: 'center',
     borderWidth: 0.6,
     borderColor: '#BBBBBB',
     borderRadius: 5,
@@ -436,7 +460,7 @@ const st = StyleSheet.create({
   },
   passwordQuality: {
     fontSize: 13,
-    color: "#737373",
+    color: '#737373',
     marginBottom: 20,
     fontWeight: '800',
   },

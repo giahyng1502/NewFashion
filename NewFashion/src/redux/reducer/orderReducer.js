@@ -1,5 +1,5 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import { fetchOrders,createOrder } from '../actions/orderActions';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createOrder, fetchOrders } from '../actions/orderActions';
 
 const initialState = {
   orders: [],
@@ -24,8 +24,9 @@ const orderSlice = createSlice({
         state.orders = action.payload;
       })
       .addCase(createOrder.rejected, (state, action) => {
-        console.log('Add to cart failed: ', action.payload);
+        console.log('Fetch categories failed: ', action.payload);
       })
+
   },
 });
 

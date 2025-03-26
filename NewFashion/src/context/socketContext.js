@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import {baseUrl} from "../service/axios";
 
 const SocketContext = createContext();
 
@@ -8,9 +9,7 @@ export const SocketProvider = ({ children, userId }) => {
 
     useEffect(() => {
         if (userId) {
-            console.log(userId)
-
-            const newSocket = io("http://160.30.21.59:3000", {
+            const newSocket = io(baseUrl, {
                 transports: ["websocket"],
                 auth: { userId: userId }
             });

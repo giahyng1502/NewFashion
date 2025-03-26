@@ -17,7 +17,7 @@ const cartSlice = createSlice({
                 state.carts = action.payload;
             })
             .addCase(fetchCart.rejected, (state, action) => {
-                console.log('Fetch carts failed: ', action.payload);
+                // console.log('Fetch carts failed: ', action.payload);
             })
 
             // Add to cart
@@ -25,7 +25,7 @@ const cartSlice = createSlice({
                 state.carts = action.payload;
             })
             .addCase(addToCart.rejected, (state, action) => {
-                console.log('Add to cart failed: ', action.payload);
+                // console.log('Add to cart failed: ', action.payload);
             })
 
             // Update cart
@@ -33,7 +33,7 @@ const cartSlice = createSlice({
                 state.carts = action.payload;
             })
             .addCase(updateCart.rejected, (state, action) => {
-                console.log('Update cart failed: ', action.payload);
+                // console.log('Update cart failed: ', action.payload);
             })
 
             // Delete cart
@@ -41,7 +41,7 @@ const cartSlice = createSlice({
                 state.carts = action.payload;
             })
             .addCase(deleteCart.rejected, (state, action) => {
-                console.log('Delete cart failed: ', action.payload);
+                // console.log('Delete cart failed: ', action.payload);
             })
     },
 });

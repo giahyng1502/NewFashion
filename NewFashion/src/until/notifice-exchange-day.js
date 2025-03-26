@@ -18,7 +18,6 @@ export const groupNotificationsByDate = (notifications) => {
         } else if (date.isSameOrAfter(today.clone().subtract(6, "days"), "day")) {
             title = "Tuần này";
         }
-
         else {
             title = date.format("DD/MM/YYYY");
         }

@@ -1,11 +1,11 @@
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import AppManager from "../utils/AppManager";
 // baseURL: "http://160.30.21.59:3000",
 // baseURL: "https://b79c-42-119-222-88.ngrok-free.app",
 // https://3737-42-114-151-175.ngrok-free.app
+export const baseUrl = 'http://160.30.21.59:3000'
 const api = axios.create({
-    baseURL: "http://160.30.21.59:3000",
+    baseURL: baseUrl,
     timeout: 5000,
     headers: {
         "Content-Type": "application/json",
