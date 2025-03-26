@@ -15,6 +15,7 @@ import BaseHeader from '../../components/BaseHeader';
 import {getTimeAgoText} from '../../until/getDaysAgoNext';
 import {getCommentsByPostId} from '../../redux/actions/commentAction';
 import axios from "../../service/axios";
+import AppManager from "../../utils/AppManager";
 
 
 function CommentScreen({ navigation,route }) {
@@ -23,7 +24,8 @@ function CommentScreen({ navigation,route }) {
     const [page, setPage] = useState(1); // Trang hiện tại
     const [isLoading, setIsLoading] = useState(false); // Trạng thái loading
     const [hasMore, setHasMore] = useState(true); // Kiểm tra còn dữ liệu không
-
+    const [replyInfor, setReplyInfor] = useState(null);
+    const [commentText, setCommentText] = useState(""); // Lưu nội dung bình luận
     useEffect(() => {
         if (route.params?._id) {
             setPost(route.params._id);
@@ -35,6 +37,28 @@ function CommentScreen({ navigation,route }) {
             getComment(post, 1);
         }
     }, [post]);
+    const handleSendComment = async () => {
+        if (!commentText.trim()) return; // Không gửi nếu bình luận trống
+        let url = `/comment/${post}`
+        try {
+            let data = {
+                content: commentText,
+            };
+
+            // Nếu đang phản hồi một bình luận, gửi kèm commentId
+            if (replyInfor?.type === 'COMMENT') {
+                url = `/replies/${replyInfor._id}`;
+            }
+            // const user = AppManager.shared.getUserInfo();
+            // console.log(user)
+            const response = await axios.post(url, data); // Gửi bình luận đến API
+            setComments([...comments,response?.comment]); // Cập nhật danh sách bình luận ngay lập tức
+            setCommentText(""); // Xóa nội dung ô nhập
+            setReplyInfor(null); // Xóa thông tin trả lời
+        } catch (error) {
+            console.error("Lỗi khi gửi bình luận:", error);
+        }
+    };
 
     const getComment = async (postId, pageNumber = 1) => {
         if (isLoading || !hasMore) return;
@@ -71,12 +95,14 @@ function CommentScreen({ navigation,route }) {
                         <ButtonWithLeftIcon
                             icon={require('../../assets/icons/ic_comment.png')}
                             count={item?.replyCount}
+                            onPress={() => setReplyInfor({ type: 'COMMENT', name: item.user?.name, _id: item._id })}
                         />
                     </View>
                 </View>
             </View>
         );
     }, []);
+
 
 
     return (
@@ -100,17 +126,30 @@ function CommentScreen({ navigation,route }) {
                 </View>
 
             </TouchableWithoutFeedback>
-            <View style={styles.commentInputContainer}>
+            <View style={{height : 100,flexDirection : 'column',justifyContent:'center',}}>
+                {replyInfor && (
+                    <View style={{ flexDirection : 'row',justifyContent: 'flex-start',width: '500' }}>
+                        <Text style={styles.replyText}>
+                            Đang trả lời <Text style={{ fontWeight: 'bold' }}>{replyInfor.name}</Text>
+                        </Text>
+                        <TouchableOpacity style={styles.removeBtn} onPress={()=>{}} activeOpacity={0.7}>
+                            <Image style={styles.icon} source={require('../../assets/bt_exit.png')} />
+                        </TouchableOpacity>
+                    </View>
+                )}
+                <View style={styles.commentInputContainer}>
                 <TextInput
                     style={styles.commentInput}
                     placeholder="Nhập bình luận..."
-                    // value={comment}
-                    // onChangeText={setComment}
+                    value={commentText}
+                    onChangeText={setCommentText}
                 />
-                <TouchableOpacity style={styles.sendButton}>
+                <TouchableOpacity style={styles.sendButton} onPress={handleSendComment}>
                     <Text style={styles.sendText}>Gửi</Text>
                 </TouchableOpacity>
+                </View>
             </View>
+
         </KeyboardAvoidingView>
     );
 }
@@ -134,6 +173,21 @@ const styles = StyleSheet.create({
     hashtag : {
         fontStyle : 'italic',
         color : 'gray',
+    },
+    icon:{
+        width : 14,
+        height : 14,
+        resizeMode : 'contain',
+    },
+    removeBtn : {
+      width : 20,
+      justifyContent: 'center',
+      height : 20,
+      marginLeft : 5,
+    },
+    replyText:{
+        color : '#fffff',
+        marginLeft : 15,
     },
     errorContainer: {
         flex: 1,
