@@ -28,9 +28,6 @@ const MainScreen = () => {
                         } else if (route.name === 'News') {
                             iconName = focused ? require("../assets/icons/ic_favouriteSelected.png") : require("../assets/icons/ic_favourite.png");
                             label = 'NF News'
-                        } else if (route.name === 'Notification') {
-                            iconName = require("../assets/icons/ic_notification.png");
-                            label = 'Notification'
                         } else if (route.name === 'You') {
                             iconName = require("../assets/icons/ic_you.png");
                             label = 'You'
@@ -51,7 +48,6 @@ const MainScreen = () => {
                 <Tab.Screen name="Home" component={HomeScreen} />
                 <Tab.Screen name="Category" component={CategoryScreen} />
                 <Tab.Screen name="News" component={NewScreen} />
-                <Tab.Screen name="Notification" component={NotificationScreen} />
                 <Tab.Screen name="You" component={YouScreen} />
             </Tab.Navigator>
         </View>

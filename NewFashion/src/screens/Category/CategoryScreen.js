@@ -3,9 +3,9 @@ import { View, FlatList, Text, TouchableOpacity, Animated, ActivityIndicator, Im
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSubCategories } from '../../redux/actions/subCateActions';
 import ScreenSize from '../../contants/ScreenSize';
-import { products } from '../Home/HomeScreen';
 import StarRating from '../../components/StarRating';
 import SearchBar from '../../components/SearchBar';
+import ProductCard from '../../components/ProductCard';
 
 const CategoryScreen = ({navigation}) => {
   const [searchText, setSearchText] = useState('');
@@ -14,6 +14,7 @@ const CategoryScreen = ({navigation}) => {
   const dispatch = useDispatch();
 
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const translateAnim = useRef(new Animated.Value(0)).current;
 
@@ -31,11 +32,17 @@ const CategoryScreen = ({navigation}) => {
 
   const fetchSubCateByCategoryID = (categoryId) => {
     if (subCategoriesByCategory[categoryId]) {
+      const { products } = subCategoriesByCategory[categoryId];
+      setProducts(products);
       setLoading(false);
-    } else {
+    } else { 
       setLoading(true);
       dispatch(fetchSubCategories(categoryId))
-        .then(() => {
+        .then((result) => {
+          const { products } = result.payload;
+          console.log('Fetch subCategories success: ', products);
+          
+          setProducts(products);          
           setLoading(false);
         })
         .catch((error) => {
@@ -61,7 +68,6 @@ const CategoryScreen = ({navigation}) => {
     });
   }, [selectedCategory, categories]);
 
-
   const renderCategoryItem = ({ item, index }) => (
     <TouchableOpacity
       style={[
@@ -77,30 +83,19 @@ const CategoryScreen = ({navigation}) => {
   );
 
   const renderSubCategoryItem = ({ item }) => (
-    <View style={{ alignItems: 'center', width: subCateColumnWidth, padding: 10 }}>
+    <TouchableOpacity style={{ alignItems: 'center', width: subCateColumnWidth, padding: 10 }} onPress={() => handleSelectedSubCategory(item)}>
       <Image source={{ uri: item.subImage }} style={{ width: 50, height: 50, borderRadius: 25 }} />
       <Text style={{ fontSize: 12, textAlign: 'center' }}>{item.subCateName}</Text>
-    </View>
+    </TouchableOpacity>
   );
 
-  const renderProductItem = ({ item }) => (
-    <View style={{ width: productColumnWidth, padding: 10 }}>
-      <View>
-        <Image source={{ uri: item.image }} style={{ width: '100%', aspectRatio: 1 }} />
-        <TouchableOpacity style={{ position: 'absolute', right: 10, bottom: 10 }}>
-          <Image source={require('../../assets/buttons/bt_addToCart2.png')} style={{ width: 20, height: 20 }} resizeMode='contain' />
-        </TouchableOpacity>
-      </View>
-      <View style={{ flexDirection: 'row', marginTop: 5 }}>
-        <StarRating rating={item.rating} />
-        <Text style={{ color: '#737373', fontSize: 12, marginLeft: 5 }}>{item.ratingCount}</Text>
-      </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 5 }}>
-        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{item.price}</Text>
-        <Text style={{ fontSize: 10, fontWeight: 'medium', color: '#737373' }}>{item.sold}</Text>
-      </View>
-    </View>
-  );
+  const handleSelectedItem = (item) => {
+    navigation.navigate("ProductDetail", { item });
+  }
+
+  const handleSelectedSubCategory = (subCategory) => {
+    navigation.navigate("SubCateDetail", { subCategory });
+  }
 
   const ListHeaderComponent = () => {
     if (!selectedCategory) {
@@ -125,11 +120,6 @@ const CategoryScreen = ({navigation}) => {
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
               <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Related products</Text>
-              {/* sort by button */}
-              <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ fontSize: 14, color: '#000' }}>Sort by</Text>
-                <Image source={require('../../assets/icons/ic_arrowDown.png')} style={{ width: 14, height: 14, marginLeft: 5 }} resizeMethod='contain' />
-              </TouchableOpacity>
             </View>
           </>
         )}
@@ -174,9 +164,9 @@ const CategoryScreen = ({navigation}) => {
             <FlatList
               data={products}
               ListHeaderComponent={ListHeaderComponent}
-              renderItem={renderProductItem}
+              renderItem={({ item }) => <ProductCard item={item} onSelected={() => { handleSelectedItem(item) }} />}
               numColumns={2}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item._id}
               showsVerticalScrollIndicator={false}
             />
           </Animated.View>

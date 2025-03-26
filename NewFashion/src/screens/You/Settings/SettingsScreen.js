@@ -1,5 +1,7 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import BaseHeader from '../../../components/BaseHeader';
+import AppManager from '../../../utils/AppManager';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const options = [
   {
@@ -82,7 +84,6 @@ const settings = [
 
 const SettingsScreen = ({navigation}) => {
   const handleNavigate = ({nameScreen}) => navigation.navigate(nameScreen);
-  const signedIn = true;
   const filteredOptions = options
     .slice(1)
     .filter(item => item.title === 'Language');
@@ -104,8 +105,8 @@ const SettingsScreen = ({navigation}) => {
         </View>
         <View
           style={[
-            index === 0 && (signedIn ? styles.line : styles.firstIndex),
-            index !== 0 && (!signedIn ? styles.firstIndex : styles.line),
+            index === 0 && (AppManager.shared.isUserLoggedIn() ? styles.line : styles.firstIndex),
+            index !== 0 && (!AppManager.shared.isUserLoggedIn() ? styles.firstIndex : styles.line),
             index === options.length - 1 && styles.lastIndex,
             title === 'Sign out' && styles.lastIndex,
             title === 'Sign in / Register' && styles.firstIndex,
@@ -123,7 +124,7 @@ const SettingsScreen = ({navigation}) => {
         onLeftButtonPress={() => navigation.goBack()}
       />
       <View style={styles.lineHeader} />
-      {signedIn ? (
+      {AppManager.shared.isUserLoggedIn() ? (
         <View>
           <View style={styles.heading}>
             <Text style={styles.h2}>Your account is protected</Text>
@@ -159,7 +160,19 @@ const SettingsScreen = ({navigation}) => {
               key={item.id}
               index={index}
               item={item}
-              onPress={() => handleNavigate(item)}
+              onPress={() => {
+                if (item.title === 'Sign out') {
+                  AppManager.shared.removeUserInfo()
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Splash' }],
+                  });
+
+                  AsyncStorage.removeItem('browsingHistory');
+                } else {
+                  handleNavigate(item)
+                }
+              }}
             />
           ))}
         </View>

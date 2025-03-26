@@ -62,26 +62,6 @@ const HomeScreen = ({ navigation }) => {
     navigation.navigate("ProductDetail", { item, discount, expire });
   }
 
-  const renderItemTitleCategory = ({ index, item }) => {
-    const isSelected = item === selectedTitleCategory;
-    return (
-      <TouchableOpacity onPress={() => {
-        setSelectedTitleCategory(item);
-        titleCategoryFlatlistRef.current.scrollToIndex({ index, animated: true });
-      }}>
-        <View style={[st.categoryItem, { justifyContent: 'center' }]}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            {item.image && <Image source={item.image} style={{ width: 14, height: 14 }} resizeMode='contain' />}
-            <Text style={[st.categoryText, isSelected && st.selectedText, item.highlight && { color: '#F91616' }]}>
-              {item.name}
-            </Text>
-          </View>
-          {isSelected && <View style={[st.underline, item.highlight && { backgroundColor: '#F91616' }]} />}
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <FlatList
       data={products} // Danh sách sản phẩm chính

@@ -138,7 +138,6 @@ const CheckoutScreen = ({ navigation }) => {
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#0000ff" />
-                <Text>Loading personal info...</Text>
             </View>
         );
     }

@@ -9,7 +9,6 @@ import ReviewDetail, { Ratingbar } from '../components/ReviewDetail'
 import ReviewFormUser, { ReviewItem } from '../components/ReviewFormUser'
 import AboutShop from '../components/AboutShop'
 import DetailProduct from '../components/DetailProduct'
-import SuggestProduct from '../components/SuggestProduct'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchProducts } from '../redux/actions/productActions'
 import Swiper from 'react-native-swiper'
@@ -19,6 +18,7 @@ import SupportFunctions from '../utils/SupportFunctions'
 import AppManager from '../utils/AppManager'
 import { addToCart } from '../redux/actions/cartActions'
 import CountdownTimer from '../components/CountdownTimer'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const reviews = [
     {
@@ -53,12 +53,34 @@ const DetailsScreen = ({ navigation, route }) => {
     const [selectedSize, setSelectedSize] = React.useState(null);
     const [quantity, setQuantity] = React.useState(1);
     const dispatch = useDispatch()
-
     const { carts } = useSelector(state => state.cart);
 
     useEffect(() => {
-        setSelectedColor(item.color[0])
-    }, [])
+        const saveItemToLocal = async () => {
+            try {
+                // Lấy danh sách các item đã lưu từ local storage
+                const storedItems = await AsyncStorage.getItem('browsingHistory');
+                const itemsArray = storedItems ? JSON.parse(storedItems) : [];
+
+                // Kiểm tra xem item đã tồn tại trong danh sách chưa
+                const isItemExists = itemsArray.some(savedItem => savedItem._id === item._id);
+
+                if (!isItemExists) {
+                    // Nếu item chưa tồn tại, thêm vào danh sách và lưu lại
+                    const updatedItems = [...itemsArray, item];
+                    await AsyncStorage.setItem('browsingHistory', JSON.stringify(updatedItems));
+                    console.log('Item saved to local storage:', item);
+                } else {
+                    console.log('Item already exists in local storage');
+                }
+            } catch (error) {
+                console.error('Error saving item to local storage:', error);
+            }
+        };
+
+        setSelectedColor(item.color[0]);
+        saveItemToLocal();
+    }, []);
 
     const addToCartHandle = () => {
         if (!AppManager.shared.isUserLoggedIn()) {

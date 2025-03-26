@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Settings, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native'
@@ -19,6 +19,9 @@ import OrderScreen from '../screens/Order/OrderScreen'
 import CheckoutScreen from '../screens/Checkout/CheckoutScreen'
 import AddAddressScreen from '../screens/AddAddressScreen'
 import CouponScreen from '../screens/Coupon/CouponScreen'
+import SubCategoryDetail from '../screens/Category/SubCategoryDetail'
+import SettingsScreen from '../screens/You/Settings/SettingsScreen'
+import NotificationScreen from '../screens/Notification/notification-screen'
 
 const Stack = createStackNavigator()
 
@@ -43,6 +46,9 @@ const AppNavigator = () => {
           <Stack.Screen name="CheckOut" component={CheckoutScreen} />
           <Stack.Screen name="AddAddress" component={AddAddressScreen} />
           <Stack.Screen name="Coupon" component={CouponScreen}/>
+          <Stack.Screen name="SubCateDetail" component={SubCategoryDetail}/>
+          <Stack.Screen name="Setting" component={SettingsScreen}/>
+          <Stack.Screen name="Notification" component={NotificationScreen}/>
         </Stack.Navigator>
       </NavigationContainer>
   )

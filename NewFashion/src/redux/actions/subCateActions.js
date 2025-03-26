@@ -13,3 +13,15 @@ export const fetchSubCategories = createAsyncThunk(
         }
     }
 );
+
+export const fetchProductBySubCategory = createAsyncThunk(
+    'subCategories/fetchProductBySubCategory',
+    async (subCategoryId, thunkAPI) => {
+        try {
+            const response = await axios.get(`/subcategory/searchProduct/${subCategoryId}`);
+            return { subCategoryId, products: response.data };
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);

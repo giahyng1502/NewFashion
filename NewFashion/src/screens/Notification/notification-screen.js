@@ -34,10 +34,10 @@ const notifications = [
     }
 ];
 
-const NotificationScreen = () => {
+const NotificationScreen = ({navigation}) => {
     return (
         <View style={styles.container}>
-            <BaseHeader title="Notifications" showLeftButton={false}/>
+            <BaseHeader title="Notifications" showLeftButton={true} onLeftButtonPress={() => navigation.goBack()}/>
             <NotificationList notifications={notifications} />
         </View>
     )

@@ -53,7 +53,7 @@ class AppManager {
 
   async removeUserInfo() {
     try {
-      await AsyncStorage.removeItem('userInfo');
+      await AsyncStorage.removeItem('token');
       this.userInfo = null;
     } catch (error) {
       console.log('removeUserInfo error: ', error);

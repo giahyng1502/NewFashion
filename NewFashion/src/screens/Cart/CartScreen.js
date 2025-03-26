@@ -43,6 +43,7 @@ const CartScreen = ({ navigation }) => {
     setTitle(carts.length > 0 ? `Cart (${carts.length})` : 'Cart');
     setCheckOutTitleButton(carts.length > 0 ? `Checkout (${carts.length})` : 'Checkout');
     setShowDeleteButton(carts.filter(item => item.isSelected).length > 0);
+    setIsSelectedAll(carts.filter(item => item.isSelected).length === carts.length);
   }, []);
 
   const loadMoreProducts = () => {
