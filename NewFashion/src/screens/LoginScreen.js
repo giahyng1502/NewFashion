@@ -65,9 +65,8 @@ const LoginScreen = ({navigation}) => {
         </View>
 
         <OutlinedButton icon={require('../assets/bt_google.png')} title="Continue with Google" customStyle={{ width: ScreenSize.width - 40, marginTop: 40 }} />
-        <OutlinedButton icon={require('../assets/bt_facebook.png')} title="Continue with Facebook" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} />
         <OutlinedButton icon={require('../assets/bt_email.png')} title="Continue with Email" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onPress={() => {navigation.navigate('LoginWithEmail')}} />
-        <OutlinedButton icon={require('../assets/bt_phone.png')} title="Continue with phone number" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} />
+        {/* <OutlinedButton icon={require('../assets/bt_phone.png')} title="Continue with phone number" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} /> */}
 
         <TouchableOpacity style={st.troubleContainer} onPress={() => openBottomSheet()} >
           <Text style={st.troubleText}>Trouble signing in?</Text>

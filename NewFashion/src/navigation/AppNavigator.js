@@ -22,6 +22,9 @@ import CouponScreen from '../screens/Coupon/CouponScreen'
 import SubCategoryDetail from '../screens/Category/SubCategoryDetail'
 import SettingsScreen from '../screens/You/Settings/SettingsScreen'
 import NotificationScreen from '../screens/Notification/notification-screen'
+import LightningScreen from '../screens/Lightning/LightningScreen'
+import AddressesScreen from '../screens/Adresses/AdressesScreen'
+import OrderDoneScreen from '../screens/Order/OrderDoneScreen'
 
 const Stack = createStackNavigator()
 
@@ -30,10 +33,10 @@ const AppNavigator = () => {
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={'Splash'}>
           <Stack.Screen name="Splash" component={SplashScreen} />
+          <Stack.Screen name="Main" component={MainScreen} />
           <Stack.Screen name="Login" component={LoginScreen} options={{ presentation: 'modal' }} />
           <Stack.Screen name="RegisterWithEmail" component={RegisterWithEmailScreen} />
           <Stack.Screen name="LoginWithEmail" component={LoginWithEmailScreen} />
-          <Stack.Screen name="Main" component={MainScreen} />
           <Stack.Screen name="ProductDetail" component={DetailsScreen} />
           <Stack.Screen name="LoginWithPhoneNumber" component={LoginWithPhoneNumber} />
           <Stack.Screen name="Chat" component={ChatScreen} />
@@ -49,11 +52,13 @@ const AppNavigator = () => {
           <Stack.Screen name="SubCateDetail" component={SubCategoryDetail}/>
           <Stack.Screen name="Setting" component={SettingsScreen}/>
           <Stack.Screen name="Notification" component={NotificationScreen}/>
+          <Stack.Screen name="Coupons & offers" component={CouponScreen}/>
+          <Stack.Screen name="Lightning" component={LightningScreen} />
+          <Stack.Screen name="Addresses" component={AddressesScreen} />
+          <Stack.Screen name="OrderDone" component={OrderDoneScreen} />
         </Stack.Navigator>
       </NavigationContainer>
   )
 }
 
 export default AppNavigator
-
-const styles = StyleSheet.create({})

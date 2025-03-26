@@ -13,3 +13,15 @@ export const fetchOrders = createAsyncThunk(
         }
     }
 );
+
+export const createOrder = createAsyncThunk(
+    'order/createOrder',
+    async (data, thunkAPI) => {
+        try {
+            const response = await axios.post('/order/create',{name:data.name,phoneNumber:data.phoneNumber,address:data.address});            
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);

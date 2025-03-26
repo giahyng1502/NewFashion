@@ -14,7 +14,6 @@ import { fetchCart } from '../../redux/actions/cartActions';
 import SupportFunctions from '../../utils/SupportFunctions';
 import LightningDealItem from '../../components/LightningDealItem';
 
-
 const titleCategories = [
   { id: "1", name: "All", image: null },
   { id: "2", name: "DEALS", image: require("../../assets/icons/ic_deals.png"), highlight: true },
@@ -130,7 +129,7 @@ const HomeScreen = ({ navigation }) => {
 
           {/* Lightning Deals */}
           {saleProducts.length > 0 && (
-            <View style={st.lightningDealContainer}>
+            <TouchableOpacity style={st.lightningDealContainer} onPress={()=>navigation.navigate('Lightning')}>
               <View style={st.header}>
                 <View style={st.subHeader}>
                   <Image source={require('../../assets/icons/ic_lightning.png')} style={st.headerImage} />
@@ -149,7 +148,7 @@ const HomeScreen = ({ navigation }) => {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={st.listContainer}
               />
-            </View>
+            </TouchableOpacity>
           )}
 
           <View style={{ height: 6, backgroundColor: '#eee', width: '100%' }} />

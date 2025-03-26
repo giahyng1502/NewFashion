@@ -45,7 +45,6 @@ const BuyerDetail = ({ products, onClickShowPopup, information }) => {
                         </TouchableOpacity>
                     </View>
 
-
                     {/* Dải phân cách dạng đường kẻ */}
                     <Image source={require('../../assets/ig_line.png')} resizeMode='cover' style={styles.line} />
                 </TouchableOpacity>

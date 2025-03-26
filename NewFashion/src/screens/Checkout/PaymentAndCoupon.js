@@ -3,8 +3,8 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, Switch } from "react-n
 import { RadioButton } from "react-native-paper";
 import SupportFunctions from '../../utils/SupportFunctions';
 
-const PaymentAndCoupon = ({ products, personalInfo, onSwitch }) => {
-  const [selectedPayment, setSelectedPayment] = useState(null);
+const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup }) => {
+  const [selectedPayment, setSelectedPayment] = useState("direct");
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => {
     setIsEnabled(previousState => !previousState)
@@ -85,7 +85,7 @@ const PaymentAndCoupon = ({ products, personalInfo, onSwitch }) => {
       {/* Coupon */}
       <View style={[styles.titleContainer, { marginBottom: 0, padding: 15, justifyContent: 'space-between', alignItems: 'center' }]}>
         <Text style={styles.couponText}>Apply coupon</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>onClickShowPopup()}>
           <Image source={require('../../assets/ic_arrowRight.png')} style={styles.importantIcon} />
         </TouchableOpacity>
       </View>
