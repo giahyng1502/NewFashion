@@ -23,7 +23,7 @@ const orders = [
   },
 ]
 
-const OrderItem = ({ order }) => (
+const OrderItem = ({ order, OnMyReview }) => (
   <View style={styles.orderContainer}>
     <View style={styles.breaker} />
 
@@ -47,10 +47,14 @@ const OrderItem = ({ order }) => (
         <Text style={[styles.textHeader, { fontSize: 14, color: '#FA7806' }]}>{order.product.price}</Text>
       </View>
     </View>
-
-    <TouchableOpacity style={styles.buyAgainButton}>
-      <Text style={[styles.textHeader, { fontSize: 16 }]}>Buy this again</Text>
-    </TouchableOpacity>
+    <View style={{flexDirection:'row',justifyContent:'flex-end'}}>
+      <TouchableOpacity style={styles.buyAgainButton}>
+        <Text style={[styles.textHeader, { fontSize: 16 }]}>Buy this again</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.buyAgainButton} onPress={() => OnMyReview()}>
+        <Text style={[styles.textHeader, { fontSize: 16 }]}>See reviews</Text>
+      </TouchableOpacity>
+    </View>
     <View style={styles.breaker} />
   </View>
 );
@@ -58,7 +62,7 @@ const OrderItem = ({ order }) => (
 const OrderScreen = ({ navigation }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const dispatch = useDispatch();
-  const {products, loading, page, hasMore} = useSelector(state => state.product);
+  const { products, loading, page, hasMore } = useSelector(state => state.product);
 
   const loadMoreProducts = () => {
     if (!loading && hasMore) {
@@ -81,46 +85,46 @@ const OrderScreen = ({ navigation }) => {
       <BaseHeader title="Your orders" showLeftButton={true} showRightButton={true} rightIcon={require('../../assets/buttons/bt_cart2.png')} onLeftButtonPress={() => { navigation.goBack() }} />
 
 
-<FlatList
-      data={products} // Danh sách sản phẩm chính
-      keyExtractor={(item) => item._id}
-      numColumns={2}
-      ListHeaderComponent={() => (
-        <>
-          <FlatList
-            data={tabs}
-            horizontal
-            keyExtractor={(item) => item}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity onPress={() => setSelectedTab(index)} style={styles.tab}>
-                <Text style={[styles.tabText, selectedTab === index && styles.activeText]}>{item}</Text>
-                {selectedTab === index && <View style={styles.activeIndicator} />}
-              </TouchableOpacity>
-            )}
-            showsHorizontalScrollIndicator={false}
-          />
-          {orders.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Image source={require('../../assets/icons/ic_emptyOrder.png')} style={{ width: 60, height: 60 }} />
-              <Text style={[styles.textHeader, { fontSize: 16, marginLeft: 10 }]}>You don’t have any processing orders</Text>
-            </View>
-          ) : (
+      <FlatList
+        data={products} // Danh sách sản phẩm chính
+        keyExtractor={(item) => item._id}
+        numColumns={2}
+        ListHeaderComponent={() => (
+          <>
             <FlatList
-              data={orders}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => <OrderItem order={item} />}
+              data={tabs}
+              horizontal
+              keyExtractor={(item) => item}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity onPress={() => setSelectedTab(index)} style={styles.tab}>
+                  <Text style={[styles.tabText, selectedTab === index && styles.activeText]}>{item}</Text>
+                  {selectedTab === index && <View style={styles.activeIndicator} />}
+                </TouchableOpacity>
+              )}
+              showsHorizontalScrollIndicator={false}
             />
-          )}
+            {orders.length === 0 ? (
+              <View style={styles.emptyContainer}>
+                <Image source={require('../../assets/icons/ic_emptyOrder.png')} style={{ width: 60, height: 60 }} />
+                <Text style={[styles.textHeader, { fontSize: 16, marginLeft: 10 }]}>You don’t have any processing orders</Text>
+              </View>
+            ) : (
+              <FlatList
+                data={orders}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => <OrderItem order={item} OnMyReview={() => navigation.navigate('WriteReview')} />}
+              />
+            )}
 
-          <Text style={[styles.textHeader, { fontSize: 16, padding: 10 }]}>Maybe you will be also like</Text>
-        </>
-      )}
-      renderItem={({ item }) => <ProductCard item={item} onSelected={() => {handleSelectedItem(item)}} />}
-      onEndReached={loadMoreProducts}
-      onEndReachedThreshold={0.5}
-      ListFooterComponent={renderFooter}
-      contentContainerStyle={{paddingHorizontal: 3,backgroundColor: '#fff'}}
-    />
+            <Text style={[styles.textHeader, { fontSize: 16, padding: 10 }]}>Maybe you will be also like</Text>
+          </>
+        )}
+        renderItem={({ item }) => <ProductCard item={item} onSelected={() => { handleSelectedItem(item) }} />}
+        onEndReached={loadMoreProducts}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter}
+        contentContainerStyle={{ paddingHorizontal: 3, backgroundColor: '#fff' }}
+      />
     </View>
   )
 }
