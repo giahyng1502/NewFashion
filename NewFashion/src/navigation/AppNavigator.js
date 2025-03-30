@@ -39,7 +39,7 @@ const AppNavigator = () => {
           <Stack.Screen name="LoginWithEmail" component={LoginWithEmailScreen} />
           <Stack.Screen name="ProductDetail" component={DetailsScreen} />
           <Stack.Screen name="LoginWithPhoneNumber" component={LoginWithPhoneNumber} />
-          <Stack.Screen name="Chat" component={ChatScreen} />
+          <Stack.Screen name="Messages" component={ChatScreen} />
           <Stack.Screen name="ChatDetail" component={ChatDetail} />
           <Stack.Screen name="PostDetail" component={CommentScreen} />
           <Stack.Screen name="Cart" component={CartScreen} />

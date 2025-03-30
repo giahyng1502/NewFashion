@@ -26,5 +26,16 @@ async function onGoogleButtonPress() {
 
 }
 
+async function onGoogleSignOut() {
+    try {
+        await GoogleSignin.revokeAccess(); // Revoke Google access
+        await GoogleSignin.signOut(); // Sign out from Google
+        await auth().signOut(); // Sign out from Firebase
+        console.log('User signed out successfully');
+    } catch (error) {
+        console.error('Sign-out Error:', error);
+        throw error;
+    }
+}
 
-export default  onGoogleButtonPress;
+export { onGoogleButtonPress, onGoogleSignOut };

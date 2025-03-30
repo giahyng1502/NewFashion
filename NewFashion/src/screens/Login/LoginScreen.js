@@ -10,10 +10,11 @@ import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
 import TextField, { TextFieldType } from '../../components/TextField';
 import PasswordStrengthBar from '../../components/PasswordStrengthBar';
-import onGoogleButtonPress from './signInWithGoogle';
 import { useDispatch } from "react-redux";
 import { loginWithGoogle } from "../../service/userService";
 import AppManager from "../../utils/AppManager";
+import {onGoogleButtonPress} from "./signInWithGoogle";
+import {setUser} from "../../redux/reducer/userReducer";
 
 const LoginScreen = ({ navigation }) => {
 
@@ -49,6 +50,7 @@ const LoginScreen = ({ navigation }) => {
     const data = await onGoogleButtonPress();
     const res = await loginWithGoogle(data.user);
     if (res.token) {
+      dispatch(setUser(res.user));
       AppManager.shared.saveUserInfo(res.token)
         .then(() => {
           // Lấy lại token đã lưu và log ra

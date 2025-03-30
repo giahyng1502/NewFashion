@@ -202,7 +202,7 @@ const YouScreen = ({ navigation }) => {
               <>
                 <View>
                   <View style={st.userInfo}>
-                    <Image source={{ uri: personalInfo.avatar }} style={st.avatar} />
+                    <Image source={{ uri: personalInfo?.avatar }} style={st.avatar} />
                     <Text style={st.userName}>{personalInfo.name}</Text>
                     <View style={st.headerIcons}>
                       <Image
