@@ -4,9 +4,9 @@ import axios from "../../service/axios"
 // Tạo async thunk để fetch orders từ API
 export const fetchOrders = createAsyncThunk(
     'order/fetchOrders',
-    async (_, thunkAPI) => {
+    async (status, thunkAPI) => {
         try {
-            const response = await axios.get('/order/getOrderUser');            
+            const response = await axios.get('/order/getOrderUser?status=',{params: {status: status}});            
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);

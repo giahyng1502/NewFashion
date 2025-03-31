@@ -7,7 +7,7 @@ import cartReducer from '../reducer/cartReducer'
 import personalInfoReducer from '../reducer/informationReducer'
 import postReducer from "../reducer/postReducer";
 import voucherReducer from '../reducer/voucherReducer'
-
+import orderReducer from '../reducer/orderReducer'
 
 export default configureStore({
     reducer: {
@@ -18,6 +18,7 @@ export default configureStore({
         cart: cartReducer,
         personalInfo: personalInfoReducer,
         post: postReducer,
-        coupons: voucherReducer
+        coupons: voucherReducer,
+        orders:orderReducer
     }
 })

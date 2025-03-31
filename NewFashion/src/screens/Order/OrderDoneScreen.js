@@ -49,7 +49,8 @@ const OrderDoneScreen = ({navigation}) => {
                         <Image source={require('../../assets/icons/ic_greenCheck3.png')} style={{width:80,height:80,marginTop:20}}/>
                         <Text style={{color:'#000',fontSize:20,fontWeight:'bold',marginTop:20}}>Thank you for ordering!</Text>
                         <Text style={{color:'#737373',fontSize:14,marginTop:20,marginBottom:10}}>You will receive updates of the product in the mailbox to notification.</Text>
-                        <TouchableOpacity style={{ backgroundColor: "#ff7f00", padding: 12, borderRadius: 40, alignItems: "center",width:'100%',margin:10 }}>
+                        <TouchableOpacity style={{ backgroundColor: "#ff7f00", padding: 12, borderRadius: 40, alignItems: "center",width:'100%',margin:10 }}
+                            onPress={()=>navigation.navigate('Your orders')}>
                             <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 18 }}>
                                 View order
                             </Text>

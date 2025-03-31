@@ -25,6 +25,7 @@ import NotificationScreen from '../screens/Notification/notification-screen'
 import LightningScreen from '../screens/Lightning/LightningScreen'
 import AddressesScreen from '../screens/Adresses/AdressesScreen'
 import OrderDoneScreen from '../screens/Order/OrderDoneScreen'
+import OrderDetailScreen from '../screens/Order/OrderDetailScreen'
 
 const Stack = createStackNavigator()
 
@@ -56,6 +57,7 @@ const AppNavigator = () => {
           <Stack.Screen name="Lightning" component={LightningScreen} />
           <Stack.Screen name="Addresses" component={AddressesScreen} />
           <Stack.Screen name="OrderDone" component={OrderDoneScreen} />
+          <Stack.Screen name="OrderDetail" component={OrderDetailScreen} />
         </Stack.Navigator>
       </NavigationContainer>
   )
