@@ -113,7 +113,7 @@ const YouScreen = ({ navigation }) => {
   if (loading) {
     return (
       <View style={st.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#FA7806" />
       </View>
     );
   }
@@ -202,7 +202,7 @@ const YouScreen = ({ navigation }) => {
               <>
                 <View>
                   <View style={st.userInfo}>
-                    <Image source={{ uri: personalInfo.avatar }} style={st.avatar} />
+                    <Image source={{ uri: personalInfo?.avatar }} style={st.avatar} />
                     <Text style={st.userName}>{personalInfo.name}</Text>
                     <View style={st.headerIcons}>
                       <Image

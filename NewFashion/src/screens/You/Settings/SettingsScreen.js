@@ -2,6 +2,7 @@ import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import BaseHeader from '../../../components/BaseHeader';
 import AppManager from '../../../utils/AppManager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {onGoogleSignOut} from "../../Login/signInWithGoogle";
 
 const options = [
   {
@@ -169,6 +170,7 @@ const SettingsScreen = ({navigation}) => {
                   });
 
                   AsyncStorage.removeItem('browsingHistory');
+                  onGoogleSignOut();
                 } else {
                   handleNavigate(item)
                 }

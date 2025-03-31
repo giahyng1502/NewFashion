@@ -6,6 +6,7 @@ import AppManager from '../utils/AppManager';
 import { fetchProducts, fetchSaleProducts } from '../redux/actions/productActions';
 import { fetchOrders } from '../redux/actions/orderActions';
 import { fetchInformation } from '../redux/actions/infomationActions';
+import { fetchCoupon } from '../redux/actions/voucherAction';
 
 const SplashScreen = ({ navigation }) => {
     const fadeAnimLogo = useRef(new Animated.Value(1)).current;
@@ -15,51 +16,64 @@ const SplashScreen = ({ navigation }) => {
     useEffect(() => {
         const loadDataAndAnimate = async () => {
             try {
-                await loadData();
-                animate();
+                const isSuccess = await loadData();
+                if (isSuccess) {
+                    animate();
+                }
             } catch (error) {
-                console.log('Load data error: ', error);
+                Alert.alert(
+                    'Error',
+                    'Failed to load data. Please try again.',
+                    [
+                        { text: 'Try Again', onPress: loadDataAndAnimate },
+                    ]
+                );
             }
         };
-
+    
         loadDataAndAnimate();
     }, [fadeAnimLogo, fadeAnimBanner, navigation]);
-
+    
     const loadData = async () => {
         try {
             console.log('Load data');
-
+    
             // Gọi và unwrap fetchCategories
             const fetchResult = await dispatch(fetchCategories()).unwrap();
             if (!fetchResult) {
                 throw new Error('Fetch categories failed');
             }
-
+    
             // Gọi và unwrap fetchProducts
             const fetchProduct = await dispatch(fetchProducts(1)).unwrap();
             if (!fetchProduct) {
                 throw new Error('Fetch products failed');
             }
-
+    
             const fetchSaleProduct = await dispatch(fetchSaleProducts(1)).unwrap();
             if (!fetchSaleProduct) {
                 throw new Error('Fetch sale products failed');
             }
-
+    
+            const fetchCoupons = await dispatch(fetchCoupon()).unwrap();
+            if (!fetchCoupons) {
+                throw new Error('Fetch coupon failed');
+            }
+    
             await AppManager.shared.loadUserInfo();
-
+    
             const token = await AppManager.shared.getToken();
             console.log('Token:', token);
-
+    
             if (token) {
                 const fetchPersonalInfo = await dispatch(fetchInformation()).unwrap();
                 console.log('Fetch personal info success:', fetchPersonalInfo);
             }
-
-            navigation.replace('Main');
+    
+            return true; // Thành công
         } catch (error) {
             console.log('Load data error: ', error);
-            Alert.alert('Error', 'Load data error');
+            return false; // Thất bại
         }
     };
 

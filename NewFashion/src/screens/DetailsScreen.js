@@ -143,6 +143,12 @@ const DetailsScreen = ({ navigation, route }) => {
         );
     };
 
+    const handleSelectedItem = (item) => {
+        console.log('Selected item:', item);
+    
+        navigation.navigate("ProductDetail", { item });
+      }
+
     return (
         <View style={st.container}>
             <View style={{ padding: 20, position: 'absolute', flexDirection: 'row', justifyContent: 'space-between', width: '100%', zIndex: 99 }}>
@@ -169,7 +175,14 @@ const DetailsScreen = ({ navigation, route }) => {
                 data={products}
                 numColumns={2}
                 keyExtractor={(item) => item._id}
-                renderItem={({ item }) => <ProductCard item={item} />}
+                renderItem={({ item }) => (
+                    <View style={{ flex: 1 / 2, padding: 5 }}>
+                        <ProductCard
+                            item={item}
+                            onSelected={() => { handleSelectedItem(item) }}
+                        />
+                    </View>
+                )}
                 onEndReachedThreshold={0.5}
                 onEndReached={() => {
                     if (!loading && hasMore) {

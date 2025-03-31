@@ -17,6 +17,7 @@ export const userSlice = createSlice({
             state.name = action.payload.name
             state.email = action.payload.email
             state.avatar = action.payload.avatar
+            console.log(state)
         },
         logout : (state,action)=>{
             state.userId = ""

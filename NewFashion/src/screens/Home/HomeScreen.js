@@ -33,16 +33,18 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     setSelectedTitleCategory(titleCategories[0]);
     dispatch(fetchCart())
-
   }, []);
 
   const loadMoreProducts = () => {
     if (!loading && hasMore) {
+      console.log('Loading more products');
       dispatch(fetchProducts(page));
     }
   };
 
   const renderFooter = () => {
+    console.log('Loading:', loading);
+
     if (!loading) return null;
     return (
       <View style={{ padding: 10 }}>
@@ -64,7 +66,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <FlatList
       data={products} // Danh sách sản phẩm chính
-      keyExtractor={(item) => item._id}
+      keyExtractor={(item) => `${item._id}${item.name}`}
       numColumns={2}
       ListHeaderComponent={() => (
         <View>
@@ -83,10 +85,9 @@ const HomeScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={{paddingLeft: 10}} onPress={() => {navigation.navigate('Search')}}>
-            <SearchBar disable={false} onSearch={() => {  }} />
+          <TouchableOpacity onPress={() => { navigation.navigate('Search') }}>
+            <SearchBar disable={false} onSearch={() => { }} />
           </TouchableOpacity>
-
 
           {/* Discount */}
           <View style={st.discountContainer}>
@@ -129,7 +130,7 @@ const HomeScreen = ({ navigation }) => {
 
           {/* Lightning Deals */}
           {saleProducts.length > 0 && (
-            <TouchableOpacity style={st.lightningDealContainer} onPress={()=>navigation.navigate('Lightning')}>
+            <TouchableOpacity style={st.lightningDealContainer} onPress={() => navigation.navigate('Lightning')}>
               <View style={st.header}>
                 <View style={st.subHeader}>
                   <Image source={require('../../assets/icons/ic_lightning.png')} style={st.headerImage} />
@@ -152,23 +153,18 @@ const HomeScreen = ({ navigation }) => {
           )}
 
           <View style={{ height: 6, backgroundColor: '#eee', width: '100%' }} />
-
-          {/* <View>
-            <FlatList
-              data={titleCategories}
-              ref={titleCategoryFlatlistRef}
-              horizontal
-              keyExtractor={(item) => item.id}
-              renderItem={renderItemTitleCategory}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={st.listContainer}
-            />
-          </View> */}
         </View>
       )}
-      renderItem={({ item }) => <ProductCard item={item} onSelected={() => { handleSelectedItem(item) }} />}
+      renderItem={({ item }) => (
+        <View style={{ flex: 1 / 2, padding: 5 }}>
+          <ProductCard
+            item={item}
+            onSelected={() => { handleSelectedItem(item) }}
+          />
+        </View>
+      )}
       onEndReached={loadMoreProducts}
-      onEndReachedThreshold={0.5}
+      onEndReachedThreshold={0.2}
       ListFooterComponent={renderFooter}
       contentContainerStyle={{ paddingHorizontal: 3, backgroundColor: '#fff' }}
       showsVerticalScrollIndicator={false}

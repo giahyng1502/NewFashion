@@ -35,7 +35,7 @@ const CouponScreen = ({ navigation }) => {
     if (!loading) return null;
       return (
         <View style={{ padding: 10 }}>
-          <ActivityIndicator size="small" color="#0000ff" />
+          <ActivityIndicator size="small" color="#FA7806" />
         </View>
     )
   }
@@ -112,7 +112,14 @@ const CouponScreen = ({ navigation }) => {
       data={products} // Danh sách sản phẩm chính
       keyExtractor={(item) => item._id}
       numColumns={2}
-      renderItem={({ item }) => <ProductCard item={item} onSelected={() => {handleSelectedItem(item)}} />}
+      renderItem={({ item }) => (
+        <View style={{ flex: 1 / 2, padding: 5 }}>
+            <ProductCard
+                item={item}
+                onSelected={() => { handleSelectedItem(item) }}
+            />
+        </View>
+    )}
       onEndReached={loadMoreProducts}
       onEndReachedThreshold={0.5}
       ListFooterComponent={renderFooter}
