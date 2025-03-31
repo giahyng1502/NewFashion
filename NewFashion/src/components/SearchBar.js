@@ -40,10 +40,10 @@ const SearchBar = ({ disable, onSearch }) => {
         value={searchText}
         style={styles.searchInput}
         placeholder="Search something..."
+        placeholderTextColor={'#bbb'}
         onChangeText={handleTextChange}
         onSubmitEditing={handleSubmitEditing}
         editable={disable}
-        
       />
       {searchText.length > 0 && (
         <TouchableOpacity style={styles.clearButton} onPress={handleClearText}>
@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     paddingHorizontal: 15,
+    color: '#000',
   },
   clearButton: {
     padding: 5,

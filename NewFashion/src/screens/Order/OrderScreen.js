@@ -70,7 +70,7 @@ const OrderScreen = ({ navigation }) => {
     if (!loading) return null;
     return (
       <View style={{ padding: 10 }}>
-        <ActivityIndicator size="small" color="#0000ff" />
+        <ActivityIndicator size="small" color="#FA7806" />
       </View>
     )
   }
@@ -115,7 +115,14 @@ const OrderScreen = ({ navigation }) => {
           <Text style={[styles.textHeader, { fontSize: 16, padding: 10 }]}>Maybe you will be also like</Text>
         </>
       )}
-      renderItem={({ item }) => <ProductCard item={item} onSelected={() => {handleSelectedItem(item)}} />}
+      renderItem={({ item }) => (
+        <View style={{ flex: 1 / 2, padding: 5 }}>
+            <ProductCard
+                item={item}
+                onSelected={() => { handleSelectedItem(item) }}
+            />
+        </View>
+    )}
       onEndReached={loadMoreProducts}
       onEndReachedThreshold={0.5}
       ListFooterComponent={renderFooter}

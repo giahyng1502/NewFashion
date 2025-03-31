@@ -38,7 +38,7 @@ const SubCategoryDetail = ({ navigation, route }) => {
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size="large" color="#FA7806" />
             </View>
         );
     }

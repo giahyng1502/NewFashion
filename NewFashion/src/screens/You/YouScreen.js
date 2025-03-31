@@ -113,7 +113,7 @@ const YouScreen = ({ navigation }) => {
   if (loading) {
     return (
       <View style={st.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#FA7806" />
       </View>
     );
   }

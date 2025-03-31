@@ -20,7 +20,7 @@ function NewScreen({ navigation }) {
         <View style={styles.container}>
             {isLoading ? (
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#3498db" />
+                    <ActivityIndicator size="large" color="#FA7806" />
                     <Text style={styles.loadingText}>Đang tải dữ liệu...</Text>
                 </View>
             ) : error ? (

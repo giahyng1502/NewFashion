@@ -62,7 +62,14 @@ const OrderDoneScreen = ({navigation}) => {
                     </View>
                 </>
             )}
-            renderItem={({ item }) => <ProductCard item={item} onSelected={() => { handleSelectedItem(item) }} />}
+            renderItem={({ item }) => (
+                <View style={{ flex: 1 / 2, padding: 5 }}>
+                    <ProductCard
+                        item={item}
+                        onSelected={() => { handleSelectedItem(item) }}
+                    />
+                </View>
+            )}
             showsVerticalScrollIndicator={false}
             onEndReached={loadMoreProducts}
             onEndReachedThreshold={0.5}
