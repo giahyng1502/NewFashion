@@ -31,15 +31,16 @@ const OrderScreen = ({ navigation }) => {
   const orderStatus = [
     { id: 0, name: 'All orders' },
     { id: 1, name: 'Processing' },
-    { id: 2, name: 'Shipping' },
-    { id: 3, name: 'Delivered' },
-    { id: 4, name: 'Returns' }
+    { id: 2, name: 'Waiting to ship' },
+    { id: 3, name: 'Shipping' },
+    { id: 4, name: 'Delivered' },
+    { id: 5, name: 'Canceled' }
   ];
   const { orders } = useSelector(state => state.orders);
 
   useEffect(() => {
     dispatch(fetchOrders())
-    console.log(orders.length);
+
   }, [])
 
   useEffect(() => {
@@ -51,10 +52,10 @@ const OrderScreen = ({ navigation }) => {
   useEffect(() => {
     if (selectedTab === 0) {
       dispatch(fetchOrders()); // null = lấy tất cả đơn hàng
-      console.log(orders.length);
+
     } else {
       dispatch(fetchOrders(selectedTab - 1)); // Lấy đơn hàng theo trạng thái cụ thể
-      console.log(orders.length);
+
     }
   }, [selectedTab])
 
