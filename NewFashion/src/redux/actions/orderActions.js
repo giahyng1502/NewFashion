@@ -25,3 +25,15 @@ export const createOrder = createAsyncThunk(
         }
     }
 );
+
+export const cancelOrder = createAsyncThunk(
+    'order/cancelOrder',
+    async (_id, thunkAPI) => {
+        try {
+            const response = await axios.put(`/order/cancel/${_id}`);            
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);

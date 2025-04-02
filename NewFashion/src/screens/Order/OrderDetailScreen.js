@@ -5,10 +5,19 @@ import SupportFunctions from '../../utils/SupportFunctions'
 
 const OrderDetailScreen = ({navigation,route}) => {
     const {order}=route.params
+    const orderStatus = [
+        { id: 0, name: 'Processing' },
+        { id: 1, name: 'Waiting to ship' },
+        { id: 2, name: 'Shipping' },
+        { id: 3, name: 'Delivered' },
+        { id: 4, name: 'Canceled'}
+    ];
 
-    const handleReview = (status)=>{
-        if(status<2){
+    const handleReview = (status,products)=>{
+        if(status != 3){
           alert('You can only write a review after receiving the product.');
+        }else{
+            navigation.navigate('WriteReview',{products})
         }
     }
 
@@ -34,7 +43,7 @@ const OrderDetailScreen = ({navigation,route}) => {
                                 <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginTop: 5 }}>
                                     <Image source={require('../../assets/icons/ic_truck.png')} style={{ width: 25, height: 25, marginEnd: 10 }} resizeMode='contain' />
                                     <View>
-                                        <Text style={{ color: '#078809', fontSize: 16, fontWeight: 'bold' }}>Order Processing</Text>
+                                        <Text style={{ color: '#078809', fontSize: 16, fontWeight: 'bold' }}>{orderStatus[order.status].name}</Text>
                                         <Text style={{ color: '#000', fontSize: 14 }}>30/03/2025 20:47</Text>
                                     </View>
                                 </View>
@@ -140,7 +149,7 @@ const OrderDetailScreen = ({navigation,route}) => {
 
             <View style={{ width: '100%', backgroundColor: '#fff', padding: 15, borderTopColor: '#BBBBBB', borderTopWidth: 0.5 }}>
                 <TouchableOpacity style={{ backgroundColor: "#ff7f00", padding: 12, borderRadius: 40, alignItems: "center" }}
-                    onPress={()=>handleReview(order.status)}>
+                    onPress={()=>handleReview(order.status,order.item)}>
                     <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 18 }}>
                         Write a review
                     </Text>

@@ -1,11 +1,11 @@
-import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import ProductCard from '../../components/ProductCard';
 import BaseHeader from '../../components/BaseHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts } from '../../redux/actions/productActions';
 import { Dimensions } from 'react-native';
-import { fetchOrders } from '../../redux/actions/orderActions';
+import { fetchOrders,cancelOrder } from '../../redux/actions/orderActions';
 import SupportFunctions from '../../utils/SupportFunctions'
 
 const screenWidth = Dimensions.get('window').width;
@@ -31,15 +31,15 @@ const OrderScreen = ({ navigation }) => {
   const orderStatus = [
     { id: 0, name: 'All orders' },
     { id: 1, name: 'Processing' },
-    { id: 2, name: 'Shipping' },
-    { id: 3, name: 'Delivered' },
-    { id: 4, name: 'Returns' }
+    { id: 2, name: 'Waiting to ship' },
+    { id: 3, name: 'Shipping' },
+    { id: 4, name: 'Delivered' },
+    { id: 5, name: 'Canceled' }
   ];
   const { orders } = useSelector(state => state.orders);
 
   useEffect(() => {
     dispatch(fetchOrders())
-    console.log(orders.length);
   }, [])
 
   useEffect(() => {
@@ -51,10 +51,8 @@ const OrderScreen = ({ navigation }) => {
   useEffect(() => {
     if (selectedTab === 0) {
       dispatch(fetchOrders()); // null = lấy tất cả đơn hàng
-      console.log(orders.length);
     } else {
       dispatch(fetchOrders(selectedTab - 1)); // Lấy đơn hàng theo trạng thái cụ thể
-      console.log(orders.length);
     }
   }, [selectedTab])
 
@@ -63,6 +61,28 @@ const OrderScreen = ({ navigation }) => {
 
     navigation.navigate("ProductDetail", { item, discount, expire });
   }
+
+    const handleCancelOrder = (orderId) => {
+      Alert.alert(
+        "Confirm Cancel",
+        "Are you sure to cancel this order?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Yes",
+            style: "destructive",
+            onPress: () => {
+              dispatch(cancelOrder(orderId)).unwrap();
+              alert('Cancel order successfully')
+            },
+          },
+        ],
+        { cancelable: true }
+      );
+    };
 
   const loadMoreProducts = () => {
     if (!loading && hasMore) {
@@ -88,9 +108,11 @@ const OrderScreen = ({ navigation }) => {
     )
   }
 
-  const handleReview = (status) => {
-    if (status < 2) {
+  const handleReview = (status,products) => {
+    if (status != 3) {
       alert('You can only write a review after receiving the product.');
+    } else {
+      navigation.navigate('WriteReview',{products})
     }
   }
 
@@ -123,10 +145,21 @@ const OrderScreen = ({ navigation }) => {
         </View>
       </View>
 
-      <TouchableOpacity style={{ margin: 10, paddingVertical: 5, paddingHorizontal: 12, borderWidth: 1, borderColor: 'black', borderRadius: 18, alignSelf: 'flex-end' }}
-        onPress={() => handleReview(order.status)}>
-        <Text style={[styles.textHeader, { fontSize: 16 }]}>Write a review</Text>
-      </TouchableOpacity>
+      <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginVertical: 10 }}>
+        {order.status === 0 ? (
+          <TouchableOpacity style={{ marginHorizontal: 5, marginRight: 10,paddingVertical: 5, paddingHorizontal: 12, borderWidth: 1, borderColor: 'black', borderRadius: 18, alignSelf: 'flex-end' }}
+            onPress={() => handleCancelOrder(order._id)}>
+            <Text style={[styles.textHeader, { fontSize: 16 }]}>Cancel order</Text>
+          </TouchableOpacity>
+        ) : (<View />)}
+
+        {order.status === 3 ? (
+          <TouchableOpacity style={{ marginHorizontal: 5, marginRight: 10, paddingVertical: 5, paddingHorizontal: 12, borderWidth: 1, borderColor: 'black', borderRadius: 18, alignSelf: 'flex-end' }}
+            onPress={() => handleReview(order.status, order.item)}>
+            <Text style={[styles.textHeader, { fontSize: 16 }]}>Write a review</Text>
+          </TouchableOpacity>
+        ):(<View/>)}
+      </View>
       <View style={styles.breaker} />
     </View>
   );
@@ -152,7 +185,7 @@ const OrderScreen = ({ navigation }) => {
             <FlatList
               data={orderStatus}
               horizontal
-              keyExtractor={(item) => `${item.id}${item.name}`}
+              keyExtractor={(item) => item.id.toString()}
               renderItem={({ item, index }) => (
                 <TouchableOpacity onPress={() => setSelectedTab(orderStatus[index].id)} style={styles.tab}>
                   <Text style={[styles.tabText, selectedTab === index && styles.activeText]}>{item.name}</Text>
@@ -171,7 +204,7 @@ const OrderScreen = ({ navigation }) => {
                 <FlatList
                   data={orders}
                   pagingEnabled={true}
-                  keyExtractor={(item) => item.id}
+                  keyExtractor={(item,index) => `${item._id}`+index}
                   snapToInterval={screenWidth} // Cố định khoảng cách cuộn
                   snapToAlignment="center"
                   renderItem={({ item }) => <OrderItem order={item} orderStatus={orderStatus} />}

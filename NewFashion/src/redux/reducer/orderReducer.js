@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createOrder, fetchOrders } from '../actions/orderActions';
+import { createOrder, fetchOrders, cancelOrder } from '../actions/orderActions';
 
 const initialState = {
   orders: [],
@@ -27,6 +27,13 @@ const orderSlice = createSlice({
         console.log('Fetch categories failed: ', action.payload);
       })
 
+      .addCase(cancelOrder.fulfilled, (state, action) => {
+        state.orders = state.orders.filter(order => order._id !== action.meta.arg);
+      })
+      .addCase(cancelOrder.rejected, (state, action) => {
+        state.error = action.payload;
+        console.log('Cancel order failed: ', action.payload);
+      })
   },
 });
 

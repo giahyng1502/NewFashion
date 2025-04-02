@@ -22,7 +22,7 @@ const App = () => {
         configureGoogleSignIn();
     }, []);
     return (
-        <SafeAreaView style={{ flex: 1}}>
+        <SafeAreaView style={{ flex:1 }}>
             <SocketProvider userId={userId}>
                 <AppNavigator />
             </SocketProvider>
