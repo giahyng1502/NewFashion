@@ -1,9 +1,11 @@
-import { Image, Text, TouchableOpacity, View, FlatList } from 'react-native'
-import React from 'react'
+import { Image, Text, TouchableOpacity, View, FlatList, Animated, StyleSheet } from 'react-native'
+import React, { useRef, useState } from 'react'
 import BaseHeader from '../../components/BaseHeader'
 import SupportFunctions from '../../utils/SupportFunctions'
 
+
 const OrderDetailScreen = ({navigation,route}) => {
+
     const {order}=route.params
     const orderStatus = [
         { id: 0, name: 'Processing' },
@@ -13,8 +15,64 @@ const OrderDetailScreen = ({navigation,route}) => {
         { id: 4, name: 'Canceled'}
     ];
 
-    const handleReview = (status,products)=>{
-        if(status != 3){
+    function formatDate(isoString) {
+        const date = new Date(isoString);
+        
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng tính từ 0 nên +1
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+    
+    const [isShowStatusBottomSheet, setIsShowStatusBottomSheet] = useState(false);
+    const animatedValue = useRef(new Animated.Value(0)).current;
+    const bottomSheetHeight = 500;
+
+
+    //mở sheet chi tiết đơn hàng
+        const toggleStatusBottomSheet = () => {
+            if (!isShowStatusBottomSheet) {
+                openStatusBottomSheet()
+            } else {
+                closeStatusBottomSheet()
+            }
+        }
+    
+        const openStatusBottomSheet = () => {
+            setIsShowStatusBottomSheet(true);
+            Animated.timing(animatedValue, {
+                toValue: 1,
+                duration: 500,
+                useNativeDriver: true
+            }).start();
+        }
+    
+        const closeStatusBottomSheet = () => {
+            Animated.timing(animatedValue, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: true
+            }).start(() => {
+                setIsShowStatusBottomSheet(false);
+            });
+        }
+
+        const backdropOpacity = animatedValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 0.5]
+        });
+    
+        const sheetTranslateY = animatedValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [bottomSheetHeight, 0]
+        });
+
+    const handleReview = (status)=>{
+        if(status !== 3){
           alert('You can only write a review after receiving the product.');
         }else{
             navigation.navigate('WriteReview',{products})
@@ -44,10 +102,10 @@ const OrderDetailScreen = ({navigation,route}) => {
                                     <Image source={require('../../assets/icons/ic_truck.png')} style={{ width: 25, height: 25, marginEnd: 10 }} resizeMode='contain' />
                                     <View>
                                         <Text style={{ color: '#078809', fontSize: 16, fontWeight: 'bold' }}>{orderStatus[order.status].name}</Text>
-                                        <Text style={{ color: '#000', fontSize: 14 }}>30/03/2025 20:47</Text>
+                                        <Text style={{ color: '#000', fontSize: 14 }}>{formatDate(order.statusHistory[order.statusHistory.length - 1].timestamp)}</Text>
                                     </View>
                                 </View>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={toggleStatusBottomSheet}>
                                     <Image source={require('../../assets/ic_arrowRight.png')} style={{ width: 20, height: 20 }} resizeMode='contain' />
                                 </TouchableOpacity>
                             </View>
@@ -146,6 +204,44 @@ const OrderDetailScreen = ({navigation,route}) => {
                     </View>
                 }
             />
+
+            {isShowStatusBottomSheet && (
+                    <View style={{ position: 'absolute', bottom: 80, left: 0, right: 0, top: 0, justifyContent: 'flex-end', overflow: 'hidden' }}>
+                        {/* background */}
+                        <TouchableOpacity style={{ ...StyleSheet.absoluteFillObject }} onPress={closeStatusBottomSheet} >
+                            <Animated.View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'black', opacity: backdropOpacity }} />
+                        </TouchableOpacity>
+
+                        {/* content */}
+                        <Animated.View style={{ transform: [{ translateY: sheetTranslateY }], backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomWidth: 1, borderBottomColor: '#BBB' }}>
+                            <BaseHeader
+                                title="Order Status History"
+                                showRightButton={true}
+                                rightIcon={require('../../assets/bt_exit.png')}
+                                onRightButtonPress={closeStatusBottomSheet}
+                            />
+                        <View>
+                            <FlatList
+                                data={order.statusHistory}
+                                keyExtractor={item=>item._id}
+                                renderItem={({item})=>(
+                                    <View style={{flexDirection:"row",justifyContent:"space-between",marginHorizontal: 15, borderBottomWidth: 1, marginBottom: 10, borderBottomColor:"#E7E7E7"}}>
+                                        <View style={{flexDirection:"column",paddingBottom: 10}}>
+                                        <Text style={{fontWeight:"bold",color:"#078809",paddingBottom: 10}}>{orderStatus[item.status].name}</Text>
+                                        <Text style={{fontWeight:"bold"}}>Live Date: {formatDate(item.timestamp)}</Text>
+                                        </View>
+                                        <Text style={{fontWeight:"bold"}}>By: {item.updatedBy.name}</Text>
+                                    </View>
+                                )}
+                            />
+                        </View>
+
+
+                            
+                        </Animated.View>
+
+                    </View>
+                )}
 
             <View style={{ width: '100%', backgroundColor: '#fff', padding: 15, borderTopColor: '#BBBBBB', borderTopWidth: 0.5 }}>
                 <TouchableOpacity style={{ backgroundColor: "#ff7f00", padding: 12, borderRadius: 40, alignItems: "center" }}
