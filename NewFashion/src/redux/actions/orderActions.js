@@ -37,3 +37,36 @@ export const cancelOrder = createAsyncThunk(
         }
     }
 );
+
+export const writeReview = createAsyncThunk(
+    "review/writeReview",
+    async ({ orderId, rate, content, productId, files }, thunkAPI) => {
+        try {
+            // Tạo FormData nếu có file
+            const formData = new FormData();
+            formData.append("rate", rate);
+            formData.append("content", content);
+            formData.append("productId", productId);
+
+            // Nếu có files, append từng file vào formData
+            if (files && files.length > 0) {
+                files.forEach((file, index) => {
+                    formData.append(`files`, file); // Backend nhận dạng mảng files
+                });
+            }
+
+            const response = await axios.put(
+                `/putreview/${orderId}`, 
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    }
+                }
+            );
+            return response.review; // Đảm bảo API trả về dữ liệu đúng
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data || "Có lỗi xảy ra");
+        }
+    }
+);

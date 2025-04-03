@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchProducts, fetchSaleProducts } from "../actions/productActions";
+import { writeReview } from "../actions/orderActions";
 
 const initialState = {
     products: [],
@@ -47,6 +48,16 @@ const productSlice = createSlice({
                 console.log('Fetch sale products failed: ', action.payload);
                 state.loading = false;
             })
+
+            .addCase(writeReview.fulfilled, (state, action) => {
+                const product = state.products.find(item => item._id === action.payload.productId);
+                if (product) {
+                    product.reviews = [...product.reviews, action.payload]; // Đảm bảo state không bị mutate
+                }
+            })
+            .addCase(writeReview.rejected, (state, action) => {
+                console.log('Review product failed: ', action.payload);
+            });
     }
 });
 

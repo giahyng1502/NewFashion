@@ -40,10 +40,6 @@ const CartScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('CartScreen');
-  }, []);
-
-  useEffect(() => {
     if (personalInfo) {
       setCartItems(carts);
       setTitle(carts.filter(item => item.isSelected).length > 0 ? `Cart (${carts.filter(item => item.isSelected).length})` : 'Cart');
@@ -52,7 +48,7 @@ const CartScreen = ({ navigation }) => {
       setIsSelectedAll(carts.filter(item => item.isSelected).length === carts.length);
       setIsLoading(false);
     }
-  }, [personalInfo]);
+  }, []);
 
   if (isLoading) {
     return (
@@ -239,7 +235,7 @@ const CartScreen = ({ navigation }) => {
       if (item._id === id) {
         return {
           ...item,
-          quantity: item.quantity + 1
+          quantity: item.quantity < 20 ? item.quantity + 1 : 20
         };
       }
       return item;

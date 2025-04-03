@@ -66,17 +66,6 @@ const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup }
           <Image source={require("../../assets/icons/ic_momo.png")} style={styles.paymentIcon} />
           <Text style={styles.paymentText}>Momo e-wallet</Text>
         </View>
-
-        {/* ZaloPay */}
-        <View style={[styles.paymentOption, { marginBottom: 0, borderBottomWidth: 0, paddingBottom: 0 }]}>
-          <RadioButton
-            value="zalopay"
-            status={selectedPayment === "zalopay" ? "checked" : "unchecked"}
-            onPress={() => setSelectedPayment("zalopay")}
-          />
-          <Image source={require("../../assets/icons/ic_zaloPay.png")} style={styles.paymentIcon} />
-          <Text style={styles.paymentText}>Zalopay</Text>
-        </View>
       </View>
 
       {/* line */}

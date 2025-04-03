@@ -1,11 +1,10 @@
 import { Image, Text, TouchableOpacity, View, FlatList, Animated, StyleSheet } from 'react-native'
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState,useEffect } from 'react'
 import BaseHeader from '../../components/BaseHeader'
 import SupportFunctions from '../../utils/SupportFunctions'
 
 
 const OrderDetailScreen = ({navigation,route}) => {
-
     const {order}=route.params
     const orderStatus = [
         { id: 0, name: 'Processing' },
@@ -15,6 +14,10 @@ const OrderDetailScreen = ({navigation,route}) => {
         { id: 4, name: 'Canceled'}
     ];
 
+    useEffect(() => {
+        console.log(order);
+    }, [])
+    
     function formatDate(isoString) {
         const date = new Date(isoString);
         
@@ -70,14 +73,6 @@ const OrderDetailScreen = ({navigation,route}) => {
             inputRange: [0, 1],
             outputRange: [bottomSheetHeight, 0]
         });
-
-    const handleReview = (status)=>{
-        if(status !== 3){
-          alert('You can only write a review after receiving the product.');
-        }else{
-            navigation.navigate('WriteReview',{products})
-        }
-    }
 
     return (
         <View style={{ backgroundColor: '#fff', flex: 1 }}>
@@ -146,6 +141,12 @@ const OrderDetailScreen = ({navigation,route}) => {
                                     <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#FA7806' }}>
                                         {item.price} x {item.quantity}
                                     </Text>
+                                    {order.status === 3 && (
+                                        <TouchableOpacity style={{ marginHorizontal: 5, paddingVertical: 5, paddingHorizontal: 12, borderWidth: 1, borderColor: 'black', borderRadius: 18, alignSelf: 'flex-end' }}
+                                            onPress={() => navigation.navigate(item.hasReview ? 'MyReview' : 'WriteReview', { product: item, orderId: order._id })}>
+                                            <Text style={{ fontSize: 16, color: '#000', fontWeight: 'bold' }}>{item.hasReview ? 'See review' : 'Write review'}</Text>
+                                        </TouchableOpacity>
+                                    )}
                                 </View>
                             </View>
                         </View>
@@ -206,51 +207,38 @@ const OrderDetailScreen = ({navigation,route}) => {
             />
 
             {isShowStatusBottomSheet && (
-                    <View style={{ position: 'absolute', bottom: 80, left: 0, right: 0, top: 0, justifyContent: 'flex-end', overflow: 'hidden' }}>
-                        {/* background */}
-                        <TouchableOpacity style={{ ...StyleSheet.absoluteFillObject }} onPress={closeStatusBottomSheet} >
-                            <Animated.View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'black', opacity: backdropOpacity }} />
-                        </TouchableOpacity>
+                <View style={{ position: 'absolute', bottom: 80, left: 0, right: 0, top: 0, justifyContent: 'flex-end', overflow: 'hidden' }}>
+                    {/* background */}
+                    <TouchableOpacity style={{ ...StyleSheet.absoluteFillObject }} onPress={closeStatusBottomSheet} >
+                        <Animated.View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'black', opacity: backdropOpacity }} />
+                    </TouchableOpacity>
 
-                        {/* content */}
-                        <Animated.View style={{ transform: [{ translateY: sheetTranslateY }], backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomWidth: 1, borderBottomColor: '#BBB' }}>
-                            <BaseHeader
-                                title="Order Status History"
-                                showRightButton={true}
-                                rightIcon={require('../../assets/bt_exit.png')}
-                                onRightButtonPress={closeStatusBottomSheet}
-                            />
+                    {/* content */}
+                    <Animated.View style={{ transform: [{ translateY: sheetTranslateY }], backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomWidth: 1, borderBottomColor: '#BBB' }}>
+                        <BaseHeader
+                            title="Order Status History"
+                            showRightButton={true}
+                            rightIcon={require('../../assets/bt_exit.png')}
+                            onRightButtonPress={closeStatusBottomSheet}
+                        />
                         <View>
                             <FlatList
-                                data={order.statusHistory}
-                                keyExtractor={item=>item._id}
-                                renderItem={({item})=>(
-                                    <View style={{flexDirection:"row",justifyContent:"space-between",marginHorizontal: 15, borderBottomWidth: 1, marginBottom: 10, borderBottomColor:"#E7E7E7"}}>
-                                        <View style={{flexDirection:"column",paddingBottom: 10}}>
-                                        <Text style={{fontWeight:"bold",color:"#078809",paddingBottom: 10}}>{orderStatus[item.status].name}</Text>
-                                        <Text style={{fontWeight:"bold"}}>Live Date: {formatDate(item.timestamp)}</Text>
+                                data={order.statusHistory.slice().reverse()}
+                                keyExtractor={item => item._id}
+                                renderItem={({ item }) => (
+                                    <View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: 15, borderBottomWidth: 1, marginBottom: 10, borderBottomColor: "#E7E7E7" }}>
+                                        <View style={{ flexDirection: "column", paddingBottom: 10 }}>
+                                            <Text style={{ fontWeight: "bold", color: "#078809", paddingBottom: 10 }}>{orderStatus[item.status].name}</Text>
+                                            <Text style={{ fontWeight: "bold" }}>Live Date: {formatDate(item.timestamp)}</Text>
                                         </View>
-                                        <Text style={{fontWeight:"bold"}}>By: {item.updatedBy.name}</Text>
+                                        <Text style={{ fontWeight: "bold" }}>By: {item.updatedBy.name}</Text>
                                     </View>
                                 )}
                             />
                         </View>
-
-
-                            
-                        </Animated.View>
-
+                    </Animated.View>
                     </View>
                 )}
-
-            <View style={{ width: '100%', backgroundColor: '#fff', padding: 15, borderTopColor: '#BBBBBB', borderTopWidth: 0.5 }}>
-                <TouchableOpacity style={{ backgroundColor: "#ff7f00", padding: 12, borderRadius: 40, alignItems: "center" }}
-                    onPress={()=>handleReview(order.status,order.item)}>
-                    <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 18 }}>
-                        Write a review
-                    </Text>
-                </TouchableOpacity>
-            </View>
         </View>
     )
 }

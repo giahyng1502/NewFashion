@@ -56,6 +56,8 @@ const DetailsScreen = ({ navigation, route }) => {
     const { carts } = useSelector(state => state.cart);
 
     useEffect(() => {
+        console.log(item);
+        
         const saveItemToLocal = async () => {
             try {
                 // Lấy danh sách các item đã lưu từ local storage

@@ -6,16 +6,47 @@ import {
     Image,
     TouchableOpacity,
     StyleSheet,
-    FlatList,
+    Alert
 } from "react-native";
 import { launchImageLibrary } from "react-native-image-picker";
 import BaseHeader from "../../components/BaseHeader";
+import { writeReview } from "../../redux/actions/orderActions";
+import { useDispatch } from "react-redux";
+
 
 const WriteReviews = ({ navigation,route }) => {
-    const {products} = route.params
+    const {product,orderId} = route.params
     const [rating, setRating] = useState(0);
     const [review, setReview] = useState("");
     const [images, setImages] = useState([]);
+
+    const dispatch = useDispatch()
+
+    const handleReview = () => {
+        try {
+            if (!product || !product?.productId) {
+                Alert.alert("Error", "Product data is missing!");
+                return;
+            }
+            console.log("Submitting review for product ID:", product.productId);
+
+            dispatch(
+                writeReview({
+                    rate: rating,
+                    content: review,
+                    productId: product.productId,
+                    files: images,
+                    orderId
+                })
+            ) // unwrap() giúp lấy dữ liệu từ Promise
+
+            Alert.alert("Review sent", "Your review has been sent", [
+                { text: "OK", onPress: () => navigation.replace('Your orders') }
+            ]);
+        } catch (error) {
+            Alert.alert("Error", error?.message || "Something went wrong!");
+        }
+    }
 
     const handleStarPress = (index) => {
         setRating(index + 1);
@@ -34,22 +65,18 @@ const WriteReviews = ({ navigation,route }) => {
             {/* Header */}
             <BaseHeader title="Write a review" showLeftButton={true} showRightButton={true} onLeftButtonPress={() => { navigation.goBack() }} />
 
-            <FlatList 
-            data={products}
-            keyExtractor={(item)=>item.productId}
-            renderItem={({item})=>(
                 <View style={{borderBottomWidth:7,borderBottomColor:'#E7E7E7'}}>
                     {/* Product Info */}
                     <View style={st.productContainer}>
                         <Image
-                            source={{ uri: item.color.imageColor }}
+                            source={{ uri: product.color.imageColor }}
                             style={st.productImage}
                         />
                         <View style={st.productDetails}>
                             <Text style={st.productTitle} numberOfLines={1}>
-                                {item.productName}
+                                {product.productName}
                             </Text>
-                            <Text style={st.productSubtitle}>{item.color.nameColor}, {item.size}</Text>
+                            <Text style={st.productSubtitle}>{product.color.nameColor}, {product.size}</Text>
                         </View>
                     </View>
 
@@ -88,18 +115,15 @@ const WriteReviews = ({ navigation,route }) => {
                     {/* Add Photos or Videos */}
                     <View style={{ paddingHorizontal: 10 }}>
                         <Text style={{ color: '#1E1E1E', fontWeight: '600', fontSize: 16, marginVertical: 8 }}>Add photos or videos</Text>
-                        <TouchableOpacity style={st.imagePicker} onPress={selectImage}>
+                        <TouchableOpacity style={st.imagePicker} onPress={()=>selectImage()}>
                             <Image source={require("../../assets/icons/ic_add_photo.png")} />
                             <Text style={st.imagePickerText}>Add photos or videos</Text>
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={st.submitButton} onPress={() => navigation.navigate('MyReview')}>
+                    <TouchableOpacity style={st.submitButton} onPress={() => handleReview()}>
                         <Text style={st.submitButtonText}>Send</Text>
                     </TouchableOpacity>
                 </View>
-                )}
-            />
-
         </View>
     );
 };

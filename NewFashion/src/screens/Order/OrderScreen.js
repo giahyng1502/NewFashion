@@ -152,13 +152,6 @@ const OrderScreen = ({ navigation }) => {
             <Text style={[styles.textHeader, { fontSize: 16 }]}>Cancel order</Text>
           </TouchableOpacity>
         ) : (<View />)}
-
-        {order.status === 3 ? (
-          <TouchableOpacity style={{ marginHorizontal: 5, marginRight: 10, paddingVertical: 5, paddingHorizontal: 12, borderWidth: 1, borderColor: 'black', borderRadius: 18, alignSelf: 'flex-end' }}
-            onPress={() => handleReview(order.status, order.item)}>
-            <Text style={[styles.textHeader, { fontSize: 16 }]}>Write a review</Text>
-          </TouchableOpacity>
-        ):(<View/>)}
       </View>
       <View style={styles.breaker} />
     </View>
