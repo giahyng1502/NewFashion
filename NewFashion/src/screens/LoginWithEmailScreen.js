@@ -8,6 +8,7 @@ import BenefitsInfoBox from '../components/BenefitsInfoBox';
 import { checkEmail, loginWithEmail, register } from '../redux/actions/userActions';
 import PasswordStrengthBar from '../components/PasswordStrengthBar';
 import AppManager from '../utils/AppManager'
+import {setUser} from "../redux/reducer/userReducer";
 
 const LoginWithEmailScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -157,7 +158,6 @@ const LoginWithEmailScreen = ({ navigation }) => {
       .then((result) => {
         console.log('result: ', result);
         console.log('token: ', result.payload.token);
-
         // Lưu token
         AppManager.shared.saveUserInfo(result.payload.token)
           .then(() => {

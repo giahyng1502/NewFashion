@@ -27,7 +27,6 @@ const SplashScreen = ({ navigation }) => {
 
     const loadData = async () => {
         try {
-            console.log('Load data');
 
             // Gọi và unwrap fetchCategories
             const fetchResult = await dispatch(fetchCategories()).unwrap();
@@ -46,14 +45,12 @@ const SplashScreen = ({ navigation }) => {
                 throw new Error('Fetch sale products failed');
             }
 
-            await AppManager.shared.loadUserInfo();
 
             const token = await AppManager.shared.getToken();
             console.log('Token:', token);
 
             if (token) {
                 const fetchPersonalInfo = await dispatch(fetchInformation()).unwrap();
-                console.log('Fetch personal info success:', fetchPersonalInfo);
             }
 
             navigation.replace('Main');

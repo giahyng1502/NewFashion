@@ -25,7 +25,8 @@ const productSlice = createSlice({
                 state.products = [...state.products, ...action.payload];
                 state.page += 1;
                 state.hasMore = action.payload.length > 0
-                state.loading = false;
+                state.loading = false
+                console.log(action.payload.length);
             })
             .addCase(fetchProducts.rejected, (state, action) => {
                 console.log('Fetch products failed: ', action.payload);

@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+import {loginWithEmail, loginWithGoogle} from "../actions/userActions";
 
 const initialState = {
     userId : "",
@@ -17,7 +18,7 @@ export const userSlice = createSlice({
             state.name = action.payload.name
             state.email = action.payload.email
             state.avatar = action.payload.avatar
-            console.log(state)
+            state.role = action.payload.role
         },
         logout : (state,action)=>{
             state.userId = ""
@@ -29,6 +30,24 @@ export const userSlice = createSlice({
             state.onlineUser = action.payload
         },
     },
+    extraReducers: (builder) => {
+        builder.addCase(loginWithEmail.fulfilled, (state, action) => {
+            const user = action.payload.user;
+            state.userId = user._id;
+            state.name = user.name;
+            state.email = user.email;
+            state.avatar = user.avatar;
+            state.role = user.role;
+        })
+            .addCase(loginWithGoogle.fulfilled, (state, action) => {
+                const user = action.payload.user;
+                state.userId = user._id;
+                state.name = user.name;
+                state.email = user.email;
+                state.avatar = user.avatar;
+                state.role = user.role;
+            })
+    }
 })
 
 export const { setUser, setToken ,logout, setOnlineUser } = userSlice.actions

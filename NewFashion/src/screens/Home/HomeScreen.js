@@ -64,7 +64,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <FlatList
       data={products} // Danh sách sản phẩm chính
-      keyExtractor={(item) => item._id}
+      keyExtractor={(item,index) => `${item._id} ${index}`}
       numColumns={2}
       ListHeaderComponent={() => (
         <View>

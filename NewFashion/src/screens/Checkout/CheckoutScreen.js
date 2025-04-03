@@ -33,7 +33,7 @@ const CheckoutScreen = ({ navigation }) => {
     }, []);
 
     useEffect(() => {
-        console.log('personalInfo:', personalInfo);
+        // console.log('personalInfo:', personalInfo);
 
         if (personalInfo && personalInfo.information) {
             setDefaultAddress(getDefaultInformation());

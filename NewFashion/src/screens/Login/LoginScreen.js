@@ -10,11 +10,11 @@ import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
 import TextField, { TextFieldType } from '../../components/TextField';
 import PasswordStrengthBar from '../../components/PasswordStrengthBar';
-import { useDispatch } from "react-redux";
-import { loginWithGoogle } from "../../service/userService";
-import AppManager from "../../utils/AppManager";
-import {onGoogleButtonPress} from "./signInWithGoogle";
-import {setUser} from "../../redux/reducer/userReducer";
+import { useDispatch } from 'react-redux';
+import AppManager from '../../utils/AppManager';
+import {onGoogleButtonPress} from './signInWithGoogle';
+import {setUser} from '../../redux/reducer/userReducer';
+import {loginWithGoogle} from "../../redux/actions/userActions";
 
 const LoginScreen = ({ navigation }) => {
 
@@ -47,24 +47,34 @@ const LoginScreen = ({ navigation }) => {
 
   };
   const handleLoginWithGoogle = async () => {
-    const data = await onGoogleButtonPress();
-    const res = await loginWithGoogle(data.user);
-    if (res.token) {
-      dispatch(setUser(res.user));
-      AppManager.shared.saveUserInfo(res.token)
-        .then(() => {
-          // Lấy lại token đã lưu và log ra
-          return AppManager.shared.getToken();
-        })
-        .then((token) => {
-          console.log('token: ', token); // Token thực tế
-          navigation.replace('Main');
-        })
-        .catch((err) => {
-          console.log('Error in token processing: ', err);
-        });
+    try {
+      const data = await onGoogleButtonPress();
+      if (!data || !data.user) {
+        console.log('Google login failed: No user data');
+        return;
+      }
+
+      dispatch(loginWithGoogle(data.user._user)).then((result) => {
+        console.log(result);
+        if (result?.meta.requestStatus === 'fulfilled') {
+          AppManager.shared.saveUserInfo(result.payload.token)
+              .then(() => AppManager.shared.getToken())
+              .then((token) => {
+                console.log('token: ', token);
+                navigation.replace('Main');
+              })
+              .catch((err) => {
+                console.log('Error in token processing: ', err);
+              });
+        } else {
+          console.log('Google login failed:', result);
+        }
+      });
+    } catch (error) {
+      console.error('Error in Google login:', error);
     }
-  }
+  };
+
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: isOpen ? '#fff' : 'rgba(128, 128, 128, 0.7)' }} >
@@ -89,7 +99,7 @@ const LoginScreen = ({ navigation }) => {
         </View>
 
         <OutlinedButton onPress={handleLoginWithGoogle} icon={require('../../assets/bt_google.png')} title="Continue with Google" customStyle={{ width: ScreenSize.width - 40, marginTop: 40 }} />
-        <OutlinedButton icon={require('../../assets/bt_email.png')} title="Continue with Email" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onPress={() => { navigation.navigate('LoginWithEmail') }} />
+        <OutlinedButton icon={require('../../assets/bt_email.png')} title="Continue with Email" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onPress={() => { navigation.navigate('LoginWithEmail'); }} />
         {/* <OutlinedButton icon={require('../assets/bt_phone.png')} title="Continue with phone number" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} /> */}
 
 

@@ -15,6 +15,7 @@ import ProductCard from '../../components/ProductCard';
 import AppManager from '../../utils/AppManager'
 import { useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {id} from "@gorhom/bottom-sheet/lib/typescript/utilities/id";
 
 const menuItems = [
   {
@@ -49,12 +50,6 @@ const menuItems = [
   },
 ];
 
-const userData = {
-  name: 'Minhyu Do',
-  avatar:
-    'https://s3-alpha-sig.figma.com/img/c375/02e3/5d906d3d9698632a4b0f88206e88c6d5?Expires=1741564800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=Vt1tkOomEuFPYabzA6hndU2ZQpzrK13gmW9hM9ipxVCzmmxh48FDgtZnd1Ry18GC-czFt-q0VPNTCcmN4R3o9vjiGTxnIJoWoYJFXnCWthe7mLgdxBbvPjg5o3pAaS3J-BU19OB4iKe2PW5er~Q8afqiRkLqBtpUhGuFylN615DvL8tcIIWZCcxXTR813AJR-10ZK2nXsASy4tQq9Cmpvew3~KJ-iDsZVOHLQqKu86Jgc8aTApJRRAKXhCJ1ak~bWels~hwDxuXa0pOdSl10Qua0s5qx4JGQG-uWNOr6qamXQp9v6IETZnWiwlMk9SlvCfFID5P-cqNgROCRfI~0tg__',
-};
-
 const bottomMenuItems = [
   {
     id: '1',
@@ -74,11 +69,23 @@ const bottomMenuItems = [
 ];
 
 const YouScreen = ({ navigation }) => {
-  const handleNavigate = item => navigation.navigate(item.text);
+
   const { personalInfo } = useSelector(state => state.personalInfo);
   const [browsingHistory, setBrowsingHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const handleNavigate = (item) => {
+    if (item.text !== 'Messages') {
+      navigation.navigate(item.text);
+    }
+    else {
+      if (personalInfo.role === 0) {
+        navigation.navigate('ChatDetail',{id : '67eeafc786a3c7e95e9d3a73'});
+      }
+      else {
+        navigation.navigate(item.text);
+      }
+    }
+  }
   useEffect(() => {
     const fetchBrowsingHistory = async () => {
       try {
@@ -203,7 +210,7 @@ const YouScreen = ({ navigation }) => {
                 <View>
                   <View style={st.userInfo}>
                     <Image source={{ uri: personalInfo?.avatar }} style={st.avatar} />
-                    <Text style={st.userName}>{personalInfo.name}</Text>
+                    <Text style={st.userName}>{personalInfo?.name}</Text>
                     <View style={st.headerIcons}>
                       <Image
                         source={require('../../assets/icons/ic_support.png')}
