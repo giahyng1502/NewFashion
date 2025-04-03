@@ -424,7 +424,7 @@ const CheckoutScreen = ({ navigation }) => {
                                     <View style={{ backgroundColor: "#fff", padding: 15, marginBottom: 15 }}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
                                             <Text style={{ color: '#000', fontWeight: "bold", fontSize: 16 }}>{item.name}</Text>
-                                            <Text style={{ color: "#737373", fontWeight: "bold", fontSize: 14, marginLeft: 10 }}>+84 {item.phoneNumber}</Text>
+                                            <Text style={{ color: "#737373", fontWeight: "bold", fontSize: 14, marginLeft: 10 }}>0{item.phoneNumber}</Text>
                                         </View>
 
                                         <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
