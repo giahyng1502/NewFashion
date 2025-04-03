@@ -1,5 +1,5 @@
 import { Alert, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import ImageDetailProduct from '../components/ImageDetailProduct'
 import BannerAdsProduct from '../components/BannerAdsProduct'
 import InfoProduct from '../components/InfoProduct'
@@ -10,7 +10,7 @@ import ReviewFormUser, { ReviewItem } from '../components/ReviewFormUser'
 import AboutShop from '../components/AboutShop'
 import DetailProduct from '../components/DetailProduct'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchProducts } from '../redux/actions/productActions'
+import { fetchProducts, fetchProductById } from '../redux/actions/productActions'
 import Swiper from 'react-native-swiper'
 import ProductCard from '../components/ProductCard'
 import StarRating from '../components/StarRating'
@@ -54,10 +54,33 @@ const DetailsScreen = ({ navigation, route }) => {
     const [quantity, setQuantity] = React.useState(1);
     const dispatch = useDispatch()
     const { carts } = useSelector(state => state.cart);
+    const [reviews, setReviews] = useState([]);
+
+    useEffect(() => {
+        dispatch(fetchProductById(item._id))
+            .unwrap()
+            .then((review) => {
+                console.log("Review: ", review);
+                setReviews(review);
+            })
+            .catch((error) => {
+                console.error("Error fetching reviews:", error);
+            });
+    }, []);
+
+    function formatDate(isoString) {
+        const date = new Date(isoString);
+
+        return date.toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: '2-digit', 
+            year: 'numeric' 
+        });
+    }
 
     useEffect(() => {
         console.log(item);
-        
+
         const saveItemToLocal = async () => {
             try {
                 // Lấy danh sách các item đã lưu từ local storage
@@ -147,9 +170,9 @@ const DetailsScreen = ({ navigation, route }) => {
 
     const handleSelectedItem = (item) => {
         console.log('Selected item:', item);
-    
+
         navigation.navigate("ProductDetail", { item });
-      }
+    }
 
     return (
         <View style={st.container}>
@@ -406,7 +429,30 @@ const DetailsScreen = ({ navigation, route }) => {
                             <FlatList
                                 data={reviews}
                                 keyExtractor={(item) => item.id}
-                                renderItem={({ item }) => <ReviewItem {...item} />}
+                                renderItem={({ item }) => (
+                                    <View style={{ borderBottomWidth: 1, borderBottomColor:"#BBBBBB" ,paddingBottom: 15, paddingTop: 10 }}>
+                                        <View style={{ flexDirection: "row" , gap: 5, alignItems:"center"}}>
+                                            <Image source={{ uri: item.userId.avatar }} style={{ width: 28, height: 28 }} />
+                                            <Text style={{fontWeight:"700",fontSize:12}}>{item.userId.name}</Text>
+                                            <Text style={{color:"#737373", fontSize: 10, fontWeight: "500"}}>on {formatDate(item.reviewDate)}</Text>
+                                        </View>
+                                        <View style={{ flexDirection: "row", marginBottom: 4 , marginTop: 4}}>
+                                            {Array.from({ length: 5 }).map((_, index) => (
+                                                <Image
+                                                    key={index}
+                                                    source={
+                                                        index < item.rate
+                                                            ? require("../assets/icons/ic_staralone.png")
+                                                            : require("../assets/icons/ic_staralone.png")
+                                                    }
+                                                    style={{ marginRight: 2 }}
+                                                />
+                                            ))}
+                                        </View>
+                                        <Text style={{color:"#737373", fontWeight:"500", fontSize: 10}}>{item.purchased}</Text>
+                                        <Text style={{fontWeight:"bold", fontSize: 13}}>{item.content}</Text>
+                                    </View>
+                                )}
                             />
                         </View>
 

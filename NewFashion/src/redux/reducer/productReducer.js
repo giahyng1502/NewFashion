@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchProducts, fetchSaleProducts } from "../actions/productActions";
+import { fetchProducts, fetchSaleProducts,fetchProductById } from "../actions/productActions";
 import { writeReview } from "../actions/orderActions";
 
 const initialState = {
@@ -57,7 +57,16 @@ const productSlice = createSlice({
             })
             .addCase(writeReview.rejected, (state, action) => {
                 console.log('Review product failed: ', action.payload);
-            });
+            })
+
+            .addCase(fetchProductById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.product = action.payload;
+              })
+              .addCase(fetchProductById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+              });
     }
 });
 

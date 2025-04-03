@@ -26,3 +26,14 @@ export const fetchSaleProducts = createAsyncThunk(
     }
 );
 
+export const fetchProductById = createAsyncThunk(
+    'product/fetchOne',
+    async (productId, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`/getone/${productId}`);
+        return response.reviews;
+      } catch (error) {
+        return rejectWithValue(error.message);
+      }
+    }
+  );
