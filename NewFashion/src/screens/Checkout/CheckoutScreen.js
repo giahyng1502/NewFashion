@@ -9,6 +9,7 @@ import BaseHeader from '../../components/BaseHeader'
 import { deleteInformation, updateDefaultInformation } from '../../redux/actions/infomationActions'
 import { fetchCoupon } from '../../redux/actions/voucherAction'
 import { createOrder } from '../../redux/actions/orderActions'
+import { fetchCart } from '../../redux/actions/cartActions'
 
 const CheckoutScreen = ({ navigation }) => {
     const { carts } = useSelector(state => state.cart);
@@ -26,10 +27,24 @@ const CheckoutScreen = ({ navigation }) => {
     const [defaultAddress, setDefaultAddress] = useState(null);
     const [selectedAddress, setSelectedAddress] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
+    const [isLoadingCoupon, setIsLoadingCoupon] = useState(true)
+    const [isLoadingAddress, setIsLoadingAddress] = useState(true)
+    const [isLoadingCart, setIsLoadingCart] = useState(true)
     const [isEnabled, setIsEnabled] = useState(false);
 
     useEffect(() => {
-        dispatch(fetchCoupon());
+        const fetchData = async () => {
+            try {
+                await Promise.all([
+                    dispatch(fetchCoupon()).unwrap().finally(() => setIsLoadingCoupon(false)),
+                    dispatch(fetchCart()).unwrap().finally(() => setIsLoadingCart(false))
+                ]);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+    
+        fetchData();
     }, []);
 
     useEffect(() => {
@@ -38,12 +53,19 @@ const CheckoutScreen = ({ navigation }) => {
         if (personalInfo && personalInfo.information) {
             setDefaultAddress(getDefaultInformation());
             setSelectedAddress(getDefaultInformation());
-            setIsLoading(false);
+            setIsLoadingAddress(false);
             setAddresses(personalInfo.information)
         } else {
             console.log('No personalInfo data or empty information array');
         }
     }, [personalInfo]);
+
+    useEffect(() => {
+        if (!isLoadingCoupon && !isLoadingCart && !isLoadingAddress) {
+            setIsLoading(false);
+        }
+    }, [isLoadingCoupon, isLoadingCart, isLoadingAddress]);
+    
 
     function formatDate(isoString) {
         const date = new Date(isoString);
@@ -236,7 +258,7 @@ const CheckoutScreen = ({ navigation }) => {
     if (isLoading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size="large" color="#FA7806" />
             </View>
         );
     }
@@ -402,7 +424,7 @@ const CheckoutScreen = ({ navigation }) => {
                                     <View style={{ backgroundColor: "#fff", padding: 15, marginBottom: 15 }}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
                                             <Text style={{ color: '#000', fontWeight: "bold", fontSize: 16 }}>{item.name}</Text>
-                                            <Text style={{ color: "#737373", fontWeight: "bold", fontSize: 14, marginLeft: 10 }}>+84 {item.phoneNumber}</Text>
+                                            <Text style={{ color: "#737373", fontWeight: "bold", fontSize: 14, marginLeft: 10 }}>0{item.phoneNumber}</Text>
                                         </View>
 
                                         <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>

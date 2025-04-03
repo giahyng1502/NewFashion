@@ -55,13 +55,6 @@ const TextField = ({
       onPress={type === TextFieldType.DROPDOWN ? onDropdownPress : null}
       style={[styles.container, customStyle, (error) ? styles.errorBorder : styles.defaultBorder]}
     >
-      {type === TextFieldType.PHONENUMBER && (
-        <Text style={{ color: 'black', fontSize: 12, fontWeight: 'semibold' }}>
-          VN +84 {' '}
-          <Text style={{ color: '#BBBBBB', fontSize: 12, fontWeight: 'semibold' }}>|</Text>
-          {' '}
-        </Text>
-      )}
       <TextInput
         style={styles.textInput}
         value={text}

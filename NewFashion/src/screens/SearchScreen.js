@@ -64,6 +64,12 @@ const SearchScreen = ({ navigation, onSearch }) => {
     </View>
   );
 
+  const handleSelectedItem = (item) => {
+    console.log('Selected item:', item);
+
+    navigation.navigate("ProductDetail", { item});
+  }
+
   // Hàm xử lý khi nhập dữ liệu
   const handleSearch = async (text) => {
     setSearchText(text);
@@ -158,10 +164,13 @@ const SearchScreen = ({ navigation, onSearch }) => {
               <FlatList
                 data={browsingHistory}
                 renderItem={({ item }) => (
-                  <ProductCard
-                    item={item}
-                    onSelected={() => { handleSelectedItem(item) }}
-                  />
+                  <View style={{ width: 140 }}>
+                    <ProductCard
+                      item={item}
+                      onSelected={() => { handleSelectedItem(item) }}
+                      style={{ width: 140 }} // Đặt chiều rộng cho ProductCard
+                    />
+                  </View>
                 )}
                 keyExtractor={(item) => item.id}
                 horizontal
@@ -211,9 +220,6 @@ const styles = StyleSheet.create({
     height: 18,
     marginRight: 7,
     resizeMode: 'contain',
-  },
-  list: {
-    paddingLeft: 16, // Khoảng cách lề
   },
   item: {
     flexDirection: 'row',

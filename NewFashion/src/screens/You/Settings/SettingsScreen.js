@@ -2,19 +2,13 @@ import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import BaseHeader from '../../../components/BaseHeader';
 import AppManager from '../../../utils/AppManager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {onGoogleSignOut} from "../../Login/signInWithGoogle";
 
 const options = [
   {
     id: '1',
     title: 'Sign in / Register',
     nameScreen: 'Login',
-    icon: require('../../../assets/icons/ic_arrowRight.png'),
-  },
-  {
-    id: '2',
-    title: 'Language',
-    language: 'English',
-    nameScreen: 'Language',
     icon: require('../../../assets/icons/ic_arrowRight.png'),
   },
   {
@@ -38,12 +32,6 @@ const options = [
 ];
 
 const anotherOptions = [
-  {
-    id: '3',
-    title: 'Switch accounts',
-    nameScreen: 'SwitchAccount',
-    icon: require('../../../assets/icons/ic_arrowRight.png'),
-  },
   {
     id: '4',
     title: 'Sign out',
@@ -169,6 +157,7 @@ const SettingsScreen = ({navigation}) => {
                   });
 
                   AsyncStorage.removeItem('browsingHistory');
+                  onGoogleSignOut();
                 } else {
                   handleNavigate(item)
                 }

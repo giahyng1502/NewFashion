@@ -25,8 +25,10 @@ import NotificationScreen from '../screens/Notification/notification-screen'
 import LightningScreen from '../screens/Lightning/LightningScreen'
 import AddressesScreen from '../screens/Adresses/AdressesScreen'
 import OrderDoneScreen from '../screens/Order/OrderDoneScreen'
+import OrderDetailScreen from '../screens/Order/OrderDetailScreen'
 import MyReviews from '../screens/Review/MyReviews'
 import WriteReviews from '../screens/Review/WriteReviews'
+
 
 const Stack = createStackNavigator()
 
@@ -41,7 +43,7 @@ const AppNavigator = () => {
           <Stack.Screen name="LoginWithEmail" component={LoginWithEmailScreen} />
           <Stack.Screen name="ProductDetail" component={DetailsScreen} />
           <Stack.Screen name="LoginWithPhoneNumber" component={LoginWithPhoneNumber} />
-          <Stack.Screen name="Chat" component={ChatScreen} />
+          <Stack.Screen name="Messages" component={ChatScreen} />
           <Stack.Screen name="ChatDetail" component={ChatDetail} />
           <Stack.Screen name="PostDetail" component={CommentScreen} />
           <Stack.Screen name="Cart" component={CartScreen} />
@@ -58,6 +60,7 @@ const AppNavigator = () => {
           <Stack.Screen name="Lightning" component={LightningScreen} />
           <Stack.Screen name="Addresses" component={AddressesScreen} />
           <Stack.Screen name="OrderDone" component={OrderDoneScreen} />
+          <Stack.Screen name="OrderDetail" component={OrderDetailScreen} />
           <Stack.Screen name="WriteReview" component={WriteReviews}/>
           <Stack.Screen name="MyReview" component={MyReviews}/>
         </Stack.Navigator>

@@ -13,7 +13,7 @@ export const SocketProvider = ({ children, userId }) => {
                 transports: ["websocket"],
                 auth: { userId: userId }
             });
-
+            console.log(newSocket);
             setSocket(newSocket);
             return () => newSocket.disconnect(); // Ngắt kết nối khi đăng xuất
         }

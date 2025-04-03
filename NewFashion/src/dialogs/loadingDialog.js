@@ -10,7 +10,7 @@ const LoadingDialog = ({loading}) => {
                 visible={loading}
             >
                 <View style={styles.modalContainer}>
-                        <ActivityIndicator size="large" color="#00ff00" />
+                        <ActivityIndicator size="large" color="#FA7806" />
                 </View>
             </Modal>
     );
