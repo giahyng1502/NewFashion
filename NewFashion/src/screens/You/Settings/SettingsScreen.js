@@ -12,13 +12,6 @@ const options = [
     icon: require('../../../assets/icons/ic_arrowRight.png'),
   },
   {
-    id: '2',
-    title: 'Language',
-    language: 'English',
-    nameScreen: 'Language',
-    icon: require('../../../assets/icons/ic_arrowRight.png'),
-  },
-  {
     id: '3',
     title: 'Privacy',
     nameScreen: '',
@@ -39,12 +32,6 @@ const options = [
 ];
 
 const anotherOptions = [
-  {
-    id: '3',
-    title: 'Switch accounts',
-    nameScreen: 'SwitchAccount',
-    icon: require('../../../assets/icons/ic_arrowRight.png'),
-  },
   {
     id: '4',
     title: 'Sign out',

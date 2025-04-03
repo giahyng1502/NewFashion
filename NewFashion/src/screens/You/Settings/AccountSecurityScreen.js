@@ -21,7 +21,7 @@ const getPasswordStrength = password => {
 };
 
 const formatPhoneNumber = phone =>
-  phone?.replace(/^0(\d{3})(\d{3})(\d{3})$/, '+84 $1 $2 $3') || '';
+  phone?.replace(/^0(\d{3})(\d{3})(\d{3})$/, '0$1 $2 $3') || '';
 
 const getButtonText = value => (value ? 'Edit' : 'Add');
 
