@@ -30,19 +30,25 @@ const WriteReviews = ({ navigation,route }) => {
             }
             console.log("Submitting review for product ID:", product.productId);
 
-            dispatch(
-                writeReview({
-                    rate: rating,
-                    content: review,
-                    productId: product.productId,
-                    files: images,
-                    orderId
-                })
-            ) // unwrap() giúp lấy dữ liệu từ Promise
+            if(!rating || !review){
+                Alert.alert("Error", "Your review isn't valid");
+                return
+            }else{
+                dispatch(
+                    writeReview({
+                        rate: rating,
+                        content: review,
+                        productId: product.productId,
+                        files: images,
+                        orderId
+                    })
+                ) // unwrap() giúp lấy dữ liệu từ Promise
+    
+                Alert.alert("Review sent", "Your review has been sent", [
+                    { text: "OK", onPress: () => navigation.replace('Your orders') }
+                ]);
+            }
 
-            Alert.alert("Review sent", "Your review has been sent", [
-                { text: "OK", onPress: () => navigation.replace('Your orders') }
-            ]);
         } catch (error) {
             Alert.alert("Error", error?.message || "Something went wrong!");
         }

@@ -83,7 +83,7 @@ const OrderDetailScreen = ({navigation,route}) => {
             />
 
             <FlatList
-                data={order.item}
+                data={order.items}
                 keyExtractor={item => item._id}
                 ListHeaderComponent={
                     <View>
@@ -143,8 +143,10 @@ const OrderDetailScreen = ({navigation,route}) => {
                                     </Text>
                                     {order.status === 3 && (
                                         <TouchableOpacity style={{ marginHorizontal: 5, paddingVertical: 5, paddingHorizontal: 12, borderWidth: 1, borderColor: 'black', borderRadius: 18, alignSelf: 'flex-end' }}
-                                            onPress={() => navigation.navigate(item.hasReview ? 'MyReview' : 'WriteReview', { product: item, orderId: order._id })}>
-                                            <Text style={{ fontSize: 16, color: '#000', fontWeight: 'bold' }}>{item.hasReview ? 'See review' : 'Write review'}</Text>
+                                            onPress={() => {item.reviewId !== null 
+                                                ? navigation.navigate('MyReview', { item: item })
+                                                : navigation.navigate('WriteReview',{ product: item, orderId: order._id })}}>
+                                            <Text style={{ fontSize: 16, color: '#000', fontWeight: 'bold' }}>{item.reviewId !== null ? 'See review' : 'Write review'}</Text>
                                         </TouchableOpacity>
                                     )}
                                 </View>
@@ -166,7 +168,7 @@ const OrderDetailScreen = ({navigation,route}) => {
                         <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
                             <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000' }}>Item(s) discount:</Text>
                             <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000', color: '#D96923' }}>
-                                {SupportFunctions.convertPrice(order.disCountSale)}
+                                {SupportFunctions.convertPrice(order.totalDiscount)}
                             </Text>
                         </View>
 
@@ -207,7 +209,7 @@ const OrderDetailScreen = ({navigation,route}) => {
             />
 
             {isShowStatusBottomSheet && (
-                <View style={{ position: 'absolute', bottom: 80, left: 0, right: 0, top: 0, justifyContent: 'flex-end', overflow: 'hidden' }}>
+                <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, top: 0, justifyContent: 'flex-end', overflow: 'hidden' }}>
                     {/* background */}
                     <TouchableOpacity style={{ ...StyleSheet.absoluteFillObject }} onPress={closeStatusBottomSheet} >
                         <Animated.View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'black', opacity: backdropOpacity }} />

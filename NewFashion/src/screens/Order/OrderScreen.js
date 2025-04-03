@@ -108,14 +108,6 @@ const OrderScreen = ({ navigation }) => {
     )
   }
 
-  const handleReview = (status,products) => {
-    if (status != 3) {
-      alert('You can only write a review after receiving the product.');
-    } else {
-      navigation.navigate('WriteReview',{products})
-    }
-  }
-
   const OrderItem = ({ order, orderStatus }) => (
     <View style={{ backgroundColor: '#fff', width: screenWidth }}>
       <View style={{ padding: 10, flexDirection: 'row', justifyContent: 'space-between', borderBottomWidth: 0.5, borderTopWidth: 5, borderBottomColor: '#BBBBBB', borderTopColor: '#e7e7e7', alignItems: 'center' }}>
@@ -124,7 +116,7 @@ const OrderScreen = ({ navigation }) => {
         </Text>
         <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={() => navigation.navigate('OrderDetail', { order })}>
           <Text style={{ fontSize: 14, color: '#737373', fontWeight: 'bold' }}>
-            {order.item.length} items: <Text style={{ fontSize: 14, color: '#000', fontWeight: 'bold' }}>{SupportFunctions.convertPrice(order.totalPrice)}</Text>
+            {order.items.length} items: <Text style={{ fontSize: 14, color: '#000', fontWeight: 'bold' }}>{SupportFunctions.convertPrice(order.totalPrice)}</Text>
           </Text>
           <Image source={require('../../assets/icons/ic_arrowRight.png')} style={{ width: 12, height: 12, marginLeft: 3 }} />
         </TouchableOpacity>
@@ -134,14 +126,14 @@ const OrderScreen = ({ navigation }) => {
       <Text style={{ fontSize: 16, color: '#FA7806', padding: 10, fontWeight: 'bold' }}>Delivery: {formatDate(order.dateCreated)}</Text>
 
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10 }}>
-        <Image source={{ uri: order.item[0].color.imageColor }} style={styles.productImage} />
+        <Image source={{ uri: order.items[0].color.imageColor }} style={styles.productImage} />
         <View style={styles.productDetails}>
           <View>
-            <Text style={styles.productName}>{order.item[0].productName}</Text>
-            <Text style={[styles.productName, { color: '#BBBBBB' }]}>{order.item[0].color.nameColor}, {order.item[0].size}</Text>
+            <Text style={styles.productName}>{order.items[0].productName}</Text>
+            <Text style={[styles.productName, { color: '#BBBBBB' }]}>{order.items[0].color.nameColor}, {order.items[0].size}</Text>
           </View>
 
-          <Text style={[styles.textHeader, { fontSize: 14, color: '#FA7806' }]}>{order.item[0].price} x {order.item[0].quantity}</Text>
+          <Text style={[styles.textHeader, { fontSize: 14, color: '#FA7806' }]}>{order.items[0].price} x {order.items[0].quantity}</Text>
         </View>
       </View>
 
