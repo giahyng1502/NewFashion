@@ -3,6 +3,8 @@ import BaseHeader from '../../../components/BaseHeader';
 import AppManager from '../../../utils/AppManager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {onGoogleSignOut} from "../../Login/signInWithGoogle";
+import {useDispatch} from "react-redux";
+import {logout} from "../../../redux/reducer/userReducer";
 
 const options = [
   {
@@ -76,7 +78,7 @@ const SettingsScreen = ({navigation}) => {
     .slice(1)
     .filter(item => item.title === 'Language');
   const mergedOptions = [...filteredOptions, ...anotherOptions];
-
+  const dispatch = useDispatch();
   const Options = ({item: {id, title, language, icon}, index, onPress}) => {
     return (
       <Pressable
@@ -157,6 +159,7 @@ const SettingsScreen = ({navigation}) => {
                   });
 
                   AsyncStorage.removeItem('browsingHistory');
+                  dispatch(logout())
                   onGoogleSignOut();
                 } else {
                   handleNavigate(item)

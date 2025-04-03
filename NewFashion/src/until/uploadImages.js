@@ -17,6 +17,12 @@ export const uploadImage = async (files, onProgress) => {
             headers: {
                 "Content-Type": "multipart/form-data"
             },
+            onUploadProgress: (progressEvent) => {
+                if (onProgress && progressEvent.total) {
+                    const progress = progressEvent.loaded / progressEvent.total;
+                    onProgress(progress);
+                }
+            }
         });
         return response.url; // Giả sử API trả về danh sách URL ảnh ở response.data.url
     } catch (error) {

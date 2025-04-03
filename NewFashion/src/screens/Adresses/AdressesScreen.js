@@ -22,7 +22,7 @@ const AddressesScreen = ({navigation}) => {
   }
 
   useEffect(() => {
-    console.log('personalInfo:', personalInfo);
+    // console.log('personalInfo:', personalInfo);
     console.log('default address',defaultAddress);
     
     if (personalInfo && personalInfo.information) {

@@ -6,7 +6,7 @@ import AppManager from "../utils/AppManager";
 export const baseUrl = 'https://ce7f-58-186-78-252.ngrok-free.app'
 const api = axios.create({
     baseURL: baseUrl,
-    timeout: 5000,
+    timeout: 50000,
     headers: {
         "Content-Type": "application/json",
     },
