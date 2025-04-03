@@ -1,5 +1,5 @@
 import { ActivityIndicator, Alert, Animated, FlatList, Image, Pressable, ScrollView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import BaseHeader from '../../components/BaseHeader'
 import FilledButton from '../../components/FilledButton'
@@ -35,16 +35,32 @@ const CartScreen = ({ navigation }) => {
   const [cartItems, setCartItems] = React.useState(carts);
   const { products, loading, page, hasMore } = useSelector(state => state.product);
   const { personalInfo } = useSelector(state => state.personalInfo);
+  const [isLoading, setIsLoading] = useState(true);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setCartItems(carts);
-    setTitle(carts.length > 0 ? `Cart (${carts.length})` : 'Cart');
-    setCheckOutTitleButton(carts.length > 0 ? `Checkout (${carts.length})` : 'Checkout');
-    setShowDeleteButton(carts.filter(item => item.isSelected).length > 0);
-    setIsSelectedAll(carts.filter(item => item.isSelected).length === carts.length);
+    console.log('CartScreen');
   }, []);
+
+  useEffect(() => {
+    if (personalInfo) {
+      setCartItems(carts);
+      setTitle(carts.filter(item => item.isSelected).length > 0 ? `Cart (${carts.filter(item => item.isSelected).length})` : 'Cart');
+      setCheckOutTitleButton(carts.filter(item => item.isSelected).length > 0 ? `Checkout (${carts.filter(item => item.isSelected).length})` : 'Checkout');
+      setShowDeleteButton(carts.filter(item => item.isSelected).length > 0);
+      setIsSelectedAll(carts.filter(item => item.isSelected).length === carts.length);
+      setIsLoading(false);
+    }
+  }, [personalInfo]);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#FA7806" />
+      </View>
+    );
+  }
 
   const loadMoreProducts = () => {
     if (!loading && hasMore) {
@@ -364,7 +380,7 @@ const CartScreen = ({ navigation }) => {
   const handleCheckOut = () => {
     if (AppManager.shared.isUserLoggedIn()) {
       if (personalInfo.information.length == 0) {
-        navigation.navigate('AddAddress',{ isFromCheckout: true });
+        navigation.navigate('AddAddress', { isFromCheckout: true });
       } else if (cartItems.filter(item => item.isSelected).length > 0) {
         navigation.navigate('CheckOut');
       } else {
@@ -444,7 +460,7 @@ const CartScreen = ({ navigation }) => {
   }
 
   const getDiscountPrice = (item) => {
-    return SupportFunctions.convertPrice(item.disCountSale > 0 ? item.price * (1 - item.disCountSale/100) : item.price);
+    return SupportFunctions.convertPrice(item.disCountSale > 0 ? item.price * (1 - item.disCountSale / 100) : item.price);
   }
 
   const handleSelectedItem = (item) => {
@@ -612,7 +628,14 @@ const CartScreen = ({ navigation }) => {
             </View>
           </>
         )}
-        renderItem={({ item }) => <ProductCard item={item} onSelected={() => { handleSelectedItem(item) }} />}
+        renderItem={({ item }) => (
+          <View style={{ flex: 1 / 2, padding: 5 }}>
+            <ProductCard
+              item={item}
+              onSelected={() => { handleSelectedItem(item) }}
+            />
+          </View>
+        )}
         showsVerticalScrollIndicator={false}
         onEndReached={loadMoreProducts}
         onEndReachedThreshold={0.5}
@@ -860,7 +883,7 @@ const CartScreen = ({ navigation }) => {
                     />
                   </TouchableOpacity>
                 </View>
-                
+
               </View>
 
             </ScrollView>

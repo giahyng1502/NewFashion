@@ -7,7 +7,7 @@ import StarRating from '../../components/StarRating';
 import SearchBar from '../../components/SearchBar';
 import ProductCard from '../../components/ProductCard';
 
-const CategoryScreen = ({navigation}) => {
+const CategoryScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState('');
   const categories = useSelector(state => state.category.categories);
   const subCategoriesByCategory = useSelector(state => state.subCategory.subCategoriesByCategory);
@@ -35,14 +35,14 @@ const CategoryScreen = ({navigation}) => {
       const { products } = subCategoriesByCategory[categoryId];
       setProducts(products);
       setLoading(false);
-    } else { 
+    } else {
       setLoading(true);
       dispatch(fetchSubCategories(categoryId))
         .then((result) => {
           const { products } = result.payload;
           console.log('Fetch subCategories success: ', products);
-          
-          setProducts(products);          
+
+          setProducts(products);
           setLoading(false);
         })
         .catch((error) => {
@@ -52,20 +52,8 @@ const CategoryScreen = ({navigation}) => {
   };
 
   const handleCategoryPress = useCallback((category, index) => {
-    const currentIndex = categories.indexOf(selectedCategory);
-    const searchBarHeight = 60
-    const height = ScreenSize.height - searchBarHeight;
-    const slideDirection = index > currentIndex ? -height : height;
-
-    Animated.timing(translateAnim, {
-      toValue: slideDirection,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => {
-      setSelectedCategory(category);
-      fetchSubCateByCategoryID(category._id);
-      translateAnim.setValue(0);
-    });
+    setSelectedCategory(category);
+    fetchSubCateByCategoryID(category._id);
   }, [selectedCategory, categories]);
 
   const renderCategoryItem = ({ item, index }) => (
@@ -106,23 +94,19 @@ const CategoryScreen = ({navigation}) => {
 
     return (
       <View>
-        {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
-        ) : (
-          <>
-            <FlatList
-              data={subCategories}
-              renderItem={renderSubCategoryItem}
-              numColumns={3}
-              keyExtractor={(item) => item._id}
-              showsVerticalScrollIndicator={false}
-            />
+        <>
+          <FlatList
+            data={subCategories}
+            renderItem={renderSubCategoryItem}
+            numColumns={3}
+            keyExtractor={(item) => item._id}
+            showsVerticalScrollIndicator={false}
+          />
 
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
-              <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Related products</Text>
-            </View>
-          </>
-        )}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
+            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Related products</Text>
+          </View>
+        </>
       </View>
     );
   };
@@ -130,24 +114,25 @@ const CategoryScreen = ({navigation}) => {
   return (
     <View style={{ flex: 1, backgroundColor: '#FFF' }}>
       <TouchableOpacity onPress={() => navigation.navigate('Search')} style={styles.searchContainer}>
-          <TextInput
-            value={searchText}
-            style={styles.searchInput}
-            placeholder="Search something..."
-            editable={false}
-          />
-          {searchText.length > 0 && (
-            <TouchableOpacity style={styles.clearButton}
-            // onPress={handleClearText}
-            >
-              <Image source={require('../../assets/bt_clearText.png')} style={styles.icon} />
-            </TouchableOpacity>
-          )}
-          <TouchableOpacity style={styles.searchButton}
-            onPress={() => navigation.navigate('Search')}
+        <TextInput
+          value={searchText}
+          style={styles.searchInput}
+          placeholder="Search something..."
+          placeholderTextColor={'#bbb'}
+          editable={false}
+        />
+        {searchText.length > 0 && (
+          <TouchableOpacity style={styles.clearButton}
+          // onPress={handleClearText}
           >
-            <Image source={require('../../assets/icons/ic_search.png')} style={styles.searchIcon} />
+            <Image source={require('../../assets/bt_clearText.png')} style={styles.icon} />
           </TouchableOpacity>
+        )}
+        <TouchableOpacity style={styles.searchButton}
+          onPress={() => navigation.navigate('Search')}
+        >
+          <Image source={require('../../assets/icons/ic_search.png')} style={styles.searchIcon} />
+        </TouchableOpacity>
       </TouchableOpacity>
 
       <View style={{ flexDirection: 'row', flex: 1, backgroundColor: '#FFF', overflow: 'hidden' }}>
@@ -160,19 +145,30 @@ const CategoryScreen = ({navigation}) => {
         />
 
         {selectedCategory && (
-          <Animated.View style={{ flex: 3, transform: [{ translateY: translateAnim }] }}>
-            <FlatList
-              data={products}
-              ListHeaderComponent={ListHeaderComponent}
-              renderItem={({ item }) => <ProductCard item={item} onSelected={() => { handleSelectedItem(item) }} />}
-              numColumns={2}
-              keyExtractor={(item) => item._id}
-              showsVerticalScrollIndicator={false}
-            />
-          </Animated.View>
+          loading ? (
+            <ActivityIndicator style={{flex: 3}} size="large" color="#FA7806" />
+          ) : (
+            <View style={{ flex: 3 }}>
+              <FlatList
+                data={products}
+                ListHeaderComponent={ListHeaderComponent}
+                renderItem={({ item }) => (
+                  <ProductCard
+                    item={item}
+                    onSelected={() => { handleSelectedItem(item) }}
+                    style={{ flex: 1 }}
+                  />
+                )}
+                numColumns={2}
+                keyExtractor={(item) => item._id}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingHorizontal: 10 }}
+              />
+            </View>
+          )
         )}
       </View>
-    </View>
+    </View >
   );
 };
 
@@ -191,6 +187,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     paddingHorizontal: 15,
+    color: '#000',
   },
   clearButton: {
     padding: 5,

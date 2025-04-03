@@ -20,9 +20,6 @@ const ProductCard = ({ item, onSelected, style }) => (
     <View style={st.priceContainer}>
       <Text style={st.price}>{convertPrice(item.price)}</Text>
       <Text style={st.sold}>{item.sold} sold</Text>
-      {/* <TouchableOpacity>
-        <Image source={require('../assets/buttons/bt_addToCart.png')} style={st.cartIcon} />
-      </TouchableOpacity> */}
     </View>
   </TouchableOpacity>
 );
@@ -31,7 +28,6 @@ export default ProductCard
 
 const st = StyleSheet.create({
   card: {
-    flex: 1,
     backgroundColor: "#fff",
     margin: 10,
     borderRadius: 10,

@@ -6,7 +6,8 @@ const initialState = {
     saleProducts: [],
     page: 1,
     loading: false,
-    hasMore: true
+    hasMore: true,
+    hasMoreSale: true,
 };
 
 // Tạo slice cho categories
@@ -25,8 +26,8 @@ const productSlice = createSlice({
                 state.products = [...state.products, ...action.payload];
                 state.page += 1;
                 state.hasMore = action.payload.length > 0
-                state.loading = false
-                console.log(action.payload.length);
+                console.log('Fetch products success: ', action.payload.length);
+                state.loading = false;
             })
             .addCase(fetchProducts.rejected, (state, action) => {
                 console.log('Fetch products failed: ', action.payload);
@@ -39,7 +40,7 @@ const productSlice = createSlice({
             .addCase(fetchSaleProducts.fulfilled, (state, action) => {
                 state.saleProducts = [...state.saleProducts, ...action.payload];
                 state.page += 1;
-                state.hasMore = action.payload.length > 0
+                state.hasMoreSale = action.payload.length > 0
                 state.loading = false;
             })
             .addCase(fetchSaleProducts.rejected, (state, action) => {

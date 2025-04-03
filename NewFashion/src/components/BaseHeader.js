@@ -11,7 +11,13 @@ const BaseHeader = ({ title, showLeftButton, showRightButton, rightIcon, onLeftB
             ) : (
                 <View style={styles.button} />
             )}
-            <Text style={styles.title}>{title}</Text>
+            <Text
+                style={styles.title}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+            >
+                {title}
+            </Text>
             {showRightButton ? (
                 <TouchableOpacity onPress={onRightButtonPress} style={styles.button}>
                     <Image source={rightIcon} resizeMode='contain' style={styles.buttonIcon} />
@@ -31,25 +37,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: 10,
-        
         backgroundColor: 'transparent',
     },
     title: {
         fontSize: 18,
         fontWeight: 'bold',
         textAlign: 'center',
-        position: 'absolute',
-        width: '100%'
+        flex: 1,
     },
     button: {
         width: 40,
         height: 40,
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 9999
+        zIndex: 9999,
     },
     buttonIcon: {
         width: 24,
         height: 24,
-    }
+    },
 })

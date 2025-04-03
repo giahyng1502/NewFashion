@@ -1,64 +1,68 @@
-import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native'
-import React, { useState } from 'react'
+import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
+import React, { useState, useEffect } from 'react'
 import ProductCard from '../../components/ProductCard';
 import BaseHeader from '../../components/BaseHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts } from '../../redux/actions/productActions';
+import { Dimensions } from 'react-native';
+import { fetchOrders } from '../../redux/actions/orderActions';
+import SupportFunctions from '../../utils/SupportFunctions'
 
-const tabs = ['All orders', 'Processing', 'Shipped', 'Delivered', 'Returns'];
-const orders = [
-  {
-    id: '1',
-    status: 'Shipped',
-    deliveryDate: 'Mar 17-30',
-    totalItems: 1,
-    totalPrice: '805.329đ',
-    product: {
-      name: 'Embroidered Wool-blend Scarf Jacket',
-      color: 'Green',
-      size: 'XL',
-      image: require('../../assets/image/ig_product2.png'),
-      price: '268.443d x 3',
-    },
-  },
-]
+const screenWidth = Dimensions.get('window').width;
 
-const OrderItem = ({ order }) => (
-  <View style={styles.orderContainer}>
-    <View style={styles.breaker} />
+function formatDate(isoString) {
+  const date = new Date(isoString);
 
-    <View style={[styles.header, { padding: 10 }]}>
-      <Text style={[styles.textHeader, { fontSize: 16 }]}>{order.status}</Text>
-      <Text style={[styles.textHeader, { fontSize: 14, color: '#737373' }]}>
-        {order.totalItems} items: <Text style={[styles.textHeader, { fontSize: 14 }]}>{order.totalPrice}</Text>
-      </Text>
-    </View>
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng tính từ 0 nên +1
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
 
-    <Text style={[styles.textHeader, { fontSize: 16, color: '#FA7806', padding: 10 }]}>Delivery: {order.deliveryDate}</Text>
-
-    <View style={styles.productContainer}>
-      <Image source={order.product.image} style={styles.productImage} />
-      <View style={styles.productDetails}>
-        <View>
-          <Text style={styles.productName}>{order.product.name}</Text>
-          <Text style={[styles.productName, { color: '#BBBBBB' }]}>{order.product.color}, {order.product.size}</Text>
-        </View>
-
-        <Text style={[styles.textHeader, { fontSize: 14, color: '#FA7806' }]}>{order.product.price}</Text>
-      </View>
-    </View>
-
-    <TouchableOpacity style={styles.buyAgainButton}>
-      <Text style={[styles.textHeader, { fontSize: 16 }]}>Buy this again</Text>
-    </TouchableOpacity>
-    <View style={styles.breaker} />
-  </View>
-);
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
 
 const OrderScreen = ({ navigation }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const dispatch = useDispatch();
-  const {products, loading, page, hasMore} = useSelector(state => state.product);
+  const { products, loading, page, hasMore } = useSelector(state => state.product);
+  const [isLoading, setIsLoading] = useState(true)
+  const orderStatus = [
+    { id: 0, name: 'All orders' },
+    { id: 1, name: 'Processing' },
+    { id: 2, name: 'Shipping' },
+    { id: 3, name: 'Delivered' },
+    { id: 4, name: 'Returns' }
+  ];
+  const { orders } = useSelector(state => state.orders);
+
+  useEffect(() => {
+    dispatch(fetchOrders())
+    console.log(orders.length);
+  }, [])
+
+  useEffect(() => {
+    if (orders) {
+      setIsLoading(false)
+    }
+  }, [orders])
+
+  useEffect(() => {
+    if (selectedTab === 0) {
+      dispatch(fetchOrders()); // null = lấy tất cả đơn hàng
+      console.log(orders.length);
+    } else {
+      dispatch(fetchOrders(selectedTab - 1)); // Lấy đơn hàng theo trạng thái cụ thể
+      console.log(orders.length);
+    }
+  }, [selectedTab])
+
+  const handleSelectedItem = (item, discount, expire) => {
+    console.log('Selected item:', item);
+
+    navigation.navigate("ProductDetail", { item, discount, expire });
+  }
 
   const loadMoreProducts = () => {
     if (!loading && hasMore) {
@@ -66,61 +70,131 @@ const OrderScreen = ({ navigation }) => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Loading orders...</Text>
+      </View>
+    );
+  }
+
   const renderFooter = () => {
     if (!loading) return null;
     return (
       <View style={{ padding: 10 }}>
-        <ActivityIndicator size="small" color="#0000ff" />
+        <ActivityIndicator size="small" color="#FA7806" />
       </View>
     )
   }
 
+  const handleReview = (status) => {
+    if (status < 2) {
+      alert('You can only write a review after receiving the product.');
+    }
+  }
+
+  const OrderItem = ({ order, orderStatus }) => (
+    <View style={{ backgroundColor: '#fff', width: screenWidth }}>
+      <View style={{ padding: 10, flexDirection: 'row', justifyContent: 'space-between', borderBottomWidth: 0.5, borderTopWidth: 5, borderBottomColor: '#BBBBBB', borderTopColor: '#e7e7e7', alignItems: 'center' }}>
+        <Text style={{ fontSize: 16, color: '#000', fontWeight: 'bold' }}>
+          {orderStatus[order.status + 1].name}
+        </Text>
+        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={() => navigation.navigate('OrderDetail', { order })}>
+          <Text style={{ fontSize: 14, color: '#737373', fontWeight: 'bold' }}>
+            {order.item.length} items: <Text style={{ fontSize: 14, color: '#000', fontWeight: 'bold' }}>{SupportFunctions.convertPrice(order.totalPrice)}</Text>
+          </Text>
+          <Image source={require('../../assets/icons/ic_arrowRight.png')} style={{ width: 12, height: 12, marginLeft: 3 }} />
+        </TouchableOpacity>
+
+      </View>
+
+      <Text style={{ fontSize: 16, color: '#FA7806', padding: 10, fontWeight: 'bold' }}>Delivery: {formatDate(order.dateCreated)}</Text>
+
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10 }}>
+        <Image source={{ uri: order.item[0].color.imageColor }} style={styles.productImage} />
+        <View style={styles.productDetails}>
+          <View>
+            <Text style={styles.productName}>{order.item[0].productName}</Text>
+            <Text style={[styles.productName, { color: '#BBBBBB' }]}>{order.item[0].color.nameColor}, {order.item[0].size}</Text>
+          </View>
+
+          <Text style={[styles.textHeader, { fontSize: 14, color: '#FA7806' }]}>{order.item[0].price} x {order.item[0].quantity}</Text>
+        </View>
+      </View>
+
+      <TouchableOpacity style={{ margin: 10, paddingVertical: 5, paddingHorizontal: 12, borderWidth: 1, borderColor: 'black', borderRadius: 18, alignSelf: 'flex-end' }}
+        onPress={() => handleReview(order.status)}>
+        <Text style={[styles.textHeader, { fontSize: 16 }]}>Write a review</Text>
+      </TouchableOpacity>
+      <View style={styles.breaker} />
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       {/* header */}
-      <BaseHeader title="Your orders" showLeftButton={true} showRightButton={true} rightIcon={require('../../assets/buttons/bt_cart2.png')} onLeftButtonPress={() => { navigation.goBack() }} />
+      <BaseHeader
+        title="Your orders"
+        showLeftButton={true}
+        showRightButton={true}
+        rightIcon={require('../../assets/buttons/bt_cart2.png')}
+        onLeftButtonPress={() => { navigation.goBack() }}
+        onRightButtonPress={() => { navigation.navigate('Cart') }}
+      />
 
-
-<FlatList
-      data={products} // Danh sách sản phẩm chính
-      keyExtractor={(item) => item._id}
-      numColumns={2}
-      ListHeaderComponent={() => (
-        <>
-          <FlatList
-            data={tabs}
-            horizontal
-            keyExtractor={(item) => item}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity onPress={() => setSelectedTab(index)} style={styles.tab}>
-                <Text style={[styles.tabText, selectedTab === index && styles.activeText]}>{item}</Text>
-                {selectedTab === index && <View style={styles.activeIndicator} />}
-              </TouchableOpacity>
-            )}
-            showsHorizontalScrollIndicator={false}
-          />
-          {orders.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Image source={require('../../assets/icons/ic_emptyOrder.png')} style={{ width: 60, height: 60 }} />
-              <Text style={[styles.textHeader, { fontSize: 16, marginLeft: 10 }]}>You don’t have any processing orders</Text>
-            </View>
-          ) : (
+      <FlatList
+        data={products} // Danh sách sản phẩm chính
+        keyExtractor={(item) => item._id}
+        numColumns={2}
+        ListHeaderComponent={() => (
+          <>
             <FlatList
-              data={orders}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => <OrderItem order={item} />}
+              data={orderStatus}
+              horizontal
+              keyExtractor={(item) => `${item.id}${item.name}`}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity onPress={() => setSelectedTab(orderStatus[index].id)} style={styles.tab}>
+                  <Text style={[styles.tabText, selectedTab === index && styles.activeText]}>{item.name}</Text>
+                  {selectedTab === index && <View style={styles.activeIndicator} />}
+                </TouchableOpacity>
+              )}
+              showsHorizontalScrollIndicator={false}
             />
-          )}
+            {(orders && orders.length === 0) ? (
+              <View style={styles.emptyContainer}>
+                <Image source={require('../../assets/icons/ic_emptyOrder.png')} style={{ width: 60, height: 60 }} />
+                <Text style={[styles.textHeader, { fontSize: 16, marginLeft: 10 }]}>You don’t have any orders</Text>
+              </View>
+            ) : (
+              <View style={{ width: '100%' }}>
+                <FlatList
+                  data={orders}
+                  pagingEnabled={true}
+                  keyExtractor={(item) => item.id}
+                  snapToInterval={screenWidth} // Cố định khoảng cách cuộn
+                  snapToAlignment="center"
+                  renderItem={({ item }) => <OrderItem order={item} orderStatus={orderStatus} />}
+                />
+              </View>
+            )}
 
-          <Text style={[styles.textHeader, { fontSize: 16, padding: 10 }]}>Maybe you will be also like</Text>
-        </>
-      )}
-      renderItem={({ item }) => <ProductCard item={item} onSelected={() => {handleSelectedItem(item)}} />}
-      onEndReached={loadMoreProducts}
-      onEndReachedThreshold={0.5}
-      ListFooterComponent={renderFooter}
-      contentContainerStyle={{paddingHorizontal: 3,backgroundColor: '#fff'}}
-    />
+            <Text style={[styles.textHeader, { fontSize: 16, padding: 10 }]}>Maybe you will be also like</Text>
+          </>
+        )}
+        renderItem={({ item }) => (
+          <View style={{ flex: 1 / 2, padding: 5 }}>
+            <ProductCard
+              item={item}
+              onSelected={() => { handleSelectedItem(item) }}
+            />
+          </View>
+        )}
+        onEndReached={loadMoreProducts}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter}
+        contentContainerStyle={{ paddingHorizontal: 3, backgroundColor: '#fff' }}
+      />
     </View>
   )
 }
@@ -150,7 +224,9 @@ const styles = StyleSheet.create({
   },
   tab: {
     alignItems: 'center',
-    padding: 12
+    padding: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#BBBBBB'
   },
   tabText: {
     fontSize: 18,
@@ -178,7 +254,9 @@ const styles = StyleSheet.create({
   },
 
   orderContainer: {
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    flex: 1,
+    marginRight: 10
   },
   breaker: {
     width: '100%',
