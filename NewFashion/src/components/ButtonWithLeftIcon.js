@@ -1,10 +1,10 @@
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {Image, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 
 function ButtonWithLeftIcon({ count, icon, onPress }) {
     return (
         <TouchableOpacity style={styles.button} onPress={onPress} activeOpacity={0.7}>
-            <Image style={styles.icon} source={icon} />
+                <Image style={styles.icon} source={icon} />
             <Text style={styles.count}>{count}</Text>
         </TouchableOpacity>
     );

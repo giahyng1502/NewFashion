@@ -8,6 +8,16 @@ const postReducer = createSlice({
         error: null,
         posts: [],
     },
+    reducers :{
+        incComment: (state, action) => {
+            state.posts = state.posts.map(post =>
+                post._id === action.payload._id
+                    ? { ...post, commentCount: (post.commentCount || 0) + 1 }
+                    : post
+            );
+        }
+
+    },
     extraReducers: (builder) => {
         builder.addCase(getPosts.pending, (state, action) => {
             state.isLoading = true;
@@ -26,5 +36,5 @@ const postReducer = createSlice({
             })
     }
 })
-
+export const {incComment} = postReducer.actions;
 export default postReducer.reducer

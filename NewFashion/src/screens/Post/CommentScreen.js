@@ -16,6 +16,8 @@ import {getTimeAgoText} from '../../until/getDaysAgoNext';
 import {getCommentsByPostId} from '../../redux/actions/commentAction';
 import axios from "../../service/axios";
 import AppManager from "../../utils/AppManager";
+import {useDispatch, useSelector} from "react-redux";
+import {incComment} from "../../redux/reducer/postReducer";
 
 
 function CommentScreen({ navigation,route }) {
@@ -26,6 +28,9 @@ function CommentScreen({ navigation,route }) {
     const [hasMore, setHasMore] = useState(true); // Kiểm tra còn dữ liệu không
     const [replyInfor, setReplyInfor] = useState(null);
     const [commentText, setCommentText] = useState(""); // Lưu nội dung bình luận
+
+    const user = useSelector((state) => state.user);
+    const dispatch = useDispatch();
     useEffect(() => {
         if (route.params?._id) {
             setPost(route.params._id);
@@ -37,28 +42,74 @@ function CommentScreen({ navigation,route }) {
             getComment(post, 1);
         }
     }, [post]);
+    useEffect(() => {
+        console.log(comments)
+    },[comments]);
     const handleSendComment = async () => {
-        if (!commentText.trim()) return; // Không gửi nếu bình luận trống
-        let url = `/comment/${post}`
-        try {
-            let data = {
-                content: commentText,
-            };
+        const content = commentText.trim();
+        if (!content) return;
 
-            // Nếu đang phản hồi một bình luận, gửi kèm commentId
+        let url = `/comment/${post}`;
+        let data = {
+            content,
+            postId: post,
+        };
+
+        try {
             if (replyInfor?.type === 'COMMENT') {
+                // Nếu là reply
                 url = `/replies/${replyInfor._id}`;
+                const response = await axios.post(url, data);
+
+                const newReply = {
+                    ...response?.reply,
+                    user: {
+                        _id: user.userId,
+                        name: user.name,
+                        avatar: user.avatar,
+                    },
+                    commentId: replyInfor._id,
+                };
+
+                // Cập nhật replies trong comment tương ứng
+                setComments((prevComments) =>
+                    prevComments.map((comment) =>
+                        comment._id === replyInfor._id
+                            ? {
+                                ...comment,
+                                replies: [...(comment.replies || []), newReply],
+                                replyCount: (comment.replyCount || 0) + 1,
+                            }
+                            : comment
+                    )
+                );
+            } else {
+                // Nếu là comment chính
+                const response = await axios.post(url, data);
+
+                const newComment = {
+                    ...response?.comment,
+                    user: {
+                        _id: user.userId,
+                        name: user.name,
+                        avatar: user.avatar,
+                    },
+                    replies: [],
+                    replyCount: 0,
+                };
+
+                setComments((prev) => [...prev, newComment]);
             }
-            // const user = AppManager.shared.getUserInfo();
-            // console.log(user)
-            const response = await axios.post(url, data); // Gửi bình luận đến API
-            setComments([...comments,response?.comment]); // Cập nhật danh sách bình luận ngay lập tức
-            setCommentText(""); // Xóa nội dung ô nhập
-            setReplyInfor(null); // Xóa thông tin trả lời
+
+            setCommentText("");
+            setReplyInfor(null);
+            dispatch(incComment({ _id: post }));
+
         } catch (error) {
             console.error("Lỗi khi gửi bình luận:", error);
         }
     };
+
 
     const getComment = async (postId, pageNumber = 1) => {
         if (isLoading || !hasMore) return;
@@ -69,6 +120,7 @@ function CommentScreen({ navigation,route }) {
             if (response.data.length > 0) {
                 setComments(prevComments => [...prevComments, ...response.data]); // Thêm dữ liệu mới vào danh sách
                 setPage(pageNumber + 1); // Tăng số trang
+                console.log(comments);
             } else {
                 setHasMore(false); // Nếu không còn dữ liệu, dừng phân trang
             }
@@ -78,6 +130,26 @@ function CommentScreen({ navigation,route }) {
         setIsLoading(false);
     };
 
+    const handleMoreReply = async (offset,commentId) => {
+        try {
+
+            const res = await axios.get(`/replies/${commentId}`,{
+                params: {offset},
+            })
+            setComments((prev) =>
+                prev.map((c) =>
+                    c._id === commentId
+                        ? {
+                            ...c,
+                            replies: [...(c.replies || []), ...res?.data],
+                        }
+                        : c
+                )
+            );
+        }catch (error) {
+            console.log(error);
+        }
+    };
     const renderComment = useCallback(({ item }) => {
         return (
             <View style={styles.commentContainer}>
@@ -91,17 +163,54 @@ function CommentScreen({ navigation,route }) {
                     <Text style={styles.commentText}>{item?.content}</Text>
 
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>
-                        <LikePost isLike={item?.isLike} likeCount={item?.likes} commentId={item._id} />
                         <ButtonWithLeftIcon
                             icon={require('../../assets/icons/ic_comment.png')}
                             count={item?.replyCount}
                             onPress={() => setReplyInfor({ type: 'COMMENT', name: item.user?.name, _id: item._id })}
                         />
                     </View>
+
+                    {/* Danh sách reply hiển thị dưới mỗi comment */}
+                    {item.replies && item.replies.length > 0 && (
+                        <FlatList
+                            data={item.replies}
+                            keyExtractor={(item,index) => `${item._id} ${index} replies in comments`}
+                            renderItem={({ item: reply }) => (
+                                <View style={styles.replyContainer}>
+                                    <Image style={styles.avatar} source={{ uri: reply.user?.avatar }} />
+                                    <View style={styles.commentContent}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            <Text style={styles.name}>{reply.user?.name}</Text>
+                                            <View style={{ width: 10 }} />
+                                            <Text style={styles.time}>{getTimeAgoText(reply.createdAt)}</Text>
+                                        </View>
+                                        <Text style={styles.commentText}>{reply.content}</Text>
+                                    </View>
+                                </View>
+                            )}
+                            ListFooterComponent={
+                                (item.replyCount - item.replies.length) > 0 ? (
+                                    <View>
+                                        <TouchableOpacity
+                                            onPress={() =>
+                                                handleMoreReply(item?.replies?.length,item._id)
+                                            }
+                                        >
+                                            <Text style={{ color: '#202020', marginLeft: 20, marginTop: 5 }}>
+                                                {`Xem thêm ${item.replyCount - item.replies.length} phản hồi`}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                ) : null
+                            }
+
+                        />
+                    )}
                 </View>
             </View>
         );
-    }, []);
+    }, [comments]);
+
 
 
 
@@ -117,7 +226,7 @@ function CommentScreen({ navigation,route }) {
                             <FlatList
                                 data={comments}
                                 renderItem={renderComment}
-                                keyExtractor={(item) => item._id}
+                                keyExtractor={(item,index) =>`${item._id}${index} comment in commentScreen`}
                                 onEndReached={() => getComment(post, page)} // Gọi khi cuộn đến cuối danh sách
                                 onEndReachedThreshold={0.5}
                                 ListFooterComponent={isLoading ? <ActivityIndicator size="small" color="#3498db" /> : null} // Hiển thị loading khi tải thêm
@@ -132,7 +241,7 @@ function CommentScreen({ navigation,route }) {
                         <Text style={styles.replyText}>
                             Đang trả lời <Text style={{ fontWeight: 'bold' }}>{replyInfor.name}</Text>
                         </Text>
-                        <TouchableOpacity style={styles.removeBtn} onPress={()=>{}} activeOpacity={0.7}>
+                        <TouchableOpacity style={styles.removeBtn} onPress={()=>{setReplyInfor(null)}} activeOpacity={0.7}>
                             <Image style={styles.icon} source={require('../../assets/bt_exit.png')} />
                         </TouchableOpacity>
                     </View>
