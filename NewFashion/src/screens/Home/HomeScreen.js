@@ -66,7 +66,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <FlatList
       data={products} // Danh sách sản phẩm chính
-      keyExtractor={(item) => `${item._id}${item.name}`}
+      keyExtractor={(item,index) => `${item._id}${item.name} ${index} product in home`}
       numColumns={2}
       ListHeaderComponent={() => (
         <View>
@@ -144,7 +144,7 @@ const HomeScreen = ({ navigation }) => {
               <FlatList
                 data={saleProducts}
                 horizontal
-                keyExtractor={(item) => item._id}
+                keyExtractor={(item,index) =>`${item._id}${index} saleProduct in homeScreen`}
                 renderItem={({ item }) => <LightningDealItem item={item} onPress={() => { handleSelectedItem(item.productId, item.discount, item.expireAt) }} />}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={st.listContainer}

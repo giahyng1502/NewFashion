@@ -66,7 +66,7 @@ const SubCategoryDetail = ({ navigation, route }) => {
                     </View>
                 )}
                 numColumns={2}
-                keyExtractor={(item) => item._id}
+                keyExtractor={(item,index) =>`${item._id}${index} product in subcategoryDetai`}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingHorizontal: 3, backgroundColor: '#fff' }}
             />

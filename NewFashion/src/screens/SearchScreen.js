@@ -109,7 +109,7 @@ const SearchScreen = ({ navigation, onSearch }) => {
         <FlatList
           data={dataSearch}
           renderItem={({ item }) => <DataSearchRender title={item.title} image={item.image} />}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => `${item.id} data search in search screen`}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.list}
         />

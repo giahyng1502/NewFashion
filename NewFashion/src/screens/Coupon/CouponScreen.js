@@ -75,7 +75,7 @@ const CouponScreen = ({ navigation }) => {
       {/* Danh sách coupon */}
       <FlatList
         data={coupons}
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item,index) =>`${item._id}${index} coupons in couponsScreen`}
         renderItem={({ item }) => (
           <View style={{ borderTopWidth: 3, marginVertical: 10, marginHorizontal: 12, borderTopColor: '#FA7806', borderRadius: 2, backgroundColor: "#F0FFEB", height: 150, gap: 5 }}>
             <View style={{ backgroundColor: '#FA7806', width: 30, borderBottomLeftRadius: 3, borderBottomRightRadius: 3 }}>
@@ -110,7 +110,7 @@ const CouponScreen = ({ navigation }) => {
         </>
       }
       data={products} // Danh sách sản phẩm chính
-      keyExtractor={(item) => item._id}
+      keyExtractor={(item,index) =>`${item._id}${index} voucher in couponScreen`}
       numColumns={2}
       renderItem={({ item }) => (
         <View style={{ flex: 1 / 2, padding: 5 }}>

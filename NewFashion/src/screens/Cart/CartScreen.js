@@ -498,7 +498,7 @@ const CartScreen = ({ navigation }) => {
       <FlatList
         data={products}
         numColumns={2}
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item,index) =>`${item._id}${index} productincart in cart`}
         ListHeaderComponent={() => (
           <>
             {/* empty view */}
@@ -526,7 +526,7 @@ const CartScreen = ({ navigation }) => {
             {AppManager.shared.isUserLoggedIn() && cartItems.length > 0 && (
               <FlatList
                 data={cartItems}
-                keyExtractor={item => item._id}
+                keyExtractor={(item,index) =>`${item._id}${index} cart item in cart`}
                 renderItem={({ item }) => (
                   <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
                     <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
@@ -710,7 +710,7 @@ const CartScreen = ({ navigation }) => {
 
               <FlatList
                 data={cartItems.filter(item => item.isSelected)}
-                keyExtractor={item => item.id}
+                keyExtractor={(item,index) =>`${item._id}${index} cartItem isSelected`}
                 horizontal
                 style={{ marginTop: 5 }}
                 renderItem={({ item }) => (

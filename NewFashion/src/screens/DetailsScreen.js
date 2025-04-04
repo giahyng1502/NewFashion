@@ -199,7 +199,7 @@ const DetailsScreen = ({ navigation, route }) => {
             <FlatList
                 data={products}
                 numColumns={2}
-                keyExtractor={(item) => item._id}
+                keyExtractor={(item,index) =>`${item._id}${index} product in product detail`}
                 renderItem={({ item }) => (
                     <View style={{ flex: 1 / 2, padding: 5 }}>
                         <ProductCard
@@ -282,7 +282,7 @@ const DetailsScreen = ({ navigation, route }) => {
                                 <FlatList
                                     data={item.color}
                                     horizontal
-                                    keyExtractor={(item) => item._id}
+                                    keyExtractor={(item,index) =>`${item._id}${index} color in product detail`}
                                     renderItem={({ item }) => (
                                         <TouchableOpacity
                                             onPress={() => setSelectedColor(item)}
@@ -313,7 +313,7 @@ const DetailsScreen = ({ navigation, route }) => {
                                 <FlatList
                                     data={item.size}
                                     horizontal
-                                    keyExtractor={(item) => item}
+                                    keyExtractor={(item,index) => `${item._id}${index} size in productDetail`}
                                     renderItem={({ item }) => (
                                         <TouchableOpacity
                                             onPress={() => setSelectedSize(item)}
@@ -428,7 +428,7 @@ const DetailsScreen = ({ navigation, route }) => {
 
                             <FlatList
                                 data={reviews}
-                                keyExtractor={(item) => item.id}
+                                keyExtractor={(item,index) =>`${item._id}${index} review in product detail`}
                                 renderItem={({ item }) => (
                                     <View style={{ borderBottomWidth: 1, borderBottomColor:"#BBBBBB" ,paddingBottom: 15, paddingTop: 10 }}>
                                         <View style={{ flexDirection: "row" , gap: 5, alignItems:"center"}}>

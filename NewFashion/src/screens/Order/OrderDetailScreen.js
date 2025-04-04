@@ -84,7 +84,7 @@ const OrderDetailScreen = ({navigation,route}) => {
 
             <FlatList
                 data={order.items}
-                keyExtractor={item => item._id}
+                keyExtractor={(item,index) =>`${item._id}${index} orderItem in orderScreen`}
                 ListHeaderComponent={
                     <View>
                         <View style={{ padding: 15, borderTopWidth: 0.5, borderTopColor: '#BBBBBB',borderBottomWidth: 10, borderBottomColor: '#e7e7e7'}}>
@@ -226,7 +226,7 @@ const OrderDetailScreen = ({navigation,route}) => {
                         <View>
                             <FlatList
                                 data={order.statusHistory.slice().reverse()}
-                                keyExtractor={item => item._id}
+                                keyExtractor={(item,index) =>`${item._id}${index} history in orderDetail`}
                                 renderItem={({ item }) => (
                                     <View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: 15, borderBottomWidth: 1, marginBottom: 10, borderBottomColor: "#E7E7E7" }}>
                                         <View style={{ flexDirection: "column", paddingBottom: 10 }}>

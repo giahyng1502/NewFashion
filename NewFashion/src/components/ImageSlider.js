@@ -22,7 +22,7 @@ const ImageSlider = ({ images }) => {
                 horizontal
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
-                keyExtractor={(_, index) => index.toString()}
+                keyExtractor={(_, index) => `${index.toString()} image slide`}
                 renderItem={({ item }) => (
                     <View style={styles.item}>
                         <Image source={{ uri: item }} style={styles.image} />

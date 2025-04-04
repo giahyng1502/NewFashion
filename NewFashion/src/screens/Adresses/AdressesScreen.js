@@ -96,7 +96,8 @@ const AddressesScreen = ({navigation}) => {
         ):(
           <FlatList
             data={personalInfo.information}
-            keyExtractor={(item) => item._id}
+            keyExtractor={(item,index) =>`${item._id}${index} information in addressScreen`}
+
             renderItem={({ item }) => (
               <View style={{ backgroundColor: "#fff", padding: 15, marginBottom: 15 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>

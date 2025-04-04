@@ -81,7 +81,7 @@ const YouScreen = ({ navigation }) => {
       if (personalInfo.role === 0) {
         navigation.navigate('ChatDetail',{id : '67eeafc786a3c7e95e9d3a73'});
       }
-      else {
+      else if (personalInfo.role > 0) {
         navigation.navigate(item.text);
       }
     }

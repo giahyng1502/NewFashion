@@ -99,7 +99,8 @@ const CategoryScreen = ({ navigation }) => {
             data={subCategories}
             renderItem={renderSubCategoryItem}
             numColumns={3}
-            keyExtractor={(item) => item._id}
+            keyExtractor={(item,index) =>`${item._id}${index} subcategory in categoryScreen`}
+
             showsVerticalScrollIndicator={false}
           />
 
@@ -139,7 +140,7 @@ const CategoryScreen = ({ navigation }) => {
         <FlatList
           data={categories}
           renderItem={renderCategoryItem}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item,index) =>`${item._id}${index} category in categoryScreen`}
           showsVerticalScrollIndicator={false}
           style={{ flex: 1 }}
         />
@@ -160,7 +161,7 @@ const CategoryScreen = ({ navigation }) => {
                   />
                 )}
                 numColumns={2}
-                keyExtractor={(item) => item._id}
+                keyExtractor={(item,index) =>`${item._id}${index} product in categoryScreen`}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingHorizontal: 10 }}
               />

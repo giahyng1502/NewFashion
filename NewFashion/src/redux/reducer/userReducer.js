@@ -6,6 +6,7 @@ const initialState = {
     name : "",
     email : "",
     avatar : "",
+    role : 0,
     onlineUser : [],
 }
 
@@ -25,6 +26,7 @@ export const userSlice = createSlice({
             state.name = ""
             state.email = ""
             state.avatar = ""
+            state.role = 0
         },
         setOnlineUser : (state,action)=>{
             state.onlineUser = action.payload

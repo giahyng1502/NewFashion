@@ -44,7 +44,6 @@ const ChatScreen = ({navigation}) => {
     const renderItem = ({item}) => {
         const user = item.userDetails;
         const lastMessage = item.lastMsg;
-        console.log(user)
         if (!user) return null;
         return (
             <TouchableOpacity
@@ -53,11 +52,26 @@ const ChatScreen = ({navigation}) => {
             >
                 <Image source={{uri: user?.avatar}} style={styles.avatar} />
                 <View style={styles.chatInfo}>
-                    <Text style={[styles.userName,!lastMessage?.seen ? {fontWeight: 'bold'} : null]}>
+                    <Text   style={[
+                        styles.lastMessage,
+                        // Chỉ in đậm nếu: tin nhắn chưa đọc và KHÔNG phải của chính mình
+                        !lastMessage?.seen && lastMessage?.msgByUserId !== userId
+                            ? { fontWeight: 'bold' }
+                            : { fontWeight: 'normal' },
+                    ]}>
                         {user?.name}</Text>
-                    <Text style={[styles.lastMessage, !lastMessage?.seen ? {fontWeight: 'bold'} : {fontWeight: 'normal'}]}>
+                    <Text
+                        style={[
+                            styles.lastMessage,
+                            // Chỉ in đậm nếu: tin nhắn chưa đọc và KHÔNG phải của chính mình
+                            !lastMessage?.seen && lastMessage?.msgByUserId !== userId
+                                ? { fontWeight: 'bold' }
+                                : { fontWeight: 'normal' },
+                        ]}
+                    >
                         {lastMessage?.text || 'No messages yet'}
                     </Text>
+
 
                     <View style={styles.unseenMsgContainer}>
                         {item.unseenMsg > 0 && (
@@ -77,7 +91,7 @@ const ChatScreen = ({navigation}) => {
             <FlatList
                 data={allUser}
                 renderItem={renderItem}
-                keyExtractor={(item) => item._id}
+                keyExtractor={(item,index) =>`${item._id}${index} chat in product chatScreen`}
                 ListEmptyComponent={<Text style={styles.noConversations}>No conversations available</Text>}
             />
         </View>

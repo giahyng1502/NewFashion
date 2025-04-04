@@ -72,7 +72,8 @@ const ReviewFormUser = () => {
       </View>
       <FlatList
         data={reviews}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item,index) =>`${item._id}${index} review in reviewFromUser`}
+
         renderItem={({ item }) => <ReviewItem {...item} />}
         contentContainerStyle={st.listContainer}
       />

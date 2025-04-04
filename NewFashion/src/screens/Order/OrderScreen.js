@@ -163,7 +163,8 @@ const OrderScreen = ({ navigation }) => {
 
       <FlatList
         data={products} // Danh sách sản phẩm chính
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item,index) =>`${item._id}${index} products in orderScreen`}
+
         numColumns={2}
         ListHeaderComponent={() => (
           <>

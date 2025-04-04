@@ -3,7 +3,7 @@ import React, {useRef, useState } from 'react'
 
 const products = [
     {
-      id: "1",
+      _id: "1",
       image: require("../assets/image/img_rcproduct.png"),
       title: "Embroidered Wool-blend Scarf Jacket",
       price: "268.443đ",
@@ -13,7 +13,7 @@ const products = [
       almostSoldOut: true,
     },
     {
-      id: "2",
+      _id: "2",
       image: require("../assets/image/img_rcproduct2.png"),
       title: "Unisex Herringbone Black Cat Sweater",
       price: "153.229đ",
@@ -24,7 +24,7 @@ const products = [
     },
 
     {
-        id: "3",
+        _id: "3",
         image: require("../assets/image/img_rcproduct3.png"),
         title: "Unisex Herringbone Black Cat Sweater",
         price: "153.229đ",
@@ -35,7 +35,7 @@ const products = [
     },
 
     {
-        id: "4",
+        _id: "4",
         image: require("../assets/image/img_rcproduct4.png"),
         title: "Unisex Herringbone Black Cat Sweater",
         price: "153.229đ",
@@ -99,7 +99,7 @@ const SuggestProduct = () => {
 
     <FlatList
       data={products}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item,index) =>`${item._id}${index} product in suggestProduct`}
       numColumns={2}
       renderItem={({ item }) => <ProductCard item={item} />}
       contentContainerStyle={st.container}

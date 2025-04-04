@@ -210,13 +210,14 @@ const ChatDetail = ({ navigation, route }) => {
             />
             <View style={styles.container}>
                 <ChatDetailHeader onPress={() => navigation.goBack()} user={receiver} />
+                <View style={{marginBottom : 15}}></View>
                 <FlatList
                     ref={flatListRef}
                     data={messages}
                     renderItem={renderMessage}
                     onRefresh={loadMoreMessages}
                     refreshing={isLoadingMoreMessages}
-                    keyExtractor={(item) => item._id}
+                    keyExtractor={(item,index) =>`${item._id}${index} chat in chatDetail`}
                     ListFooterComponent={
                         isUploading && imagePick.length > 0 ? (
                             <View style={{flex : 1,alignItems: 'flex-end'}}>

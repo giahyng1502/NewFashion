@@ -55,7 +55,7 @@ const BuyerDetail = ({ products, onClickShowPopup, information }) => {
                 <FlatList
                     data={products.filter(item => item.isSelected)}
                     renderItem={({ item }) => <ProductItem item={item} />}
-                    keyExtractor={(item) => item._id}
+                    keyExtractor={(item,index) =>`${item._id}${index} product in buyerDetail`}
                     horizontal // Vuốt theo chiều ngang
                     showsHorizontalScrollIndicator={false} // Ẩn thanh cuộn ngang
                     contentContainerStyle={styles.listContainer}

@@ -42,7 +42,7 @@ const OrderDoneScreen = ({navigation}) => {
         <FlatList
             data={products}
             numColumns={2}
-            keyExtractor={(item) => item._id}
+            keyExtractor={(item,index) =>`${item._id}${index} product in orderDoneScreen`}
             ListHeaderComponent={() => (
                 <>
                     <View style={{width:'100%',backgroundColor:'#fff',padding:20,alignItems:'center',borderTopColor: '#BBBBBB', borderTopWidth: 0.5}}>

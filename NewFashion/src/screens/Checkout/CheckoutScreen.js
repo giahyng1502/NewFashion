@@ -317,7 +317,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                 <FlatList
                                     data={carts.filter(item => item.isSelected)}
-                                    keyExtractor={item => item._id}
+                                    keyExtractor={(item,index) =>`${item._id}${index} cartItem isSelected in checkout`}
                                     horizontal
                                     style={{ marginTop: 5 }}
                                     renderItem={({ item }) => (
@@ -419,7 +419,7 @@ const CheckoutScreen = ({ navigation }) => {
                         <View style={{ backgroundColor: "#F5F5F5", maxHeight: 500, borderTopColor: '#BBBBBB', borderTopWidth: 0.5 }}>
                             <FlatList
                                 data={personalInfo.information}
-                                keyExtractor={(item) => item._id}
+                                keyExtractor={(item,index) =>`${item._id}${index} checkout in checkoutScreen`}
                                 renderItem={({ item }) => (
                                     <View style={{ backgroundColor: "#fff", padding: 15, marginBottom: 15 }}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
@@ -567,7 +567,7 @@ const CheckoutScreen = ({ navigation }) => {
                                 ): (
                                     <FlatList
                                         data={coupons}
-                                        keyExtractor={(item) => item.id}
+                                        keyExtractor={(item,index) =>`${item._id}${index} coupons in checkout`}
                                         style={{marginBottom:5}}
                                         renderItem={({ item }) => (
                                             <View style={{ borderTopWidth: 3, marginVertical: 10, marginHorizontal: 12, borderTopColor: '#FA7806', borderRadius: 2, backgroundColor: "#F0FFEB", height: 150, gap: 5 }}>
