@@ -8,6 +8,8 @@ import { setUser } from "./src/redux/reducer/userReducer";
 import AppManager from "./src/utils/AppManager";
 import Orientation from 'react-native-orientation-locker';
 import { SafeAreaView } from 'react-native-safe-area-context'
+import NotificationDisplay from "./src/screens/Notification/toast-notification";
+import Toast from "react-native-toast-message";
 
 const AppWrapper = () => {
     return (
@@ -34,23 +36,25 @@ const App = () => {
         };
         fetchUserData();
     }, [dispatch]);
+    useEffect(() => {
+        // Khóa màn hình theo chiều dọc khi ứng dụng bắt đầu
+        // Orientation.lockToPortrait();
+        configureGoogleSignIn();
 
-    // useEffect(() => {
-    //     // Khóa màn hình theo chiều dọc khi ứng dụng bắt đầu
-    //     // Orientation.lockToPortrait();
-    //     configureGoogleSignIn();
-    //
-    //     // Cleanup function để hủy khóa khi ứng dụng kết thúc
-    //     return () => {
-    //         Orientation.unlockAllOrientations();
-    //     };
-    // }, []);
+        // Cleanup function để hủy khóa khi ứng dụng kết thúc
+        // return () => {
+        //     Orientation.unlockAllOrientations();
+        // };
+    }, []);
 
     return (
         <SafeAreaView style={{ flex: 1 ,margin : 0}}>
             <SocketProvider userId={userId}>
                 <AppNavigator />
+                {/* Cấu hình cho Toast */}
+                <NotificationDisplay/>
             </SocketProvider>
+
         </SafeAreaView>
     );
 };

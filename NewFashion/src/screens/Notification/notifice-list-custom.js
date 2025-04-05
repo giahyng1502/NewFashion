@@ -5,8 +5,7 @@ import { groupNotificationsByDate } from "../../until/notifice-exchange-day";
 import { getTimeAgoText } from "../../until/getDaysAgoNext";
 
 const TYPE_NOTIFICATIONS = {
-    1: require('../../assets/icons/ic_type_like.png'),
-    2: require('../../assets/icons/ic_type_comment.png'),
+    order_update: "Thông báo đơn hàng"
 };
 
 const NotificationList = ({ notifications }) => {
@@ -40,12 +39,12 @@ const NotificationList = ({ notifications }) => {
                         {/* Avatar + Nội dung */}
                         <View style={styles.contentWrapper}>
                             <View style={{ position: "relative", paddingVertical: 10 }}>
-                                <Image source={{ uri: item.avatar }} style={styles.avatar} />
-                                <Image source={TYPE_NOTIFICATIONS[item.type]} style={[styles.icon, item.type === 1 ? styles.icon_like : { height: 20 }]} />
+                                <Image source={{ uri: item.image }} style={styles.avatar} />
                             </View>
                             <View style={styles.textWrapper}>
+                                <Text style={{fontSize : 16,fontWeight : '800'}}>{TYPE_NOTIFICATIONS[item.type]}</Text>
                                 <Text style={styles.message}>{renderMessage(item.message)}</Text>
-                                <Text style={styles.time}>{getTimeAgoText(item.timestamp)}</Text>
+                                <Text style={styles.time}>{getTimeAgoText(item.createdAt)}</Text>
                             </View>
                         </View>
 

@@ -6,7 +6,7 @@ export const groupNotificationsByDate = (notifications) => {
     const grouped = {};
 
     notifications.forEach((item) => {
-        const date = moment(item.timestamp).startOf("day");
+        const date = moment(item.createdAt).startOf("day");
         let title;
 
         if (date.isSame(today, "day")) {

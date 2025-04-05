@@ -8,6 +8,7 @@ import personalInfoReducer from '../reducer/informationReducer'
 import postReducer from "../reducer/postReducer";
 import voucherReducer from '../reducer/voucherReducer'
 import orderReducer from '../reducer/orderReducer'
+import notificationReducer from "../reducer/notificationReducer";
 
 export default configureStore({
     reducer: {
@@ -19,6 +20,7 @@ export default configureStore({
         personalInfo: personalInfoReducer,
         post: postReducer,
         coupons: voucherReducer,
-        orders:orderReducer
+        orders:orderReducer,
+        notification: notificationReducer
     }
 })
