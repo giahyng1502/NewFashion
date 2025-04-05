@@ -33,10 +33,8 @@ const OrderDoneScreen = ({navigation}) => {
         <BaseHeader
             title=''
             showLeftButton={true}
-            onLeftButtonPress={() => navigation.navigate('Main')}
+            onLeftButtonPress={() => navigation.replace('Main')}
             showRightButton={true}
-            rightIcon={require("../../assets/buttons/bt_cart2.png")}
-            onRightButtonPress={() => navigation.navigate('Cart')}
         />
 
         <FlatList

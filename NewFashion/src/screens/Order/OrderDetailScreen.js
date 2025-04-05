@@ -7,6 +7,7 @@ import SupportFunctions from '../../utils/SupportFunctions'
 const OrderDetailScreen = ({navigation,route}) => {
     const {order}=route.params
     const orderStatus = [
+        { id: -1, name: 'Waiting for payment' },
         { id: 0, name: 'Processing' },
         { id: 1, name: 'Waiting to ship' },
         { id: 2, name: 'Shipping' },
@@ -96,7 +97,7 @@ const OrderDetailScreen = ({navigation,route}) => {
                                 <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginTop: 5 }}>
                                     <Image source={require('../../assets/icons/ic_truck.png')} style={{ width: 25, height: 25, marginEnd: 10 }} resizeMode='contain' />
                                     <View>
-                                        <Text style={{ color: '#078809', fontSize: 16, fontWeight: 'bold' }}>{orderStatus[order.status].name}</Text>
+                                        <Text style={{ color: '#078809', fontSize: 16, fontWeight: 'bold' }}>{orderStatus.find(status => status.id === order.status)?.name}</Text>
                                         <Text style={{ color: '#000', fontSize: 14 }}>{formatDate(order.statusHistory[order.statusHistory.length - 1].timestamp)}</Text>
                                     </View>
                                 </View>
@@ -161,7 +162,7 @@ const OrderDetailScreen = ({navigation,route}) => {
                         <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
                             <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000' }}>Item(s) total:</Text>
                             <Text style={{ fontSize: 16, fontWeight: "bold", textDecorationLine: 'line-through', color: '#737373' }}>
-                                {SupportFunctions.convertPrice(order.totalPrice)}
+                                {SupportFunctions.convertPrice(order.originalPrice)}
                             </Text>
                         </View>
 
@@ -175,7 +176,7 @@ const OrderDetailScreen = ({navigation,route}) => {
                         <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
                             <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000' }}>Points:</Text>
                             <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000', color: '#D96923' }}>
-                                {SupportFunctions.convertPrice(0)}
+                                {SupportFunctions.convertPrice(order.point)}
                             </Text>
                         </View>
 
@@ -230,7 +231,7 @@ const OrderDetailScreen = ({navigation,route}) => {
                                 renderItem={({ item }) => (
                                     <View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: 15, borderBottomWidth: 1, marginBottom: 10, borderBottomColor: "#E7E7E7" }}>
                                         <View style={{ flexDirection: "column", paddingBottom: 10 }}>
-                                            <Text style={{ fontWeight: "bold", color: "#078809", paddingBottom: 10 }}>{orderStatus[item.status].name}</Text>
+                                            <Text style={{ fontWeight: "bold", color: "#078809", paddingBottom: 10 }}>{orderStatus.find(status => status.id === order.status)?.name}</Text>
                                             <Text style={{ fontWeight: "bold" }}>Live Date: {formatDate(item.timestamp)}</Text>
                                         </View>
                                         <Text style={{ fontWeight: "bold" }}>By: {item.updatedBy.name}</Text>

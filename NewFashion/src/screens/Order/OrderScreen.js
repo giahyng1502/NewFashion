@@ -24,17 +24,18 @@ function formatDate(isoString) {
 }
 
 const OrderScreen = ({ navigation }) => {
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(-2);
   const dispatch = useDispatch();
   const { products, loading, page, hasMore } = useSelector(state => state.product);
   const [isLoading, setIsLoading] = useState(true)
   const orderStatus = [
-    { id: 0, name: 'All orders' },
-    { id: 1, name: 'Processing' },
-    { id: 2, name: 'Waiting to ship' },
-    { id: 3, name: 'Shipping' },
-    { id: 4, name: 'Delivered' },
-    { id: 5, name: 'Canceled' }
+    { id: -2, name: 'All orders' },
+    { id: -1, name: 'Waiting for payment' },
+    { id: 0, name: 'Processing' },
+    { id: 1, name: 'Waiting to ship' },
+    { id: 2, name: 'Shipping' },
+    { id: 3, name: 'Delivered' },
+    { id: 4, name: 'Canceled' }
   ];
   const { orders } = useSelector(state => state.orders);
 
@@ -49,10 +50,10 @@ const OrderScreen = ({ navigation }) => {
   }, [orders])
 
   useEffect(() => {
-    if (selectedTab === 0) {
+    if (selectedTab === -2) {
       dispatch(fetchOrders()); // null = lấy tất cả đơn hàng
     } else {
-      dispatch(fetchOrders(selectedTab - 1)); // Lấy đơn hàng theo trạng thái cụ thể
+      dispatch(fetchOrders(selectedTab)); // Lấy đơn hàng theo trạng thái cụ thể
     }
   }, [selectedTab])
 
@@ -112,7 +113,7 @@ const OrderScreen = ({ navigation }) => {
     <View style={{ backgroundColor: '#fff', width: screenWidth }}>
       <View style={{ padding: 10, flexDirection: 'row', justifyContent: 'space-between', borderBottomWidth: 0.5, borderTopWidth: 5, borderBottomColor: '#BBBBBB', borderTopColor: '#e7e7e7', alignItems: 'center' }}>
         <Text style={{ fontSize: 16, color: '#000', fontWeight: 'bold' }}>
-          {orderStatus[order.status + 1].name}
+          {orderStatus.find(status => status.id === order.status)?.name}
         </Text>
         <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={() => navigation.navigate('OrderDetail', { order })}>
           <Text style={{ fontSize: 14, color: '#737373', fontWeight: 'bold' }}>
@@ -157,7 +158,7 @@ const OrderScreen = ({ navigation }) => {
         showLeftButton={true}
         showRightButton={true}
         rightIcon={require('../../assets/buttons/bt_cart2.png')}
-        onLeftButtonPress={() => { navigation.goBack() }}
+        onLeftButtonPress={() => { navigation.replace('Main') }}
         onRightButtonPress={() => { navigation.navigate('Cart') }}
       />
 
@@ -172,9 +173,9 @@ const OrderScreen = ({ navigation }) => {
               horizontal
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item, index }) => (
-                <TouchableOpacity onPress={() => setSelectedTab(orderStatus[index].id)} style={styles.tab}>
-                  <Text style={[styles.tabText, selectedTab === index && styles.activeText]}>{item.name}</Text>
-                  {selectedTab === index && <View style={styles.activeIndicator} />}
+                <TouchableOpacity onPress={() => setSelectedTab(Number(orderStatus[index].id))} style={styles.tab}>
+                  <Text style={[styles.tabText, selectedTab === Number(item.id) && styles.activeText]}>{item.name}</Text>
+                  {selectedTab === Number(item.id) && <View style={styles.activeIndicator} />}
                 </TouchableOpacity>
               )}
               showsHorizontalScrollIndicator={false}

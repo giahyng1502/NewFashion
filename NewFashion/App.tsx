@@ -1,4 +1,3 @@
-import { SafeAreaView } from 'react-native';
 import React, {useEffect} from 'react';
 import AppNavigator from './src/navigation/AppNavigator';
 import {Provider, useSelector} from 'react-redux'; // Chỉ dùng Provider ở đây
@@ -6,6 +5,7 @@ import store from './src/redux/store';
 import { SocketProvider } from './src/context/socketContext';
 import {configureGoogleSignIn} from './src/firebase/configAuth';
 import Orientation from 'react-native-orientation-locker';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const AppWrapper = () => {
     return (

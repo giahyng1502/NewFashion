@@ -1,9 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet, Switch } from "react-native";
 import { RadioButton } from "react-native-paper";
 import SupportFunctions from '../../utils/SupportFunctions';
 
 const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup }) => {
+  useEffect(() => {
+    console.log(products);
+    
+  }, [])
+  
   const [selectedPayment, setSelectedPayment] = useState("direct");
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => {
@@ -117,7 +122,7 @@ const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup }
 
         <View style={styles.summaryRow}>
           <Text style={styles.textBold}>Subtotal:</Text>
-          <Text style={styles.textBold}>{SupportFunctions.convertPrice(getFinalPriceOfSelectedItems())}</Text>
+          <Text style={styles.textBold}>{SupportFunctions.convertPrice(getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))}</Text>
         </View>
 
         <View style={[styles.summaryRow, { borderTopWidth: 1, borderBottomWidth: 1, paddingVertical: 15, borderColor: '#D7D7D7' }]}>
