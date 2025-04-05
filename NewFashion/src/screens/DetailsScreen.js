@@ -71,15 +71,17 @@ const DetailsScreen = ({ navigation, route }) => {
     function formatDate(isoString) {
         const date = new Date(isoString);
 
-        return date.toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: '2-digit', 
-            year: 'numeric' 
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric'
         });
     }
 
     useEffect(() => {
         console.log(item);
+        console.log(reviews);
+
 
         const saveItemToLocal = async () => {
             try {
@@ -418,11 +420,6 @@ const DetailsScreen = ({ navigation, route }) => {
                                 </TouchableOpacity>
                             </View>
 
-                            <View style={{ marginTop: 10 }}>
-                                <Ratingbar label="Small" percentage={11} />
-                                <Ratingbar label="True to size" percentage={11} />
-                                <Ratingbar label="Large" percentage={11} />
-                            </View>
 
                             <View style={{ width: '100%', height: 1, backgroundColor: '#BBBBBB', marginTop: 10 }} />
 
@@ -430,27 +427,20 @@ const DetailsScreen = ({ navigation, route }) => {
                                 data={reviews}
                                 keyExtractor={(item) => item.id}
                                 renderItem={({ item }) => (
-                                    <View style={{ borderBottomWidth: 1, borderBottomColor:"#BBBBBB" ,paddingBottom: 15, paddingTop: 10 }}>
-                                        <View style={{ flexDirection: "row" , gap: 5, alignItems:"center"}}>
+                                    <View style={{ borderBottomWidth: 1, borderBottomColor: "#BBBBBB", paddingBottom: 15, paddingTop: 10 }}>
+                                        <View style={{ flexDirection: "row", gap: 5, alignItems: "center" }}>
                                             <Image source={{ uri: item.userId.avatar }} style={{ width: 28, height: 28 }} />
-                                            <Text style={{fontWeight:"700",fontSize:12}}>{item.userId.name}</Text>
-                                            <Text style={{color:"#737373", fontSize: 10, fontWeight: "500"}}>on {formatDate(item.reviewDate)}</Text>
+                                            <Text style={{ fontWeight: "700", fontSize: 12 }}>{item.userId.name}</Text>
+                                            <Text style={{ color: "#737373", fontSize: 10, fontWeight: "500" }}>on {formatDate(item.reviewDate)}</Text>
                                         </View>
-                                        <View style={{ flexDirection: "row", marginBottom: 4 , marginTop: 4}}>
-                                            {Array.from({ length: 5 }).map((_, index) => (
-                                                <Image
-                                                    key={index}
-                                                    source={
-                                                        index < item.rate
-                                                            ? require("../assets/icons/ic_staralone.png")
-                                                            : require("../assets/icons/ic_staralone.png")
-                                                    }
-                                                    style={{ marginRight: 2 }}
-                                                />
+                                        <StarRating rating={item.rate} />
+                                        <Text style={{ color: "#737373", fontWeight: "500", fontSize: 10 }}>{item.purchased}</Text>
+                                        <Text style={{ fontWeight: "bold", fontSize: 13 }}>{item.content}</Text>
+                                        <View style={{ flexDirection: "row", flexWrap: "wrap", marginVertical: 18 }}>
+                                            {item.images.map((uri, index) => (
+                                                <Image key={index} source={{ uri }} style={{ width: 60, height: 60, marginRight: 10, borderRadius: 5 }} />
                                             ))}
                                         </View>
-                                        <Text style={{color:"#737373", fontWeight:"500", fontSize: 10}}>{item.purchased}</Text>
-                                        <Text style={{fontWeight:"bold", fontSize: 13}}>{item.content}</Text>
                                     </View>
                                 )}
                             />
