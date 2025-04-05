@@ -1,4 +1,17 @@
-import { StyleSheet,Alert, Text, View, TouchableOpacity, Image, ScrollView, Animated, FlatList, ActivityIndicator, TextInput } from 'react-native'
+import {
+    StyleSheet,
+    Alert,
+    Text,
+    View,
+    TouchableOpacity,
+    Image,
+    ScrollView,
+    Animated,
+    FlatList,
+    ActivityIndicator,
+    TextInput,
+    Linking
+} from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import BuyerDetail from './BuyerDetail'
@@ -10,6 +23,8 @@ import { deleteInformation, updateDefaultInformation } from '../../redux/actions
 import { fetchCoupon } from '../../redux/actions/voucherAction'
 import { createOrder } from '../../redux/actions/orderActions'
 import { fetchCart } from '../../redux/actions/cartActions'
+import axios from "../../service/axios";
+import {useSocket} from "../../context/socketContext";
 
 const CheckoutScreen = ({ navigation }) => {
     const { carts } = useSelector(state => state.cart);
@@ -31,7 +46,8 @@ const CheckoutScreen = ({ navigation }) => {
     const [isLoadingAddress, setIsLoadingAddress] = useState(true)
     const [isLoadingCart, setIsLoadingCart] = useState(true)
     const [isEnabled, setIsEnabled] = useState(false);
-
+    const [payment, setOnPayment] = useState('direct');
+    const socket = useSocket();
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -46,7 +62,13 @@ const CheckoutScreen = ({ navigation }) => {
     
         fetchData();
     }, []);
-
+    useEffect(() => {
+        if (socket) {
+            socket.on('payment', (resultCode) => {
+                console.log(resultCode)
+            })
+        }
+    }, []);
     useEffect(() => {
         // console.log('personalInfo:', personalInfo);
 
@@ -65,7 +87,10 @@ const CheckoutScreen = ({ navigation }) => {
             setIsLoading(false);
         }
     }, [isLoadingCoupon, isLoadingCart, isLoadingAddress]);
-    
+
+    useEffect(() => {
+        console.log(payment);
+    }, [payment]);
 
     function formatDate(isoString) {
         const date = new Date(isoString);
@@ -82,9 +107,25 @@ const CheckoutScreen = ({ navigation }) => {
 
     const createAnOrder = ()=>{
         dispatch(createOrder(selectedAddress))
-            .then(() => {
-                console.log('Tạo đơn thành công'); 
-                navigation.replace('OrderDone')               
+            .then(async (order) => {
+                console.log('Tạo đơn thành công');
+                if (order.payload) {
+
+                    if (payment === 'direct') {
+                        navigation.replace('OrderDone')
+                    } else if (payment === 'momo') {
+                        const response = await axios.post('/momo/payment', {
+                            priceProduct: order?.payload?.totalPrice,
+                            rawOrderId: order.payload._id,
+                        })
+                        if (response && response.payUrl) {
+                            // Mở trang thanh toán MoMo
+                            Linking.openURL(response.payUrl);
+                        } else {
+                            Alert.alert('Lỗi thanh toán', 'Không thể khởi tạo thanh toán MoMo');
+                        }
+                    }
+                }
             })
             .catch((error) => {
                 console.log('Create order failed: ', error);
@@ -271,7 +312,7 @@ const CheckoutScreen = ({ navigation }) => {
             {/* body */}
             <ScrollView>
                 <BuyerDetail products={carts} onClickShowPopup={[toggleAdressSheet, toggleBottomSheet]} information={selectedAddress} />
-                <PaymentAnhCoupon products={carts} personalInfo={personalInfo} onSwitch={setIsEnabled} onClickShowPopup={toggleCouponSheet}/>
+                <PaymentAnhCoupon onPayment={setOnPayment} products={carts} personalInfo={personalInfo} onSwitch={setIsEnabled} onClickShowPopup={toggleCouponSheet}/>
                 <SubInfor />
             </ScrollView>
 

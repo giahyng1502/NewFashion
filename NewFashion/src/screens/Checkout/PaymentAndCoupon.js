@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, Switch } from "react-n
 import { RadioButton } from "react-native-paper";
 import SupportFunctions from '../../utils/SupportFunctions';
 
-const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup }) => {
+const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup,onPayment }) => {
   const [selectedPayment, setSelectedPayment] = useState("direct");
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => {
@@ -50,7 +50,10 @@ const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup }
           <RadioButton
             value="direct"
             status={selectedPayment === "direct" ? "checked" : "unchecked"}
-            onPress={() => setSelectedPayment("direct")}
+            onPress={() => {
+              setSelectedPayment("direct")
+              onPayment('direct')
+            }}
           />
           <Image source={require("../../assets/icons/ic_cash.png")} style={styles.paymentIcon} />
           <Text style={styles.paymentText}>Direct payment</Text>
@@ -61,7 +64,10 @@ const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup }
           <RadioButton
             value="momo"
             status={selectedPayment === "momo" ? "checked" : "unchecked"}
-            onPress={() => setSelectedPayment("momo")}
+            onPress={() => {
+              setSelectedPayment("momo")
+              onPayment("momo")
+            }}
           />
           <Image source={require("../../assets/icons/ic_momo.png")} style={styles.paymentIcon} />
           <Text style={styles.paymentText}>Momo e-wallet</Text>

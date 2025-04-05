@@ -30,10 +30,18 @@ import MyReviews from '../screens/Review/MyReviews'
 import WriteReviews from '../screens/Review/WriteReviews'
 
 const Stack = createStackNavigator()
-
+const linking = {
+  prefixes: ['newfashion--android://'],
+  config: {
+    screens: {
+      Home: '',
+      OrderDone: 'orderdone',
+    },
+  },
+};
 const AppNavigator = () => {
   return (
-      <NavigationContainer>
+      <NavigationContainer linking={linking}>
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={'Splash'}>
           <Stack.Screen name="Splash" component={SplashScreen} />
           <Stack.Screen name="Main" component={MainScreen} />
