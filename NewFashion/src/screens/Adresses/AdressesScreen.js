@@ -74,7 +74,6 @@ const AddressesScreen = ({navigation}) => {
     return (
       <View style={{flex: 1,justifyContent: 'center',alignItems: 'center'}}>
         <ActivityIndicator size="large" color="#FA7806" />
-        <Text>Loading personal info...</Text>
       </View>
     );
   }

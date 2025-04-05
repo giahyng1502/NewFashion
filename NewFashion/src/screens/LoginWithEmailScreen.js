@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Animated, Text, View, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { Animated, Text, View, TouchableOpacity, Image, StyleSheet, Alert, ActivityIndicator, InteractionManager, Keyboard } from 'react-native';
 import TextField, { TextFieldType } from '../components/TextField';
 import ScreenSize from '../contants/ScreenSize';
 import FilledButton from '../components/FilledButton';
@@ -8,7 +8,8 @@ import BenefitsInfoBox from '../components/BenefitsInfoBox';
 import { checkEmail, loginWithEmail, register } from '../redux/actions/userActions';
 import PasswordStrengthBar from '../components/PasswordStrengthBar';
 import AppManager from '../utils/AppManager'
-import {setUser} from "../redux/reducer/userReducer";
+import { setUser } from "../redux/reducer/userReducer";
+import { fetchInformation } from '../redux/actions/infomationActions';
 
 const LoginWithEmailScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -17,6 +18,7 @@ const LoginWithEmailScreen = ({ navigation }) => {
   const [strengLabel, setStrengLabel] = useState('')
   const [isRegister, setIsRegister] = useState(false);
   const [isContinue, setIsContinue] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const opacityAnim = useRef(new Animated.Value(1)).current; // Điều khiển opacity của infoContainer
   const translateYAnim = useRef(new Animated.Value(0)).current; // Điều khiển translateY của email input
@@ -139,86 +141,102 @@ const LoginWithEmailScreen = ({ navigation }) => {
     }
   }
 
-  const handleLogin = async () => {
+  const handleLogin = () => {
     const emailError = validateField('email', email);
     const passwordError = validateField('password', password);
-
-
+  
     if (emailError || passwordError) {
       console.log('Login failed');
-      return
+      return;
     }
-
-    let user = {
-      email: email,
-      password: password
-    }
-
-    dispatch(loginWithEmail(user))
-      .then((result) => {
-        console.log('result: ', result);
-        console.log('token: ', result.payload.token);
-        // Lưu token
-        AppManager.shared.saveUserInfo(result.payload.token)
-          .then(() => {
-            // Lấy lại token đã lưu và log ra
-            return AppManager.shared.getToken();
-          })
-          .then((token) => {
-            console.log('token: ', token); // Token thực tế
-            navigation.replace('Main');
-          })
-          .catch((err) => {
+  
+    setIsLoading(true); // Hiện loading trước
+    Keyboard.dismiss(); // Ẩn bàn phím
+  
+    InteractionManager.runAfterInteractions(() => {
+      let user = {
+        email: email,
+        password: password
+      };
+  
+      dispatch(loginWithEmail(user))
+        .then(async (result) => {
+          console.log('result: ', result);
+          console.log('token: ', result.payload.token);
+  
+          try {
+            await AppManager.shared.saveUserInfo(result.payload.token);
+  
+            const token = await AppManager.shared.getToken();
+            console.log('token: ', token);
+  
+            if (token) {
+              const fetchPersonalInfo = await dispatch(fetchInformation()).unwrap();
+              console.log('Fetch personal info success:', fetchPersonalInfo);
+  
+              setIsLoading(false); // Tắt loading trước khi chuyển màn
+              navigation.replace('Main');
+            }
+          } catch (err) {
             console.log('Error in token processing: ', err);
-          });
-      })
-      .catch((err) => {
-        console.log("Login error: ", err);
-      });
-
-  }
+            setIsLoading(false);
+            Alert.alert('Error', 'An error occurred while processing the token. Please try again.');
+          }
+        })
+        .catch((err) => {
+          console.log('Login error: ', err);
+          setIsLoading(false);
+          Alert.alert('Login failed', 'Incorrect email or password.');
+        });
+    });
+  };
 
   const handleRegister = () => {
     const emailError = validateField('email', email);
     const passwordError = validateField('password', password);
-
+  
     if (emailError || passwordError) {
       console.log('Register failed');
-      return
+      return;
     }
-
-    let name = email.split('@')[0];
-
-    let user = {
-      email: email,
-      name: name,
-      password: password
-    }
-    console.log(user);
-
-    dispatch(register(user))
-      .then((result) => {
-        console.log('Register successful', result);
-
-        // Lưu token
-        AppManager.shared.saveUserInfo(result.payload.token)
-          .then(() => {
-            // Lấy token đã lưu
-            return AppManager.shared.getToken();
-          })
-          .then((token) => {
-            console.log('token: ', token); // Token thực tế
+  
+    setIsLoading(true); // Hiện loading trước
+    Keyboard.dismiss(); // Ẩn bàn phím
+    
+    InteractionManager.runAfterInteractions(() => {
+      let name = email.split('@')[0];
+      let user = {
+        email: email,
+        name: name,
+        password: password
+      };
+  
+      console.log(user);
+  
+      dispatch(register(user))
+        .then(async (result) => {
+          console.log('Register successful', result);
+  
+          try {
+            await AppManager.shared.saveUserInfo(result.payload.token);
+            const token = await AppManager.shared.getToken();
+            console.log('token: ', token);
+  
+            setIsLoading(false); // Tắt loading trước khi chuyển màn
             navigation.replace('Main');
-          })
-          .catch((err) => {
+          } catch (err) {
             console.log('Error in saving or retrieving token: ', err);
-          });
-      })
-      .catch((err) => {
-        console.log("Register error: ", err);
-      });
-
-  }
+            setIsLoading(false);
+            Alert.alert('Error', 'Lỗi khi lưu hoặc lấy token. Vui lòng thử lại.');
+          }
+        })
+        .catch((err) => {
+          console.log('Register error: ', err);
+          setIsLoading(false);
+          Alert.alert('Register failed', 'Có lỗi xảy ra khi đăng ký.');
+        });
+    });
+  };  
 
   const handleContinue = () => {
     if (isContinue) {
@@ -323,6 +341,12 @@ const LoginWithEmailScreen = ({ navigation }) => {
           Privacy Policy
         </Text>.
       </Text>
+
+      {isLoading && (
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+          <ActivityIndicator size="large" color="#FA7806" />
+        </View>
+      )}
     </View>
   );
 }
