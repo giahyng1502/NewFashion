@@ -168,5 +168,6 @@ const st = StyleSheet.create({
     },
     cusimg: {
         alignItems: "center",
+        marginVertical:10
     },
 })
