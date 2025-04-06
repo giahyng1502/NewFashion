@@ -35,8 +35,7 @@ const OrderScreen = ({ navigation }) => {
     { id: 1, name: 'Waiting to ship' },
     { id: 2, name: 'Shipping' },
     { id: 3, name: 'Delivered' },
-    { id: 4, name: 'Canceled' }
-  ];
+    { id: 4, name: 'Canceled' } ];
   const { orders } = useSelector(state => state.orders);
 
   useEffect(() => {
