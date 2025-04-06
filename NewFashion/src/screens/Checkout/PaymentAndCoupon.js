@@ -1,9 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet, Switch } from "react-native";
 import { RadioButton } from "react-native-paper";
 import SupportFunctions from '../../utils/SupportFunctions';
 
-const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup,onPayment }) => {
+const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup }) => {
+  useEffect(() => {
+    console.log(products);
+    
+  }, [])
+  
   const [selectedPayment, setSelectedPayment] = useState("direct");
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => {
@@ -50,10 +55,7 @@ const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup,o
           <RadioButton
             value="direct"
             status={selectedPayment === "direct" ? "checked" : "unchecked"}
-            onPress={() => {
-              setSelectedPayment("direct")
-              onPayment('direct')
-            }}
+            onPress={() => setSelectedPayment("direct")}
           />
           <Image source={require("../../assets/icons/ic_cash.png")} style={styles.paymentIcon} />
           <Text style={styles.paymentText}>Direct payment</Text>
@@ -64,10 +66,7 @@ const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup,o
           <RadioButton
             value="momo"
             status={selectedPayment === "momo" ? "checked" : "unchecked"}
-            onPress={() => {
-              setSelectedPayment("momo")
-              onPayment("momo")
-            }}
+            onPress={() => setSelectedPayment("momo")}
           />
           <Image source={require("../../assets/icons/ic_momo.png")} style={styles.paymentIcon} />
           <Text style={styles.paymentText}>Momo e-wallet</Text>
@@ -123,7 +122,7 @@ const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup,o
 
         <View style={styles.summaryRow}>
           <Text style={styles.textBold}>Subtotal:</Text>
-          <Text style={styles.textBold}>{SupportFunctions.convertPrice(getFinalPriceOfSelectedItems())}</Text>
+          <Text style={styles.textBold}>{SupportFunctions.convertPrice(getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))}</Text>
         </View>
 
         <View style={[styles.summaryRow, { borderTopWidth: 1, borderBottomWidth: 1, paddingVertical: 15, borderColor: '#D7D7D7' }]}>

@@ -1,17 +1,4 @@
-import {
-    StyleSheet,
-    Alert,
-    Text,
-    View,
-    TouchableOpacity,
-    Image,
-    ScrollView,
-    Animated,
-    FlatList,
-    ActivityIndicator,
-    TextInput,
-    Linking
-} from 'react-native'
+import { StyleSheet, Alert, Text, View, TouchableOpacity, Image, ScrollView, Animated, FlatList, ActivityIndicator, TextInput } from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import BuyerDetail from './BuyerDetail'
@@ -23,8 +10,6 @@ import { deleteInformation, updateDefaultInformation } from '../../redux/actions
 import { fetchCoupon } from '../../redux/actions/voucherAction'
 import { createOrder } from '../../redux/actions/orderActions'
 import { fetchCart } from '../../redux/actions/cartActions'
-import axios from "../../service/axios";
-import {useSocket} from "../../context/socketContext";
 
 const CheckoutScreen = ({ navigation }) => {
     const { carts } = useSelector(state => state.cart);
@@ -41,13 +26,15 @@ const CheckoutScreen = ({ navigation }) => {
 
     const [defaultAddress, setDefaultAddress] = useState(null);
     const [selectedAddress, setSelectedAddress] = useState(null)
+    const [selectedCoupon, setSelectedCoupon] = useState(null);
     const [isLoading, setIsLoading] = useState(true)
     const [isLoadingCoupon, setIsLoadingCoupon] = useState(true)
     const [isLoadingAddress, setIsLoadingAddress] = useState(true)
     const [isLoadingCart, setIsLoadingCart] = useState(true)
     const [isEnabled, setIsEnabled] = useState(false);
-    const [payment, setOnPayment] = useState('direct');
-    const socket = useSocket();
+    const [newCart, setNewCart] = useState(carts);
+
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -59,16 +46,12 @@ const CheckoutScreen = ({ navigation }) => {
                 console.error('Error fetching data:', error);
             }
         };
-    
+        console.log('cart', carts);
+
+
         fetchData();
     }, []);
-    useEffect(() => {
-        if (socket) {
-            socket.on('payment', (resultCode) => {
-                console.log(resultCode)
-            })
-        }
-    }, []);
+
     useEffect(() => {
         // console.log('personalInfo:', personalInfo);
 
@@ -88,51 +71,37 @@ const CheckoutScreen = ({ navigation }) => {
         }
     }, [isLoadingCoupon, isLoadingCart, isLoadingAddress]);
 
-    useEffect(() => {
-        console.log(payment);
-    }, [payment]);
 
     function formatDate(isoString) {
         const date = new Date(isoString);
-        
+
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng tính từ 0 nên +1
         const day = String(date.getDate()).padStart(2, '0');
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
         const seconds = String(date.getSeconds()).padStart(2, '0');
-    
+
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     }
 
-    const createAnOrder = ()=>{
-        dispatch(createOrder(selectedAddress))
-            .then(async (order) => {
+    const createAnOrder = () => {
+        dispatch(createOrder({
+            name:selectedAddress.name,
+            phoneNumber:selectedAddress.phoneNumber,
+            address:selectedAddress.address,
+            voucherId: selectedCoupon ? selectedCoupon._id : null,
+            point: isEnabled ? personalInfo.point : 0}))
+            .then(() => {
                 console.log('Tạo đơn thành công');
-                if (order.payload) {
-
-                    if (payment === 'direct') {
-                        navigation.replace('OrderDone')
-                    } else if (payment === 'momo') {
-                        const response = await axios.post('/momo/payment', {
-                            priceProduct: order?.payload?.totalPrice,
-                            rawOrderId: order.payload._id,
-                        })
-                        if (response && response.payUrl) {
-                            // Mở trang thanh toán MoMo
-                            Linking.openURL(response.payUrl);
-                        } else {
-                            Alert.alert('Lỗi thanh toán', 'Không thể khởi tạo thanh toán MoMo');
-                        }
-                    }
-                }
+                navigation.replace('OrderDone')
             })
             .catch((error) => {
                 console.log('Create order failed: ', error);
             });
     }
 
-    //mở sheet chi tiết đơn hàng
+    //mở sheet chi tiết đơn hàngs
     const toggleBottomSheet = () => {
         if (!isShowPriceBottomSheet) {
             openPriceBottomSheet()
@@ -227,7 +196,7 @@ const CheckoutScreen = ({ navigation }) => {
     });
 
     const getFinalPriceOfSelectedItems = () => {
-        return carts
+        return newCart
             .filter(item => item.isSelected)
             .reduce((total, item) => {
                 const discountMultiplier = item.disCountSale > 0 ? (1 - item.disCountSale / 100) : 1;
@@ -261,32 +230,32 @@ const CheckoutScreen = ({ navigation }) => {
 
     const handleDeleteItem = (id) => {
         Alert.alert(
-          "Confirm Delete",
-          "Are you sure you want to delete this address?",
-          [
-            {
-              text: "Cancel",
-              style: "cancel",
-            },
-            {
-              text: "Delete",
-              style: "destructive",
-              onPress: () => {
-                  const updateAddress = addresses.filter(item => item._id != id);
-                  setAddresses(updateAddress);
+            "Confirm Delete",
+            "Are you sure you want to delete this address?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel",
+                },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: () => {
+                        const updateAddress = addresses.filter(item => item._id != id);
+                        setAddresses(updateAddress);
 
-                  // Gửi yêu cầu xóa lên server với các sản phẩm được chọn
-                  dispatch(deleteInformation(id))
-                      .then((result) => {
-                          console.log(result);
-                      })
-                      .catch((error) => {
-                          console.error("Error deleting address:", error);
-                      });
-              },
-            },
-          ],
-          { cancelable: true }
+                        // Gửi yêu cầu xóa lên server với các sản phẩm được chọn
+                        dispatch(deleteInformation(id))
+                            .then((result) => {
+                                console.log(result);
+                            })
+                            .catch((error) => {
+                                console.error("Error deleting address:", error);
+                            });
+                    },
+                },
+            ],
+            { cancelable: true }
         );
     };
 
@@ -295,6 +264,42 @@ const CheckoutScreen = ({ navigation }) => {
 
         dispatch(updateDefaultInformation(item._id))
     }
+
+    const handleSelectedCoupon = (item) => {
+        if (selectedCoupon === item) {
+            setSelectedCoupon(null);
+            handleSelectVoucher(null); // Bỏ chọn
+          } else {
+            setSelectedCoupon(item);
+            handleSelectVoucher(item); // Dùng item trực tiếp, không dùng selectedCoupon
+          }
+    };
+
+    const applyVoucherToCart = (voucher) => {
+        const updatedCart = carts.map(item => {
+          const discountAmount = (item.price * voucher.discount) / 100;
+          const appliedDiscount = Math.min(discountAmount, voucher.maxDiscountPrice);
+          const actualDiscountPercent = (appliedDiscount / item.price) * 100;
+      
+          return {
+            ...item,
+            disCountSale: actualDiscountPercent, // Cập nhật phần trăm đã giảm
+          };
+        });
+      
+        // Cập nhật state
+        setNewCart(updatedCart);
+    };
+
+    const handleSelectVoucher = (voucher) => {
+        if (voucher) {
+            applyVoucherToCart(voucher); // tự setNewCart bên trong hàm này
+            setSelectedCoupon(voucher);
+          } else {
+            setNewCart(carts); // reset lại nếu không có voucher
+            setSelectedCoupon(null);
+          }
+    };
 
     if (isLoading) {
         return (
@@ -312,7 +317,7 @@ const CheckoutScreen = ({ navigation }) => {
             {/* body */}
             <ScrollView>
                 <BuyerDetail products={carts} onClickShowPopup={[toggleAdressSheet, toggleBottomSheet]} information={selectedAddress} />
-                <PaymentAnhCoupon onPayment={setOnPayment} products={carts} personalInfo={personalInfo} onSwitch={setIsEnabled} onClickShowPopup={toggleCouponSheet}/>
+                <PaymentAnhCoupon products={newCart} personalInfo={personalInfo} onSwitch={setIsEnabled} onClickShowPopup={toggleCouponSheet} />
                 <SubInfor />
             </ScrollView>
 
@@ -321,15 +326,15 @@ const CheckoutScreen = ({ navigation }) => {
                 {/* Phần tổng tiền */}
                 <View style={styles.priceContainer}>
                     <View style={styles.realPriceContainer}>
-                        <Text style={styles.totalPrice}>{SupportFunctions.convertPrice(getFinalPriceOfSelectedItems())}</Text>
+                        <Text style={styles.totalPrice}>{SupportFunctions.convertPrice(getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))}</Text>
                         <TouchableOpacity onPress={toggleBottomSheet}>
                             <Image source={require('../../assets/icons/ic_arrowUp.png')} resizeMode='cover' style={styles.arrowButton} />
                         </TouchableOpacity>
                     </View>
-                    <Text style={styles.savedAmount}>Saved {SupportFunctions.convertPrice(getDiscountPriceOfSelectedItems())}</Text>
+                    <Text style={styles.savedAmount}>Saved {SupportFunctions.convertPrice(getDiscountPriceOfSelectedItems() + (isEnabled ? personalInfo.point : 0)) }</Text>
                 </View>
                 {/* Nút Submit Order */}
-                <TouchableOpacity style={styles.submitButton} onPress={()=>createAnOrder()}>
+                <TouchableOpacity style={styles.submitButton} onPress={() => createAnOrder()}>
                     <Text style={styles.buttonText}>Submit order</Text>
                 </TouchableOpacity>
 
@@ -358,7 +363,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                 <FlatList
                                     data={carts.filter(item => item.isSelected)}
-                                    keyExtractor={(item,index) =>`${item._id}${index} cartItem isSelected in checkout`}
+                                    keyExtractor={item => item._id}
                                     horizontal
                                     style={{ marginTop: 5 }}
                                     renderItem={({ item }) => (
@@ -430,7 +435,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                                         {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice(getFinalPriceOfSelectedItems())}
+                                        {SupportFunctions.convertPrice(getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))}
                                     </Text>
                                 </View>
 
@@ -460,7 +465,7 @@ const CheckoutScreen = ({ navigation }) => {
                         <View style={{ backgroundColor: "#F5F5F5", maxHeight: 500, borderTopColor: '#BBBBBB', borderTopWidth: 0.5 }}>
                             <FlatList
                                 data={personalInfo.information}
-                                keyExtractor={(item,index) =>`${item._id}${index} checkout in checkoutScreen`}
+                                keyExtractor={(item) => item._id}
                                 renderItem={({ item }) => (
                                     <View style={{ backgroundColor: "#fff", padding: 15, marginBottom: 15 }}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
@@ -541,7 +546,7 @@ const CheckoutScreen = ({ navigation }) => {
                                             >
                                                 {item._id === defaultAddress._id ? (
                                                     <View></View>
-                                                ):(
+                                                ) : (
                                                     <TouchableOpacity onPress={() => handleDeleteItem(item._id)}>
                                                         <Text style={{ marginRight: 5, color: "#737373", fontWeight: 'bold' }}>Delete</Text>
                                                     </TouchableOpacity>
@@ -581,57 +586,66 @@ const CheckoutScreen = ({ navigation }) => {
                             title="Apply coupon"
                             showRightButton={true}
                             rightIcon={require('../../assets/bt_exit.png')}
-                            onRightButtonPress={closeCouponSheet}
+                            onRightButtonPress={()=>{
+                                
+                                    closeCouponSheet()
+                                
+                                }
+                            }
                         />
 
                         <View style={{ backgroundColor: "#FFF", maxHeight: 500, borderTopColor: '#BBBBBB', borderTopWidth: 0.5 }}>
-                            {/* Ô nhập code voucher */}
-                            <View style={{ flexDirection: "row", alignItems: "center", padding: 10 }}>
-                                <TextInput placeholder="Enter coupon code" style={{ flex: 1, height: 40, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, paddingHorizontal: 10 }} />
-                                <TouchableOpacity style={{ borderColor: "#000000", borderWidth: 1, height: 40, width: 80, borderRadius: 40, justifyContent: "center", marginLeft: 10 }}>
-                                    <Text style={{ textAlign: "center", color: "#000000", fontWeight: "bold" }}>Apply</Text>
-                                </TouchableOpacity>
-                            </View>
 
                             {/* Ghi chú */}
-                            <Text style={{ fontSize: 14, marginVertical: 5, marginHorizontal: 15,color:'#000',fontWeight:'bold' }}>
+                            <Text style={{ fontSize: 14, marginVertical: 10, marginHorizontal: 15, color: '#000', fontWeight: 'bold' }}>
                                 Limit 1 coupon per purchase. Coupon cannot be applied to shipping fees.
                             </Text>
 
-                            <View style={{height:400}}>
+                            <View style={{ height: 400 }}>
                                 {coupons.length === 0 ? (
-                                    <View style={{flexDirection:'column',alignItems:'center',padding:10,justifyContent:'center',marginBottom:20,height:"100%"}}>
+                                    <View style={{ flexDirection: 'column', alignItems: 'center', padding: 10, justifyContent: 'center', marginBottom: 20, height: "100%" }}>
                                         <Image source={require("../../assets/icons/ic_nonvoucher.png")} style={{ width: 120, height: 120 }} />
-                                        <Text style={{ fontWeight: "800", fontSize: 18, color:'#000'}}>It's empty</Text>
-                                        <Text style={{ fontSize: 14, marginTop:5, color:'#737373',fontWeight:'bold' }}>There is no coupons here</Text>
+                                        <Text style={{ fontWeight: "800", fontSize: 18, color: '#000' }}>It's empty</Text>
+                                        <Text style={{ fontSize: 14, marginTop: 5, color: '#737373', fontWeight: 'bold' }}>There is no coupons here</Text>
                                     </View>
-                                ): (
+                                ) : (
                                     <FlatList
                                         data={coupons}
-                                        keyExtractor={(item,index) =>`${item._id}${index} coupons in checkout`}
-                                        style={{marginBottom:5}}
+                                        keyExtractor={(item) => item._id}
+                                        style={{ marginBottom: 5 }}
                                         renderItem={({ item }) => (
                                             <View style={{ borderTopWidth: 3, marginVertical: 10, marginHorizontal: 12, borderTopColor: '#FA7806', borderRadius: 2, backgroundColor: "#F0FFEB", height: 150, gap: 5 }}>
                                                 <View style={{ backgroundColor: '#FA7806', width: 30, borderBottomLeftRadius: 3, borderBottomRightRadius: 3 }}>
-                                                  <Text style={{ fontWeight: "bold", color: "#fff", textAlign: "center", fontSize: 10 }}>NEW</Text>
+                                                    <Text style={{ fontWeight: "bold", color: "#fff", textAlign: "center", fontSize: 10 }}>NEW</Text>
                                                 </View>
                                                 <View style={{ paddingHorizontal: 15 }}>
-                                                  <View style={{ flexDirection: "row", justifyContent:'space-between' }}>
-                                                    <View style={{ width: 250 }}>
-                                                      <Text style={{ fontSize: 18, fontWeight: "bold" }}>{item.voucherName}</Text>
-                                                      <Text style={{ fontWeight: "bold", fontSize: 12 }}>{item.voucherDetail}</Text>
-                                                      <Text style={{ fontWeight: "bold", fontSize: 12, marginTop: 30 }}>
-                                                        {formatDate(item.startDate)} - {formatDate(item.endDate)}
-                                                        </Text>
+                                                    <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
+                                                        <View style={{ width: 250 }}>
+                                                            <Text style={{ fontSize: 18, fontWeight: "bold" }}>{item.voucherName}</Text>
+                                                            <Text style={{ fontWeight: "bold", fontSize: 12 }}>{item.voucherDetail}</Text>
+                                                            <Text style={{ fontWeight: "bold", fontSize: 12, marginTop: 30 }}>
+                                                                {formatDate(item.startDate)} - {formatDate(item.endDate)}
+                                                            </Text>
+                                                        </View>
+                                                        <TouchableOpacity
+                                                            onPress={() => handleSelectedCoupon(item)}
+                                                            style={{
+                                                                backgroundColor: selectedCoupon === item ? '#aaa' : '#FA7806',
+                                                                height: 25,
+                                                                width: 54,
+                                                                borderRadius: 15,
+                                                                justifyContent: 'center',
+                                                            }}
+                                                        >
+                                                            <Text style={{ color: "#fff", fontWeight: "bold", textAlign: "center" }}>
+                                                                {selectedCoupon === item ? 'Cancel' : 'Use'}
+                                                            </Text>
+                                                        </TouchableOpacity>
                                                     </View>
-                                                    <TouchableOpacity style={{ backgroundColor: '#FA7806', height: 25, width: 54, borderRadius: 15, justifyContent: "center" }}>
-                                                      <Text style={{ color: "#fff", fontWeight: "bold", textAlign: "center" }}>Use</Text>
-                                                    </TouchableOpacity>
-                                                  </View>
-                                                  <View style={{ flexDirection: "row", justifyContent: "space-between",marginTop:10 }}>
-                                                    <Text style={{ color: "#737373" , fontWeight:"bold", fontSize: 12}}>For all items</Text>
-                                                    <Text style={{ fontWeight: "bold" }}><Text style={{ color: "#737373", fontSize: 12 }}>Code: </Text>{item._id}</Text>
-                                                  </View>
+                                                    <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
+                                                        <Text style={{ color: "#737373", fontWeight: "bold", fontSize: 12 }}>For all items</Text>
+                                                        <Text style={{ fontWeight: "bold" }}><Text style={{ color: "#737373", fontSize: 12 }}>Code: </Text>{item._id}</Text>
+                                                    </View>
                                                 </View>
                                             </View>
                                         )}

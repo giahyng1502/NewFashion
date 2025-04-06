@@ -90,9 +90,6 @@ const CouponScreen = ({ navigation }) => {
                     {formatDate(item.startDate)} - {formatDate(item.endDate)}
                   </Text>
                 </View>
-                <TouchableOpacity style={{ backgroundColor: '#FA7806', height: 25, width: 54, borderRadius: 15, justifyContent: "center" }}>
-                  <Text style={{ color: "#fff", fontWeight: "bold", textAlign: "center" }}>Copy</Text>
-                </TouchableOpacity>
               </View>
               <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
                 <Text style={{ color: "#737373", fontWeight: "bold", fontSize: 12 }}>For all items</Text>

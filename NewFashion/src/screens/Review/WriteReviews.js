@@ -14,7 +14,6 @@ import { writeReview } from "../../redux/actions/orderActions";
 import { useDispatch } from "react-redux";
 import { uploadImage } from "../../until/uploadImages";
 
-
 const WriteReviews = ({ navigation, route }) => {
     const { product, orderId } = route.params
     const [rating, setRating] = useState(0);
