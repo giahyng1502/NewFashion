@@ -1,4 +1,17 @@
-import { StyleSheet, Alert, Text, View, TouchableOpacity, Image, ScrollView, Animated, FlatList, ActivityIndicator, TextInput } from 'react-native'
+import {
+    StyleSheet,
+    Alert,
+    Text,
+    View,
+    TouchableOpacity,
+    Image,
+    ScrollView,
+    Animated,
+    FlatList,
+    ActivityIndicator,
+    TextInput,
+    Linking
+} from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import BuyerDetail from './BuyerDetail'
@@ -10,6 +23,8 @@ import { deleteInformation, updateDefaultInformation } from '../../redux/actions
 import { fetchCoupon } from '../../redux/actions/voucherAction'
 import { createOrder } from '../../redux/actions/orderActions'
 import { fetchCart } from '../../redux/actions/cartActions'
+import axios from "../../service/axios";
+import {useSocket} from "../../context/socketContext";
 
 const CheckoutScreen = ({ navigation }) => {
     const { carts } = useSelector(state => state.cart);
@@ -32,9 +47,9 @@ const CheckoutScreen = ({ navigation }) => {
     const [isLoadingAddress, setIsLoadingAddress] = useState(true)
     const [isLoadingCart, setIsLoadingCart] = useState(true)
     const [isEnabled, setIsEnabled] = useState(false);
+    const [payment, setOnPayment] = useState('direct');
+    const socket = useSocket();
     const [newCart, setNewCart] = useState(carts);
-
-
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -46,12 +61,16 @@ const CheckoutScreen = ({ navigation }) => {
                 console.error('Error fetching data:', error);
             }
         };
-        console.log('cart', carts);
-
-
+    
         fetchData();
     }, []);
-
+    useEffect(() => {
+        if (socket) {
+            socket.on('payment', (resultCode) => {
+                console.log(resultCode)
+            })
+        }
+    }, []);
     useEffect(() => {
         // console.log('personalInfo:', personalInfo);
 
@@ -71,37 +90,59 @@ const CheckoutScreen = ({ navigation }) => {
         }
     }, [isLoadingCoupon, isLoadingCart, isLoadingAddress]);
 
+    useEffect(() => {
+        console.log(payment);
+    }, [payment]);
 
     function formatDate(isoString) {
         const date = new Date(isoString);
-
+        
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng tính từ 0 nên +1
         const day = String(date.getDate()).padStart(2, '0');
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
         const seconds = String(date.getSeconds()).padStart(2, '0');
-
+    
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     }
 
     const createAnOrder = () => {
         dispatch(createOrder({
-            name:selectedAddress.name,
-            phoneNumber:selectedAddress.phoneNumber,
-            address:selectedAddress.address,
+            name: selectedAddress.name,
+            phoneNumber: selectedAddress.phoneNumber,
+            address: selectedAddress.address,
             voucherId: selectedCoupon ? selectedCoupon._id : null,
-            point: isEnabled ? personalInfo.point : 0}))
-            .then(() => {
+            momo: payment,
+            point: isEnabled ? personalInfo.point : 0
+        })) // <- chỉ cần thêm dấu ngoặc này ở đây
+            .then(async (order) => {
                 console.log('Tạo đơn thành công');
-                navigation.replace('OrderDone')
+                if (order.payload) {
+                    if (payment === 'direct') {
+                        navigation.replace('OrderDone');
+                    } else if (payment === 'momo') {
+                        const response = await axios.post('/momo/payment', {
+                            priceProduct: order?.payload?.totalPrice,
+                            rawOrderId: order.payload._id,
+                        });
+                        if (response && response.payUrl) {
+                            // Mở trang thanh toán MoMo
+                            Linking.openURL(response.payUrl);
+                        } else {
+                            Alert.alert('Lỗi thanh toán', 'Không thể khởi tạo thanh toán MoMo');
+                        }
+                    }
+                }
             })
             .catch((error) => {
                 console.log('Create order failed: ', error);
             });
     }
 
-    //mở sheet chi tiết đơn hàngs
+
+
+    //mở sheet chi tiết đơn hàng
     const toggleBottomSheet = () => {
         if (!isShowPriceBottomSheet) {
             openPriceBottomSheet()
@@ -280,13 +321,13 @@ const CheckoutScreen = ({ navigation }) => {
           const discountAmount = (item.price * voucher.discount) / 100;
           const appliedDiscount = Math.min(discountAmount, voucher.maxDiscountPrice);
           const actualDiscountPercent = (appliedDiscount / item.price) * 100;
-      
+
           return {
             ...item,
             disCountSale: actualDiscountPercent, // Cập nhật phần trăm đã giảm
           };
         });
-      
+
         // Cập nhật state
         setNewCart(updatedCart);
     };
@@ -317,7 +358,7 @@ const CheckoutScreen = ({ navigation }) => {
             {/* body */}
             <ScrollView>
                 <BuyerDetail products={carts} onClickShowPopup={[toggleAdressSheet, toggleBottomSheet]} information={selectedAddress} />
-                <PaymentAnhCoupon products={newCart} personalInfo={personalInfo} onSwitch={setIsEnabled} onClickShowPopup={toggleCouponSheet} />
+                <PaymentAnhCoupon onPayment={setOnPayment} products={newCart} personalInfo={personalInfo} onSwitch={setIsEnabled} onClickShowPopup={toggleCouponSheet} />
                 <SubInfor />
             </ScrollView>
 
@@ -587,9 +628,9 @@ const CheckoutScreen = ({ navigation }) => {
                             showRightButton={true}
                             rightIcon={require('../../assets/bt_exit.png')}
                             onRightButtonPress={()=>{
-                                
+
                                     closeCouponSheet()
-                                
+
                                 }
                             }
                         />

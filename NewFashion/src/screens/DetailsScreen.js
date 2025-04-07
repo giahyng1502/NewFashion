@@ -19,32 +19,6 @@ import AppManager from '../utils/AppManager'
 import { addToCart } from '../redux/actions/cartActions'
 import CountdownTimer from '../components/CountdownTimer'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const reviews = [
-    {
-        id: "1",
-        name: "Ngaan nè",
-        avataruser: require("../assets/icons/ic_user.png"),
-        date: "Nov 22, 2024",
-        color: "Black",
-        size: "M",
-        rating: 5,
-        review:
-            "Tôi rất thích thiết kế này, mặc vào rất tôn dáng và lộng lẫy, rất xứng đáng với giá tiền. Sẽ ủng hộ shop thật nhiều nhiều hơn nữa trong tương lai.",
-    },
-    {
-        id: "2",
-        name: "Do Duyen",
-        avataruser: require("../assets/icons/ic_user2.png"),
-        date: "Nov 24, 2024",
-        color: "Blue",
-        size: "M",
-        rating: 4,
-        review:
-            "Trời ơi xinh xỉu shop ơi, mãi iuuu, mặc lên xinh quá thế, mong rằng shop có thêm nhiều thiết kế như thế này, sẽ ủng hộ dài dài.",
-    },
-];
-
 const DetailsScreen = ({ navigation, route }) => {
     const { item, discount, expire } = route.params;
     const { products, loading, page, hasMore } = useSelector(state => state.product);

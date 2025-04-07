@@ -6,8 +6,8 @@ import {setNotification} from "../redux/reducer/notificationReducer";
 
 const SocketContext = createContext();
 
-export const SocketProvider = ({ children, userId }) => {
-    const [socket, setSocket] = useState(null);
+export const SocketProvider = ({ children, userId,setNotification }) => {
+    const [socket, setSocket] = useState(null)
     const dispatch = useDispatch();
     useEffect(() => {
         if (userId) {
@@ -25,6 +25,7 @@ export const SocketProvider = ({ children, userId }) => {
         if (socket) {
             socket.on('orderStatusUpdate', (notification) => {
                 console.log("Nhận thông báo từ server: ", notification);
+                setNotification(notification)
                 dispatch(setNotification(notification));
             });
 

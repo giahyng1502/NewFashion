@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, Switch } from "react-n
 import { RadioButton } from "react-native-paper";
 import SupportFunctions from '../../utils/SupportFunctions';
 
-const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup }) => {
+const PaymentAndCoupon = ({onPayment, products, personalInfo, onSwitch, onClickShowPopup }) => {
   useEffect(() => {
     console.log(products);
     
@@ -55,7 +55,10 @@ const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup }
           <RadioButton
             value="direct"
             status={selectedPayment === "direct" ? "checked" : "unchecked"}
-            onPress={() => setSelectedPayment("direct")}
+            onPress={() => {
+              setSelectedPayment("direct")
+              onPayment('direct')
+            }}
           />
           <Image source={require("../../assets/icons/ic_cash.png")} style={styles.paymentIcon} />
           <Text style={styles.paymentText}>Direct payment</Text>
@@ -66,7 +69,10 @@ const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup }
           <RadioButton
             value="momo"
             status={selectedPayment === "momo" ? "checked" : "unchecked"}
-            onPress={() => setSelectedPayment("momo")}
+            onPress={() => {
+              setSelectedPayment("momo")
+              onPayment('momo')
+            }}
           />
           <Image source={require("../../assets/icons/ic_momo.png")} style={styles.paymentIcon} />
           <Text style={styles.paymentText}>Momo e-wallet</Text>
@@ -90,7 +96,7 @@ const PaymentAndCoupon = ({ products, personalInfo, onSwitch, onClickShowPopup }
           style={styles.icon}
         />
         <Text style={styles.text}>
-          You have <Text style={styles.points}>{personalInfo.point}</Text> points that can be used
+          You have <Text style={styles.points}>{personalInfo?.point}</Text> points that can be used
         </Text>
         <Switch
           trackColor={{ false: "#767577", true: "#81b0ff" }}
@@ -216,11 +222,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap', // Cho phép tự động xuống dòng khi hết chỗ
     width: '100%', // Chiều rộng 100% để đảm bảo xuống dòng khi cần
     alignItems: 'center',
-  },
-  text: {
-    fontSize: 15,
-    color: '#737373',
-    fontWeight: 'bold',
   },
   link: {
     fontSize: 15,

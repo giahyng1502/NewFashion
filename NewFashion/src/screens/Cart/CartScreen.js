@@ -375,7 +375,7 @@ const CartScreen = ({ navigation }) => {
 
   const handleCheckOut = () => {
     if (AppManager.shared.isUserLoggedIn()) {
-      if (personalInfo.information.length == 0) {
+      if (personalInfo?.information?.length == 0) {
         navigation.navigate('AddAddress', { isFromCheckout: true });
       } else if (cartItems.filter(item => item.isSelected).length > 0) {
         navigation.navigate('CheckOut');
