@@ -7,7 +7,7 @@ import SupportFunctions from '../../utils/SupportFunctions'
 const OrderDetailScreen = ({navigation,route}) => {
     const {order}=route.params
     const orderStatus = [
-        { id: -1, name: 'Waiting for payment' },
+        { id: 6, name: 'Waiting for payment' },
         { id: 0, name: 'Processing' },
         { id: 1, name: 'Waiting to ship' },
         { id: 2, name: 'Shipping' },

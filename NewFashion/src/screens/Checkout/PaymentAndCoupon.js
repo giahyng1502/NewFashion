@@ -128,7 +128,11 @@ const PaymentAndCoupon = ({onPayment, products, personalInfo, onSwitch, onClickS
 
         <View style={styles.summaryRow}>
           <Text style={styles.textBold}>Subtotal:</Text>
-          <Text style={styles.textBold}>{SupportFunctions.convertPrice(getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))}</Text>
+          <Text style={styles.textBold}>{SupportFunctions.convertPrice((
+              (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
+                  ? 0
+                  : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
+          ))}</Text>
         </View>
 
         <View style={[styles.summaryRow, { borderTopWidth: 1, borderBottomWidth: 1, paddingVertical: 15, borderColor: '#D7D7D7' }]}>
@@ -139,7 +143,11 @@ const PaymentAndCoupon = ({onPayment, products, personalInfo, onSwitch, onClickS
         <View style={{ width: '100%', flexDirection: 'column' }}>
           <View style={styles.summaryRow}>
             <Text style={[styles.textBold, { fontSize: 20 }]}>Order total:</Text>
-            <Text style={[styles.textBold, { fontSize: 20 }]}>{SupportFunctions.convertPrice(getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))}</Text>
+            <Text style={[styles.textBold, { fontSize: 20 }]}>{SupportFunctions.convertPrice((
+                (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
+                    ? 0
+                    : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
+            ))}</Text>
           </View>
         </View>
       </View>

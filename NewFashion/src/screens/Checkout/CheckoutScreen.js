@@ -367,12 +367,16 @@ const CheckoutScreen = ({ navigation }) => {
                 {/* Phần tổng tiền */}
                 <View style={styles.priceContainer}>
                     <View style={styles.realPriceContainer}>
-                        <Text style={styles.totalPrice}>{SupportFunctions.convertPrice(getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))}</Text>
+                        <Text style={styles.totalPrice}>{SupportFunctions.convertPrice((
+                            (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
+                                ? 0
+                                : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
+                        ))}</Text>
                         <TouchableOpacity onPress={toggleBottomSheet}>
                             <Image source={require('../../assets/icons/ic_arrowUp.png')} resizeMode='cover' style={styles.arrowButton} />
                         </TouchableOpacity>
                     </View>
-                    <Text style={styles.savedAmount}>Saved {SupportFunctions.convertPrice(getDiscountPriceOfSelectedItems() + (isEnabled ? personalInfo.point : 0)) }</Text>
+                    <Text style={styles.savedAmount}>Saved {SupportFunctions.convertPrice(getDiscountPriceOfSelectedItems() + (isEnabled ? personalInfo?.point : 0)) }</Text>
                 </View>
                 {/* Nút Submit Order */}
                 <TouchableOpacity style={styles.submitButton} onPress={() => createAnOrder()}>
@@ -463,7 +467,11 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#FA7806' }}>
                                         {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice(getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))}
+                                        {SupportFunctions.convertPrice((
+                                            (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
+                                                ? 0
+                                                : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
+                                        ))}
                                     </Text>
                                 </View>
 
@@ -476,7 +484,11 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                                         {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice(getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))}
+                                        {SupportFunctions.convertPrice((
+                                            (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
+                                                ? 0
+                                                : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
+                                        ))}
                                     </Text>
                                 </View>
 

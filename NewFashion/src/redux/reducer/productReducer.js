@@ -39,7 +39,7 @@ const productSlice = createSlice({
                 state.loading = true;
             })
             .addCase(fetchSaleProducts.fulfilled, (state, action) => {
-                state.saleProducts = [...state.saleProducts, ...action.payload];
+                state.saleProducts = action.payload;
                 state.page += 1;
                 state.hasMoreSale = action.payload.length > 0
                 state.loading = false;

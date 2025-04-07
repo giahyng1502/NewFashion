@@ -30,7 +30,7 @@ const OrderScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true)
   const orderStatus = [
     { id: -2, name: 'All orders' },
-    { id: -1, name: 'Waiting for payment' },
+    { id: 6, name: 'Waiting for payment' },
     { id: 0, name: 'Processing' },
     { id: 1, name: 'Waiting to ship' },
     { id: 2, name: 'Shipping' },
