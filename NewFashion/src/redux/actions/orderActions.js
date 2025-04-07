@@ -6,7 +6,7 @@ export const fetchOrders = createAsyncThunk(
     'order/fetchOrders',
     async (status, thunkAPI) => {
         try {
-            const response = await axios.get('/order/getOrderUser?status=',{params: {status: status}});            
+            const response = await axios.get('/order/getOrderUser',{params: {status: status}});
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
@@ -16,12 +16,19 @@ export const fetchOrders = createAsyncThunk(
 
 export const createOrder = createAsyncThunk(
     'order/createOrder',
-    async (data, thunkAPI) => {
+    async ({ name, phoneNumber, address, momo,point ,voucherId }, thunkAPI) => {
         try {
-            const response = await axios.post('/order/create',data);            
-            return response.data;
+            const response = await axios.post('/order/create', {
+                name,
+                phoneNumber,
+                address,
+                momo,
+                point,
+                voucherId
+            });
+            return response.order; // hoặc response.data.order tùy API
         } catch (error) {
-            return thunkAPI.rejectWithValue(error.response.data);
+            return thunkAPI.rejectWithValue(error.response?.data || 'Đã có lỗi xảy ra');
         }
     }
 );
@@ -43,6 +50,7 @@ export const writeReview = createAsyncThunk(
     async ({ orderId, rate, content, productId, images }, thunkAPI) => {
         try {
             
+
             const response = await axios.put(
                 `/putreview/${orderId}`,{rate,content, productId, images} 
             );

@@ -24,7 +24,7 @@ import { fetchCoupon } from '../../redux/actions/voucherAction'
 import { createOrder } from '../../redux/actions/orderActions'
 import { fetchCart } from '../../redux/actions/cartActions'
 import axios from "../../service/axios";
-import { useSocket } from "../../context/socketContext";
+import {useSocket} from "../../context/socketContext";
 
 const CheckoutScreen = ({ navigation }) => {
     const { carts } = useSelector(state => state.cart);
@@ -41,6 +41,7 @@ const CheckoutScreen = ({ navigation }) => {
 
     const [defaultAddress, setDefaultAddress] = useState(null);
     const [selectedAddress, setSelectedAddress] = useState(null)
+    const [selectedCoupon, setSelectedCoupon] = useState(null);
     const [isLoading, setIsLoading] = useState(true)
     const [isLoadingCoupon, setIsLoadingCoupon] = useState(true)
     const [isLoadingAddress, setIsLoadingAddress] = useState(true)
@@ -48,6 +49,7 @@ const CheckoutScreen = ({ navigation }) => {
     const [isEnabled, setIsEnabled] = useState(false);
     const [payment, setOnPayment] = useState('direct');
     const socket = useSocket();
+    const [newCart, setNewCart] = useState(carts);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -59,7 +61,7 @@ const CheckoutScreen = ({ navigation }) => {
                 console.error('Error fetching data:', error);
             }
         };
-
+    
         fetchData();
     }, []);
     useEffect(() => {
@@ -94,14 +96,14 @@ const CheckoutScreen = ({ navigation }) => {
 
     function formatDate(isoString) {
         const date = new Date(isoString);
-
+        
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng tính từ 0 nên +1
         const day = String(date.getDate()).padStart(2, '0');
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
         const seconds = String(date.getSeconds()).padStart(2, '0');
-
+    
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     }
 
@@ -110,18 +112,20 @@ const CheckoutScreen = ({ navigation }) => {
             name: selectedAddress.name,
             phoneNumber: selectedAddress.phoneNumber,
             address: selectedAddress.address,
+            voucherId: selectedCoupon ? selectedCoupon._id : null,
             momo: payment,
-        }))
+            point: isEnabled ? personalInfo.point : 0
+        })) // <- chỉ cần thêm dấu ngoặc này ở đây
             .then(async (order) => {
                 console.log('Tạo đơn thành công');
                 if (order.payload) {
                     if (payment === 'direct') {
-                        navigation.replace('OrderDone')
+                        navigation.replace('OrderDone');
                     } else if (payment === 'momo') {
                         const response = await axios.post('/momo/payment', {
                             priceProduct: order?.payload?.totalPrice,
                             rawOrderId: order.payload._id,
-                        })
+                        });
                         if (response && response.payUrl) {
                             // Mở trang thanh toán MoMo
                             Linking.openURL(response.payUrl);
@@ -135,6 +139,8 @@ const CheckoutScreen = ({ navigation }) => {
                 console.log('Create order failed: ', error);
             });
     }
+
+
 
     //mở sheet chi tiết đơn hàng
     const toggleBottomSheet = () => {
@@ -231,7 +237,7 @@ const CheckoutScreen = ({ navigation }) => {
     });
 
     const getFinalPriceOfSelectedItems = () => {
-        return carts
+        return newCart
             .filter(item => item.isSelected)
             .reduce((total, item) => {
                 const discountMultiplier = item.disCountSale > 0 ? (1 - item.disCountSale / 100) : 1;
@@ -300,6 +306,42 @@ const CheckoutScreen = ({ navigation }) => {
         dispatch(updateDefaultInformation(item._id))
     }
 
+    const handleSelectedCoupon = (item) => {
+        if (selectedCoupon === item) {
+            setSelectedCoupon(null);
+            handleSelectVoucher(null); // Bỏ chọn
+          } else {
+            setSelectedCoupon(item);
+            handleSelectVoucher(item); // Dùng item trực tiếp, không dùng selectedCoupon
+          }
+    };
+
+    const applyVoucherToCart = (voucher) => {
+        const updatedCart = carts.map(item => {
+          const discountAmount = (item.price * voucher.discount) / 100;
+          const appliedDiscount = Math.min(discountAmount, voucher.maxDiscountPrice);
+          const actualDiscountPercent = (appliedDiscount / item.price) * 100;
+
+          return {
+            ...item,
+            disCountSale: actualDiscountPercent, // Cập nhật phần trăm đã giảm
+          };
+        });
+
+        // Cập nhật state
+        setNewCart(updatedCart);
+    };
+
+    const handleSelectVoucher = (voucher) => {
+        if (voucher) {
+            applyVoucherToCart(voucher); // tự setNewCart bên trong hàm này
+            setSelectedCoupon(voucher);
+          } else {
+            setNewCart(carts); // reset lại nếu không có voucher
+            setSelectedCoupon(null);
+          }
+    };
+
     if (isLoading) {
         return (
             <View style={styles.loadingContainer}>
@@ -316,7 +358,7 @@ const CheckoutScreen = ({ navigation }) => {
             {/* body */}
             <ScrollView>
                 <BuyerDetail products={carts} onClickShowPopup={[toggleAdressSheet, toggleBottomSheet]} information={selectedAddress} />
-                <PaymentAnhCoupon onPayment={setOnPayment} products={carts} personalInfo={personalInfo} onSwitch={setIsEnabled} onClickShowPopup={toggleCouponSheet} />
+                <PaymentAnhCoupon onPayment={setOnPayment} products={newCart} personalInfo={personalInfo} onSwitch={setIsEnabled} onClickShowPopup={toggleCouponSheet} />
                 <SubInfor />
             </ScrollView>
 
@@ -325,12 +367,16 @@ const CheckoutScreen = ({ navigation }) => {
                 {/* Phần tổng tiền */}
                 <View style={styles.priceContainer}>
                     <View style={styles.realPriceContainer}>
-                        <Text style={styles.totalPrice}>{SupportFunctions.convertPrice(getFinalPriceOfSelectedItems())}</Text>
+                        <Text style={styles.totalPrice}>{SupportFunctions.convertPrice((
+                            (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
+                                ? 0
+                                : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
+                        ))}</Text>
                         <TouchableOpacity onPress={toggleBottomSheet}>
                             <Image source={require('../../assets/icons/ic_arrowUp.png')} resizeMode='cover' style={styles.arrowButton} />
                         </TouchableOpacity>
                     </View>
-                    <Text style={styles.savedAmount}>Saved {SupportFunctions.convertPrice(getDiscountPriceOfSelectedItems())}</Text>
+                    <Text style={styles.savedAmount}>Saved {SupportFunctions.convertPrice(getDiscountPriceOfSelectedItems() + (isEnabled ? personalInfo?.point : 0)) }</Text>
                 </View>
                 {/* Nút Submit Order */}
                 <TouchableOpacity style={styles.submitButton} onPress={() => createAnOrder()}>
@@ -362,7 +408,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                 <FlatList
                                     data={carts.filter(item => item.isSelected)}
-                                    keyExtractor={(item, index) => `${item._id}${index} cartItem isSelected in checkout`}
+                                    keyExtractor={item => item._id}
                                     horizontal
                                     style={{ marginTop: 5 }}
                                     renderItem={({ item }) => (
@@ -410,7 +456,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#FA7806' }}>
                                         {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice(isEnabled ? personalInfo?.point : 0)}
+                                        {SupportFunctions.convertPrice(isEnabled ? personalInfo.point : 0)}
                                     </Text>
                                 </View>
 
@@ -421,7 +467,11 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#FA7806' }}>
                                         {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice(getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo?.point : 0))}
+                                        {SupportFunctions.convertPrice((
+                                            (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
+                                                ? 0
+                                                : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
+                                        ))}
                                     </Text>
                                 </View>
 
@@ -434,7 +484,11 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                                         {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice(getFinalPriceOfSelectedItems())}
+                                        {SupportFunctions.convertPrice((
+                                            (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
+                                                ? 0
+                                                : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
+                                        ))}
                                     </Text>
                                 </View>
 
@@ -464,7 +518,7 @@ const CheckoutScreen = ({ navigation }) => {
                         <View style={{ backgroundColor: "#F5F5F5", maxHeight: 500, borderTopColor: '#BBBBBB', borderTopWidth: 0.5 }}>
                             <FlatList
                                 data={personalInfo.information}
-                                keyExtractor={(item, index) => `${item._id}${index} checkout in checkoutScreen`}
+                                keyExtractor={(item) => item._id}
                                 renderItem={({ item }) => (
                                     <View style={{ backgroundColor: "#fff", padding: 15, marginBottom: 15 }}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
@@ -585,13 +639,18 @@ const CheckoutScreen = ({ navigation }) => {
                             title="Apply coupon"
                             showRightButton={true}
                             rightIcon={require('../../assets/bt_exit.png')}
-                            onRightButtonPress={closeCouponSheet}
+                            onRightButtonPress={()=>{
+
+                                    closeCouponSheet()
+
+                                }
+                            }
                         />
 
                         <View style={{ backgroundColor: "#FFF", maxHeight: 500, borderTopColor: '#BBBBBB', borderTopWidth: 0.5 }}>
 
                             {/* Ghi chú */}
-                            <Text style={{ fontSize: 14, marginVertical: 5, marginHorizontal: 15, color: '#000', fontWeight: 'bold' }}>
+                            <Text style={{ fontSize: 14, marginVertical: 10, marginHorizontal: 15, color: '#000', fontWeight: 'bold' }}>
                                 Limit 1 coupon per purchase. Coupon cannot be applied to shipping fees.
                             </Text>
 
@@ -605,7 +664,7 @@ const CheckoutScreen = ({ navigation }) => {
                                 ) : (
                                     <FlatList
                                         data={coupons}
-                                        keyExtractor={(item, index) => `${item._id}${index} coupons in checkout`}
+                                        keyExtractor={(item) => item._id}
                                         style={{ marginBottom: 5 }}
                                         renderItem={({ item }) => (
                                             <View style={{ borderTopWidth: 3, marginVertical: 10, marginHorizontal: 12, borderTopColor: '#FA7806', borderRadius: 2, backgroundColor: "#F0FFEB", height: 150, gap: 5 }}>
@@ -621,8 +680,19 @@ const CheckoutScreen = ({ navigation }) => {
                                                                 {formatDate(item.startDate)} - {formatDate(item.endDate)}
                                                             </Text>
                                                         </View>
-                                                        <TouchableOpacity style={{ backgroundColor: '#FA7806', height: 25, width: 54, borderRadius: 15, justifyContent: "center" }}>
-                                                            <Text style={{ color: "#fff", fontWeight: "bold", textAlign: "center" }}>Use</Text>
+                                                        <TouchableOpacity
+                                                            onPress={() => handleSelectedCoupon(item)}
+                                                            style={{
+                                                                backgroundColor: selectedCoupon === item ? '#aaa' : '#FA7806',
+                                                                height: 25,
+                                                                width: 54,
+                                                                borderRadius: 15,
+                                                                justifyContent: 'center',
+                                                            }}
+                                                        >
+                                                            <Text style={{ color: "#fff", fontWeight: "bold", textAlign: "center" }}>
+                                                                {selectedCoupon === item ? 'Cancel' : 'Use'}
+                                                            </Text>
                                                         </TouchableOpacity>
                                                     </View>
                                                     <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>

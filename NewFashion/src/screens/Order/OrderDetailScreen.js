@@ -7,7 +7,7 @@ import SupportFunctions from '../../utils/SupportFunctions'
 const OrderDetailScreen = ({navigation,route}) => {
     const {order}=route.params
     const orderStatus = [
-        { id: -1, name: 'Waiting for payment' },
+        { id: 6, name: 'Waiting for payment' },
         { id: 0, name: 'Processing' },
         { id: 1, name: 'Waiting to ship' },
         { id: 2, name: 'Shipping' },
@@ -203,7 +203,7 @@ const OrderDetailScreen = ({navigation,route}) => {
 
                         <View style={{flexDirection: "row",justifyContent: "space-between",marginBottom: 10,borderTopWidth: 1, paddingVertical: 15, borderColor: '#D7D7D7' }}>
                             <Text style={{fontSize: 16,fontWeight: "bold",color: '#000'}}>Payment method:</Text>
-                            <Text style={{fontSize: 16,fontWeight: "bold",color: '#737373' }}>Direct payment</Text>
+                            <Text style={{fontSize: 16,fontWeight: "bold",color: '#737373' }}>{order?.paymentMethod.toUpperCase()}</Text>
                         </View>
                     </View>
                 }
