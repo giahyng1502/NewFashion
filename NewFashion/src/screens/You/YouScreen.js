@@ -21,59 +21,59 @@ const menuItems = [
   {
     id: '1',
     image: require('../../assets/icons/ic_message.png'),
-    text: 'Tin nhắn',
-    navigation: 'Messages',
+    text: 'Messages',
+    h3: 'Tin nhắn',
   },
   {
     id: '2',
     image: require('../../assets/icons/ic_yourOrder.png'),
-    text: 'Đơn hàng của bạn',
-    navigation: 'Your orders',
+    text: 'Your orders',
+    h3: 'Đơn hàng của bạn',
   },
   {
     id: '3',
     image: require('../../assets/icons/ic_couponPercent.png'),
-    text: 'Phiếu giảm giá & ưu đãi',
-    navigation: 'Coupons & offers',
+    text: 'Coupons & offers',
+    h3: 'Đơn hàng của bạn',
   },
   {
     id: '4',
     image: require('../../assets/icons/ic_Adress.png'),
-    text: 'Địa chỉ của bạn',
-    navigation: 'Addresses',
+    text: 'Addresses',
+    h3: 'Đơn hàng của bạn',
   },
   {
     id: '5',
     image: require('../../assets/icons/ic_support.png'),
-    text: 'Hỗ trợ khách hàng',
-    navigation: 'ChatDetail',
+    text: 'Customer support',
+    h3: 'Đơn hàng của bạn',
   },
   {
     id: '6',
     image: require('../../assets/icons/ic_settings.png'),
-    text: 'Cài đặt',
-    navigation: 'Settings',
+    text: 'Settings',
+    h3: 'Đơn hàng của bạn',
   },
 ];
 
 const bottomMenuItems = [
   {
     id: '1',
-    title: 'Địa chỉ của bạn',
+    title: 'Addresses',
     icon: require('../../assets/icons/ic_Adress.png'),
-    navigation: 'Addresses',
+    h3: 'Đơn hàng của bạn',
   },
   {
     id: '2',
-    title: 'Thông báo',
+    title: 'Notification',
     icon: require('../../assets/icons/ic_notification.png'),
-    navigation: 'Notification',
+    h3: 'Đơn hàng của bạn',
   },
   {
     id: '3',
-    title: 'Phiếu giảm giá & ưu đãi',
+    title: 'Coupons & offers',
     icon: require('../../assets/icons/ic_couponPercent.png'),
-    navigation: 'Coupons & offers',
+    h3: 'Đơn hàng của bạn',
   },
 ];
 
@@ -84,14 +84,14 @@ const YouScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const handleNavigate = (item) => {
     if (item.text !== 'Messages') {
-      navigation.navigate(item.navigation);
+      navigation.navigate(item.text);
     }
     else {
       if (personalInfo.role === 0) {
         navigation.navigate('ChatDetail',{id : '67eeafc786a3c7e95e9d3a73'});
       }
       else if (personalInfo.role > 0) {
-        navigation.navigate(item.navigation);
+        navigation.navigate(item.text);
       }
     }
   }
@@ -158,18 +158,18 @@ const YouScreen = ({ navigation }) => {
                 <View>
                   <View style={st.header}>
                     <Text style={st.title}>
-                    Đăng nhập để có trải nghiệm tốt nhất.
+                    Đăng nhập để có trải nghiệm tốt nhất
                     </Text>
                     <View style={st.infoContainer}>
                       <BenefitsInfoBox
                         icon={require('../../assets/icons/ic_freeReturns.png')}
-                        title="Miễn phí trả hàng"
-                        subtitle="Trong vòng 90 ngày"
+                        title="Trả lại miễn phí"
+                        subtitle="Lên đến 90 ngày"
                       />
                       <BenefitsInfoBox
                         icon={require('../../assets/icons/ic_freeShipping.png')}
-                        title="Miễn phí giao hàng"
-                        subtitle="Tất cả đơn hàng"
+                        title="Miễn phí vận chuyển"
+                        subtitle="Trên tất cả các đơn hàng"
                       />
                     </View>
                     <FilledButton
@@ -201,7 +201,7 @@ const YouScreen = ({ navigation }) => {
                           fontWeight: '700',
                           flex: 1,
                         }}>
-                        Đăng nhập để xem các mục đã xem gần đây.
+                        Đăng nhập để xem các mục đã xem gần đây
                       </Text>
                       <Image
                         source={require('../../assets/icons/ic_next.png')}
@@ -240,7 +240,7 @@ const YouScreen = ({ navigation }) => {
                     {bottomMenuItems.map(item => (
                       <TouchableOpacity key={item.id} style={st.bottomMenuItem} onPress={() => navigation.navigate(item.title)}>
                         <Image source={item.icon} style={st.menuIcon} />
-                        <Text style={st.menuText}>{item.title}</Text>
+                        <Text style={st.menuText}>{item.h3}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -259,7 +259,7 @@ const YouScreen = ({ navigation }) => {
                         marginTop: 100,
                         textAlign: 'center',
                       }}>
-                      Không có mục nào trong lịch sử duyệt web.
+                      Không có mục nào trong lịch sử duyệt web
                     </Text>
                   )}
                 </View>
@@ -279,7 +279,7 @@ const MenuItem = ({ item, onPress }) => (
       onPress(item);
     }}>
     <Image source={item.image} style={st.menuIcon} />
-    <Text style={st.menuText}>{item.text}</Text>
+    <Text style={st.menuText}>{item.h3}</Text>
     <Image
       source={require('../../assets/icons/ic_next.png')}
       style={{ height: 15, width: 15 }}
