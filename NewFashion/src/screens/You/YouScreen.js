@@ -34,13 +34,13 @@ const menuItems = [
     id: '3',
     image: require('../../assets/icons/ic_couponPercent.png'),
     text: 'Phiếu giảm giá & ưu đãi',
-    navigation: 'Messages',
+    navigation: 'Coupons & offers',
   },
   {
     id: '4',
     image: require('../../assets/icons/ic_Adress.png'),
     text: 'Địa chỉ của bạn',
-    navigation: 'Address',
+    navigation: 'Addresses',
   },
   {
     id: '5',
@@ -61,16 +61,19 @@ const bottomMenuItems = [
     id: '1',
     title: 'Địa chỉ của bạn',
     icon: require('../../assets/icons/ic_Adress.png'),
+    navigation: 'Addresses',
   },
   {
     id: '2',
     title: 'Thông báo',
     icon: require('../../assets/icons/ic_notification.png'),
+    navigation: 'Notification',
   },
   {
     id: '3',
     title: 'Phiếu giảm giá & ưu đãi',
     icon: require('../../assets/icons/ic_couponPercent.png'),
+    navigation: 'Coupons & offers',
   },
 ];
 
