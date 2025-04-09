@@ -119,7 +119,7 @@ const SearchScreen = ({ navigation, onSearch }) => {
           {recentSearch.length > 0 && (
             <View style={{ paddingHorizontal: 16, marginBottom: 10 }}>
               <View style={[styles.sectionHeader, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 5 }]}>
-                <Text style={styles.sectionTitle}>Recent searched</Text>
+                <Text style={styles.sectionTitle}>Từ khóa vừa tìm kiếm</Text>
                 <TouchableOpacity
                   onPress={async () => {
                     try {
@@ -159,7 +159,7 @@ const SearchScreen = ({ navigation, onSearch }) => {
           {browsingHistory.length > 0 && (
             <View style={{ paddingHorizontal: 16 }}>
               <View style={[styles.sectionHeader, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 5, paddingBottom: 5 }]}>
-                <Text style={styles.sectionTitle}>Browsing history</Text>
+                <Text style={styles.sectionTitle}>Lịch sử tìm kiếm</Text>
               </View>
               <FlatList
                 data={browsingHistory}

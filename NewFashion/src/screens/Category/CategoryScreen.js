@@ -105,7 +105,7 @@ const CategoryScreen = ({ navigation }) => {
           />
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
-            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Related products</Text>
+            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Sản phẩm liên quan</Text>
           </View>
         </>
       </View>

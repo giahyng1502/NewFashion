@@ -8,10 +8,10 @@ const BannerAdsProduct = () => {
                 <Image style={st.customig} source={require('../assets/image/ig_newyear.png')} />
             </View>
             <View >
-                <Text style={st.customtext}> ✓ Free shipping special for you</Text>
+                <Text style={st.customtext}> ✓ Miễn phí vận chuyển đặc biệt dành cho bạn.</Text>
             </View>
             <View>
-                <Text style={st.customtext2}> Limited-time offer </Text>
+                <Text style={st.customtext2}> Giới hạn thời gian </Text>
             </View>
         </View>
     )

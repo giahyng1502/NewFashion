@@ -39,7 +39,7 @@ const SearchBar = ({ disable, onSearch }) => {
       <TextInput
         value={searchText}
         style={styles.searchInput}
-        placeholder="Search something..."
+        placeholder="Tìm kiếm..."
         placeholderTextColor={'#bbb'}
         onChangeText={handleTextChange}
         onSubmitEditing={handleSubmitEditing}

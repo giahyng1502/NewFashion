@@ -21,49 +21,55 @@ const menuItems = [
   {
     id: '1',
     image: require('../../assets/icons/ic_message.png'),
-    text: 'Messages',
+    text: 'Tin nhắn',
+    navigation: 'Messages',
   },
   {
     id: '2',
     image: require('../../assets/icons/ic_yourOrder.png'),
-    text: 'Your orders',
+    text: 'Đơn hàng của bạn',
+    navigation: 'Your orders',
   },
   {
     id: '3',
     image: require('../../assets/icons/ic_couponPercent.png'),
-    text: 'Coupons & offers',
+    text: 'Phiếu giảm giá & ưu đãi',
+    navigation: 'Messages',
   },
   {
     id: '4',
     image: require('../../assets/icons/ic_Adress.png'),
-    text: 'Addresses',
+    text: 'Địa chỉ của bạn',
+    navigation: 'Address',
   },
   {
     id: '5',
     image: require('../../assets/icons/ic_support.png'),
-    text: 'Customer support',
+    text: 'Hỗ trợ khách hàng',
+    navigation: 'ChatDetail',
   },
   {
     id: '6',
     image: require('../../assets/icons/ic_settings.png'),
-    text: 'Settings',
+    text: 'Cài đặt',
+    navigation: 'Settings',
   },
 ];
 
 const bottomMenuItems = [
   {
     id: '1',
-    title: 'Addresses',
+    title: 'Địa chỉ của bạn',
     icon: require('../../assets/icons/ic_Adress.png'),
   },
   {
     id: '2',
-    title: 'Notification',
+    title: 'Thông báo',
     icon: require('../../assets/icons/ic_notification.png'),
   },
   {
     id: '3',
-    title: 'Coupons & offers',
+    title: 'Phiếu giảm giá & ưu đãi',
     icon: require('../../assets/icons/ic_couponPercent.png'),
   },
 ];
@@ -75,14 +81,14 @@ const YouScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const handleNavigate = (item) => {
     if (item.text !== 'Messages') {
-      navigation.navigate(item.text);
+      navigation.navigate(item.navigation);
     }
     else {
       if (personalInfo.role === 0) {
         navigation.navigate('ChatDetail',{id : '67eeafc786a3c7e95e9d3a73'});
       }
       else if (personalInfo.role > 0) {
-        navigation.navigate(item.text);
+        navigation.navigate(item.navigation);
       }
     }
   }
@@ -149,22 +155,22 @@ const YouScreen = ({ navigation }) => {
                 <View>
                   <View style={st.header}>
                     <Text style={st.title}>
-                      Sign in for the best experience
+                    Đăng nhập để có trải nghiệm tốt nhất.
                     </Text>
                     <View style={st.infoContainer}>
                       <BenefitsInfoBox
                         icon={require('../../assets/icons/ic_freeReturns.png')}
-                        title="Free returns"
-                        subtitle="Up to 90 days"
+                        title="Miễn phí trả hàng"
+                        subtitle="Trong vòng 90 ngày"
                       />
                       <BenefitsInfoBox
                         icon={require('../../assets/icons/ic_freeShipping.png')}
-                        title="Free shipping"
-                        subtitle="On all orders"
+                        title="Miễn phí giao hàng"
+                        subtitle="Tất cả đơn hàng"
                       />
                     </View>
                     <FilledButton
-                      title="Sign in / Register"
+                      title="Đăng nhập / Đăng ký"
                       customStyle={{
                         backgroundColor: 'black',
                         width: '100%',
@@ -183,7 +189,7 @@ const YouScreen = ({ navigation }) => {
                     />
                   ))}
                   <View style={st.historyItem}>
-                    <Text style={st.sectionTitle}>Browsing history</Text>
+                    <Text style={st.sectionTitle}>Lịch sử tìm kiếm</Text>
                     <View style={{ flexDirection: 'row' }}>
                       <Text
                         style={{
@@ -192,7 +198,7 @@ const YouScreen = ({ navigation }) => {
                           fontWeight: '700',
                           flex: 1,
                         }}>
-                        Sign in to view recently viewed items
+                        Đăng nhập để xem các mục đã xem gần đây.
                       </Text>
                       <Image
                         source={require('../../assets/icons/ic_next.png')}
@@ -237,7 +243,7 @@ const YouScreen = ({ navigation }) => {
                   </View>
                   <Text
                     style={[st.sectionTitle, { marginLeft: 15, marginTop: 5 }]}>
-                    Browsing history
+                    Lịch sử tìm kiếm
                   </Text>
 
                   {browsingHistory.length === 0 && (
@@ -250,7 +256,7 @@ const YouScreen = ({ navigation }) => {
                         marginTop: 100,
                         textAlign: 'center',
                       }}>
-                      No items in browsing history
+                      Không có mục nào trong lịch sử duyệt web.
                     </Text>
                   )}
                 </View>

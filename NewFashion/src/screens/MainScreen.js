@@ -19,18 +19,18 @@ const MainScreen = () => {
                         let iconName
                         let label
 
-                        if (route.name === 'Home') {
+                        if (route.name === 'Trang chủ') {
                             iconName = focused ? require("../assets/icons/ic_homeSelected.png") : require("../assets/icons/ic_home.png");
-                            label = 'Home'
-                        } else if (route.name === 'Category') {
+                            label = 'Trang chủ'
+                        } else if (route.name === 'Danh mục') {
                             iconName = require("../assets/icons/ic_category.png");
-                            label = 'Categories'
-                        } else if (route.name === 'News') {
+                            label = 'Danh mục'
+                        } else if (route.name === 'Tin tức') {
                             iconName = focused ? require("../assets/icons/ic_favouriteSelected.png") : require("../assets/icons/ic_favourite.png");
-                            label = 'NF News'
-                        } else if (route.name === 'You') {
+                            label = 'Tin tức'
+                        } else if (route.name === 'Cá nhân') {
                             iconName = require("../assets/icons/ic_you.png");
-                            label = 'You'
+                            label = 'Cá nhân'
                         }
 
                         return (
@@ -45,10 +45,10 @@ const MainScreen = () => {
                     tabBarInactiveTintColor: "#737373", // Màu chữ khi không active
                 })}
             >
-                <Tab.Screen name="Home" component={HomeScreen} />
-                <Tab.Screen name="Category" component={CategoryScreen} />
-                <Tab.Screen name="News" component={NewScreen} />
-                <Tab.Screen name="You" component={YouScreen} />
+                <Tab.Screen name="Trang chủ" component={HomeScreen} />
+                <Tab.Screen name="Danh mục" component={CategoryScreen} />
+                <Tab.Screen name="Tin tức" component={NewScreen} />
+                <Tab.Screen name="Cá nhân" component={YouScreen} />
             </Tab.Navigator>
         </View>
     )

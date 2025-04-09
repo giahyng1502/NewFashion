@@ -95,9 +95,9 @@ const HomeScreen = ({ navigation }) => {
             <View style={st.infoItem}>
               <View style={st.textContainer}>
                 <Image source={require('../../assets/icons/ic_greenReturn.png')} style={st.icon} />
-                <Text style={[st.title, { color: 'green' }]}>Free shipping</Text>
+                <Text style={[st.title, { color: 'green' }]}>Miễn phí giao hàng</Text>
               </View>
-              <Text style={{ color: '#383838', fontSize: 12, fontWeight: 'semibold' }}>Limited-time offer</Text>
+              <Text style={{ color: '#383838', fontSize: 12, fontWeight: 'semibold' }}>Giới hạn thời gian</Text>
             </View>
 
             {/* Divider */}
@@ -108,9 +108,9 @@ const HomeScreen = ({ navigation }) => {
             <View style={st.infoItem}>
               <View style={st.textContainer}>
                 <Image source={require('../../assets/icons/ic_freeReturns.png')} style={st.icon} />
-                <Text style={st.title}>Free returns</Text>
+                <Text style={st.title}>Miễn phí trả hàng</Text>
               </View>
-              <Text style={st.subtitle}>Up to 90 days*</Text>
+              <Text style={st.subtitle}>Lên đến 90 ngày</Text>
             </View>
 
             {/* Divider */}
@@ -120,9 +120,9 @@ const HomeScreen = ({ navigation }) => {
             <View style={st.infoItem}>
               <View style={st.textContainer}>
                 <Image source={require('../../assets/icons/ic_freeAdjust.png')} style={st.icon} />
-                <Text style={st.title}>Price adjustment</Text>
+                <Text style={st.title}>Hoàn tiền</Text>
               </View>
-              <Text style={st.subtitle}>Within 30 days</Text>
+              <Text style={st.subtitle}>Trong vòng 30 ngày</Text>
             </View>
           </View>
 
@@ -134,10 +134,10 @@ const HomeScreen = ({ navigation }) => {
               <View style={st.header}>
                 <View style={st.subHeader}>
                   <Image source={require('../../assets/icons/ic_lightning.png')} style={st.headerImage} />
-                  <Text style={st.headerTitle}>Lightning deals</Text>
+                  <Text style={st.headerTitle}>Ưu đãi chớp nhoáng</Text>
                   <Image source={require('../../assets/icons/ic_arrow1.png')} style={st.headerImage} />
                 </View>
-                <Text style={st.headerOffer}>Limited time offer</Text>
+                <Text style={st.headerOffer}>Ưu đãi có thời hạn</Text>
               </View>
               {/*  */}
 
