@@ -37,3 +37,15 @@ export const fetchProductById = createAsyncThunk(
       }
     }
   );
+
+  export const searchProduct = createAsyncThunk(
+    'product/searchProducts',
+    async (query, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`/search`, {params: {search: query}});
+        return response.data;
+      } catch (error) {
+        return rejectWithValue(error.message);
+      }
+    }
+  );

@@ -1,96 +1,59 @@
 import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import SearchBar from '../components/SearchBar';
-import { useFocusEffect } from '@react-navigation/native';
 import ProductCard from '../components/ProductCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { searchProduct } from '../redux/actions/productActions';
 
-const DataSearch = [
-  { id: '1', title: 'Áo thun nam cổ tròn' },
-  { id: '2', title: 'Áo thun nữ form rộng' },
-  { id: '3', title: 'Áo sơ mi caro nam' },
-  { id: '4', title: 'Áo sơ mi trắng nữ' },
-  { id: '5', title: 'Quần jeans nam rách gối' },
-  { id: '6', title: 'Quần jeans nữ skinny' },
-  { id: '7', title: 'Áo hoodie nam basic' },
-  { id: '8', title: 'Áo hoodie nữ croptop' },
-  { id: '9', title: 'Váy công sở tay dài' },
-  { id: '10', title: 'Váy dạ hội sang trọng' },
-  { id: '11', title: 'Quần short nam thể thao' },
-  { id: '12', title: 'Quần short nữ lưng cao' },
-  { id: '13', title: 'Bộ đồ thể thao nam adidas' },
-  { id: '14', title: 'Bộ đồ thể thao nữ nike' },
-  { id: '15', title: 'Áo khoác bomber nam' },
-  { id: '16', title: 'Áo khoác jean nữ' },
-  { id: '17', title: 'Đầm maxi đi biển' },
-  { id: '18', title: 'Áo len nam cổ lọ' },
-  { id: '19', title: 'Áo len nữ oversize' },
-  { id: '20', title: 'Quần jogger nam streetwear' }
-];
+
 
 const SearchScreen = ({ navigation, onSearch }) => {
-  const [searchText, setSearchText] = useState('');
-  const [dataSearch, setDataSearch] = useState([]);
   const [recentSearch, setRecentSearch] = useState([]);
   const [browsingHistory, setBrowsingHistory] = useState([]);
-
+  const [searchQuery, setSearchQuery] = useState('');
+  const [productList, setProductList] = useState([]);
+  const dispatch = useDispatch();
+  /// lịch sử tìm kiếm
   useEffect(() => {
     const fetchLocalData = async () => {
       try {
         const storedRecentSearch = await AsyncStorage.getItem('recentSearch');
         const storedBrowsingHistory = await AsyncStorage.getItem('browsingHistory');
-
         setRecentSearch(storedRecentSearch ? JSON.parse(storedRecentSearch) : []);
         setBrowsingHistory(storedBrowsingHistory ? JSON.parse(storedBrowsingHistory) : []);
       } catch (error) {
         console.error('Error fetching local data:', error);
       }
     };
-
     fetchLocalData();
   }, []);
-
-  const Item = ({ title, image }) => (
-    <View style={styles.item}>
-      <Image source={{ uri: image }} style={styles.image} />
-      <Text style={styles.text}>{title}</Text>
-    </View>
-  );
-
-  const DataSearchRender = ({ title, image }) => (
-    <View style={styles.itemSearchList}>
-      <Image source={require('../assets/icons/ic_search_black_2x.png')} style={styles.imageSearchList} />
-      <Text style={styles.text}> {title}</Text>
-    </View>
-  );
-
+  // chi tiết sản phẩm
   const handleSelectedItem = (item) => {
     console.log('Selected item:', item);
-
-    navigation.navigate("ProductDetail", { item});
+    navigation.navigate("ProductDetail", { item });
   }
 
-  // Hàm xử lý khi nhập dữ liệu
-  const handleSearch = async (text) => {
-    setSearchText(text);
-
-    if (text.length > 0) {
-      const filteredData = DataSearch.filter(item =>
-        item.title && item.title.toLowerCase().includes(text.toLowerCase())
-      );
-      setDataSearch(filteredData);
-
-      // Lưu text vào recentSearch trong local storage
-      try {
-        const updatedRecentSearch = [...new Set([text, ...recentSearch])]; // Loại bỏ trùng lặp
-        setRecentSearch(updatedRecentSearch);
-        await AsyncStorage.setItem('recentSearch', JSON.stringify(updatedRecentSearch));
-      } catch (error) {
-        console.error('Error saving recent search:', error);
-      }
-    } else {
-      setDataSearch([]);
-    }
+  const fetchProducts = async (query) => {
+    setSearchQuery(query); 
+    if (!query.trim()) {
+      setProductList([]);
+      return;
+    }  
+    dispatch(searchProduct(query))
+      .then(async (kq) => {
+        const results = kq.payload
+        setProductList(results)
+        if (results.length > 0) {
+          const updatedRecentSearch = [...new Set([query, ...recentSearch])];
+          setRecentSearch(updatedRecentSearch);
+          await AsyncStorage.setItem('recentSearch', JSON.stringify(updatedRecentSearch));
+        }
+      }) 
+      .catch((error) => {
+        console.log('err ', error);
+      });
   };
 
   return (
@@ -100,22 +63,28 @@ const SearchScreen = ({ navigation, onSearch }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image source={require('../assets/ic_back.png')} style={{ width: 20, height: 20 }} />
         </TouchableOpacity>
-        <SearchBar disable={true} onSearch={handleSearch} />
-
+        <SearchBar disable={true} onSearch={fetchProducts} />
       </View>
 
       {/* Hiển thị DataSearch khi có nội dung tìm kiếm */}
-      {searchText.length > 0 ? (
+      {searchQuery.trim().length > 0 ? (
         <FlatList
-          data={dataSearch}
-          renderItem={({ item }) => <DataSearchRender title={item.title} image={item.image} />}
-          keyExtractor={(item) => `${item.id} data search in search screen`}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.list}
+          data={productList}
+          numColumns={2}
+          renderItem={({ item }) => (
+            <View style={{ flex: 1 / 2}}>
+              <ProductCard
+                item={item}
+                onSelected={() => { handleSelectedItem(item) }}
+                style={{padding:5}}
+              />
+            </View>
+          )}
+          keyExtractor={(item) => item._id}
         />
       ) : (
         <>
-          {/* Recently Searched */}
+          {/* Recent Search */}
           {recentSearch.length > 0 && (
             <View style={{ paddingHorizontal: 16, marginBottom: 10 }}>
               <View style={[styles.sectionHeader, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 5 }]}>
@@ -136,21 +105,18 @@ const SearchScreen = ({ navigation, onSearch }) => {
               <FlatList
                 data={recentSearch}
                 renderItem={({ item }) => (
-                  <Text
-                    style={{
-                      padding: 10,
-                      fontSize: 16,
-                      color: '#000',
-                      borderBottomColor: '#e0e0e0', // Màu đường viền
-                      borderBottomWidth: 1, // Độ dày đường viền
-                    }}
-                  >
+                  <Text style={{
+                    padding: 10,
+                    fontSize: 16,
+                    color: '#000',
+                    borderBottomColor: '#e0e0e0',
+                    borderBottomWidth: 1,
+                  }}>
                     {item}
                   </Text>
                 )}
-                keyExtractor={(item, index) => index.toString()} // Sử dụng index làm key
+                keyExtractor={(item, index) => index}
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.list}
               />
             </View>
           )}
@@ -164,18 +130,17 @@ const SearchScreen = ({ navigation, onSearch }) => {
               <FlatList
                 data={browsingHistory}
                 renderItem={({ item }) => (
-                  <View style={{ width: 140 }}>
+                  <View style={{ width: 140,marginHorizontal:5}}>
                     <ProductCard
                       item={item}
                       onSelected={() => { handleSelectedItem(item) }}
-                      style={{ width: 140 }} // Đặt chiều rộng cho ProductCard
+                      style={{ width: 140 }}
                     />
                   </View>
                 )}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item._id}
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.list}
               />
             </View>
           )}
@@ -224,16 +189,16 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5', // Màu nền giống hình
+    backgroundColor: '#ffffff', 
     borderRadius: 24,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    marginRight: 10, // Khoảng cách giữa các item
+    marginRight: 10,
   },
   image: {
     width: 40,
     height: 40,
-    borderRadius: 20, // Hình ảnh tròn
+    borderRadius: 20, 
     marginRight: 8,
   },
   text: {
@@ -246,7 +211,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-
 
   // Browsing
   BrowsingList: {
@@ -285,18 +249,17 @@ const styles = StyleSheet.create({
     color: "#777",
   },
   // màn hình search
-
   imageSearchList: {
-    width: 20,
-    height: 20,
+    width: 18,
+    height: 18,
+    marginRight: 10,
   },
   itemSearchList: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    marginBottom: 10, // Khoảng cách giữa các item
-    borderBottomWidth: 1, // Đường viền dưới
+    padding: 13,
+    marginBottom: 10,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#747474',
   },
-
 })
