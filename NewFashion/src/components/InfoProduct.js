@@ -7,9 +7,8 @@ const InfoProduct = () => {
             
             <View style={st.cusinfo}>
                 <Text style={{ width: 360 }}>
-                    Embroidered wool jacket, trendy style,
-                    built-in scarf style, eye-catching striking
-                    white border pattern, extremely convenient,
+                Áo khoác len thêu, kiểu dáng hợp thời trang,
+                kiểu khăn quàng cổ tích hợp, họa tiết viền trắng nổi bật bắt mắt, cực kỳ tiện lợi,
                 </Text>
                 <TouchableOpacity>
                 <Image style={st.cusiconmore} source={require('../assets/icons/ic_more.png')} resizeMode='cover' />
@@ -18,7 +17,7 @@ const InfoProduct = () => {
             
             <View style={st.formdetail}>
                     <TouchableOpacity style={st.cusdetail}>
-                    <Text> 831 sold | Sold by</Text>
+                    <Text> Đã bán 831 | Đã bán bởi</Text>
                     <Image style={st.customavtshop} source={require('../assets/icons/ic_avatarshop2.png')} />
                     </TouchableOpacity>
                 <View style={st.cusdetailrate}>
@@ -28,10 +27,10 @@ const InfoProduct = () => {
             </View>
 
             <View style={st.formprice}>
-                <Text style={{fontWeight:'bold', color:'#FE7018',fontSize: 20}}>ONLY 6 LEFT</Text>
+                <Text style={{fontWeight:'bold', color:'#FE7018',fontSize: 20}}>CHỈ CÒN 6 CÁI</Text>
                 <Text style={{fontWeight:'bold', color:'#1D1D1D',fontSize: 20, marginLeft: 10}}>304.568đ</Text>
                 <View style={{backgroundColor:'#FE7018', width: 60, height: 20, borderRadius: 5,marginLeft: 10}}>
-                    <Text style={{fontWeight:'bold', textAlign:'center', color:'#FFFFFF'}}>1% OFF</Text>
+                    <Text style={{fontWeight:'bold', textAlign:'center', color:'#FFFFFF'}}>GIẢM GIÁ 1%</Text>
                 </View>
                 <Text style={{color:'#737373',textDecorationLine:'line-through',marginLeft: 10}}>298.034đ</Text>
             </View>

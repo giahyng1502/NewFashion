@@ -118,7 +118,7 @@ const CategoryScreen = ({ navigation }) => {
         <TextInput
           value={searchText}
           style={styles.searchInput}
-          placeholder="Search something..."
+          placeholder="Tìm kiếm..."
           placeholderTextColor={'#bbb'}
           editable={false}
         />

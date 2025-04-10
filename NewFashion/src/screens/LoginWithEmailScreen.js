@@ -35,11 +35,11 @@ const LoginWithEmailScreen = ({ navigation }) => {
     switch (field) {
       case 'email':
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-        error = emailRegex.test(value) ? '' : 'Please enter a valid email address';
+        error = emailRegex.test(value) ? '' : 'Vui lòng nhập địa chỉ email hợp lệ';
         setEmailError(error);
         return error;
       case 'password':
-        error = value.length < 8 ? 'Password must be at least 8 characters' : '';
+        error = value.length < 8 ? 'Mật khẩu phải có ít nhất 8 ký tự' : '';
         setPasswordError(error);
         return error;
       default:
@@ -186,7 +186,7 @@ const LoginWithEmailScreen = ({ navigation }) => {
         .catch((err) => {
           console.log('Login error: ', err);
           setIsLoading(false);
-          Alert.alert('Login failed', 'Incorrect email or password.');
+          Alert.alert('Đăng nhập không thành công', 'Email hoặc mật khẩu không đúng.');
         });
     });
   };
@@ -268,14 +268,14 @@ const LoginWithEmailScreen = ({ navigation }) => {
 
       {isContinue && (
         <Animated.Text style={[{ fontSize: 16, fontWeight: 'bold', marginTop: 20 }, { opacity: fadeInAnim }]}>
-          {isRegister ? 'Create an account' : 'Welcome back!'}
+          {isRegister ? 'Tạo một tài khoản' : 'Chào mừng trở lại!'}
         </Animated.Text>
       )}
 
       {!isContinue && (
         <Animated.View style={[st.infoContainer, { opacity: opacityAnim }]}>
-          <BenefitsInfoBox icon={require('../assets/icons/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
-          <BenefitsInfoBox icon={require('../assets/icons/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
+          <BenefitsInfoBox icon={require('../assets/icons/ic_freeReturns.png')} title="Trả lại miễn phí" subtitle="Lên đến 90 ngày" />
+          <BenefitsInfoBox icon={require('../assets/icons/ic_freeShipping.png')} title="Miễn phí vận chuyển" subtitle="Trên tất cả các đơn hàng" />
         </Animated.View>
       )}
 
@@ -284,7 +284,7 @@ const LoginWithEmailScreen = ({ navigation }) => {
 
         <View style={{ marginTop: 10 }}>
           <TextField
-            placeholder="Please enter your email address"
+            placeholder="Vui lòng nhập địa chỉ email của bạn"
             onChangeText={setEmail}
             customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }}
           />
@@ -299,10 +299,10 @@ const LoginWithEmailScreen = ({ navigation }) => {
 
       {isContinue && (
         <Animated.View style={{ marginTop: 10, opacity: fadePasswordAnim }}>
-          <Text>Password *</Text>
+          <Text>Mật khẩu *</Text>
           <TextField
             type={TextFieldType.PASSWORD}
-            placeholder={isRegister ? "Minimum 8 characters required" : "Please enter your password"}
+            placeholder={isRegister ? "Yêu cầu tối thiểu 8 ký tự" : "Vui lòng nhập mật khẩu của bạn"}
             onChangeText={setPassword}
             customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }}
           />
@@ -315,7 +315,7 @@ const LoginWithEmailScreen = ({ navigation }) => {
           {(isContinue && isRegister) &&
             <>
               <PasswordStrengthBar password={password} customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onChangeText={setStrengLabel} />
-              <Text style={{ fontWeight: 'bold', fontSize: 14, marginTop: 8, alignSelf: 'flex-start', marginVertical: 5 }}>Password quality: {strengLabel}</Text>
+              <Text style={{ fontWeight: 'bold', fontSize: 14, marginTop: 8, alignSelf: 'flex-start', marginVertical: 5 }}>Chất lượng mật khẩu: {strengLabel}</Text>
             </>
 
           }
@@ -323,22 +323,22 @@ const LoginWithEmailScreen = ({ navigation }) => {
       )}
       <FilledButton
         onPress={handleContinue}
-        title="Continue"
+        title="Tiếp tục"
         customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }}
       />
 
       <TouchableOpacity style={st.troubleContainer}>
-        <Text style={st.troubleText}>Trouble signing in?</Text>
+        <Text style={st.troubleText}>Gặp sự cố khi đăng nhập?</Text>
       </TouchableOpacity>
 
       <Text style={st.termsText}>
-        By continuing, you agree to our{' '}
+      Bằng cách tiếp tục, bạn đồng ý với chúng tôi{' '}
         <Text style={st.linkText} onPress={() => { }}>
-          Terms of Use
+        Điều khoản sử dụng
         </Text>{' '}
-        and{' '}
+        Và{' '}
         <Text style={st.linkText} onPress={() => { }}>
-          Privacy Policy
+        Chính sách bảo mật
         </Text>.
       </Text>
 

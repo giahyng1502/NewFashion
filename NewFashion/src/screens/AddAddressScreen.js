@@ -225,30 +225,30 @@ const AddAddressScreen = ({ navigation, route }) => {
 
         switch (field) {
             case 'fullname':
-                error = !value.trim() ? 'Please enter a full name' :
+                error = !value.trim() ? '   Vui lòng nhập tên đầy đủ' :
                     value.trim().length < 2 ? 'Please enter your full name with no less than 2 characters' : '';
                 setFullnameError(error);
                 return error;
             case 'phoneNumber':
                 const phoneRegex = /^0\d{8,9}$/;
-                error = !value ? 'Please enter a phone number so we can call for any delivery issues' :
-                    !phoneRegex.test(value) ? 'Please enter a valid 9-digit or 10-digit phone number starting with 0' : '';
+                error = !value ? 'Vui lòng nhập số điện thoại để chúng tôi có thể gọi để giải quyết bất kỳ vấn đề giao hàng nào' :
+                    !phoneRegex.test(value) ? 'Vui lòng nhập số điện thoại hợp lệ gồm 9 chữ số hoặc 10 chữ số bắt đầu bằng 0' : '';
                 setPhoneNumberError(error);
                 return error;
             case 'city':
-                error = !selectedCity ? 'Please select a city' : '';
+                error = !selectedCity ? 'Vui lòng chọn một thành phố' : '';
                 setCityError(error);
                 return error;
             case 'district':
-                error = !selectedDistrict ? 'Please select a district' : '';
+                error = !selectedDistrict ? 'Vui lòng chọn một quận' : '';
                 setDistrictError(error);
                 return error;
             case 'ward':
-                error = !selectedWard ? 'Please select a ward' : '';
+                error = !selectedWard ? 'Vui lòng chọn một phường' : '';
                 setWardError(error);
                 return error;
             case 'streetName':
-                error = !value ? 'Please enter a street name' : '';
+                error = !value ? 'Vui lòng nhập tên đường' : '';
                 setStreetNameError(error);
                 return error;
             default:
@@ -314,24 +314,24 @@ const AddAddressScreen = ({ navigation, route }) => {
     return (
         <View style={st.container}>
             {/* Header */}
-            <BaseHeader title="Add an address to order" showLeftButton={true} onLeftButtonPress={() => { navigation.goBack() }} />
+            <BaseHeader title="Thêm địa chỉ để đặt hàng" showLeftButton={true} onLeftButtonPress={() => { navigation.goBack() }} />
 
             {/* Description */}
             <View style={st.descriptionContainer}>
                 <Image source={require('../assets/icons/ic_lock.png')} resizeMode='contain' style={{ width: 16, height: 16 }} />
-                <Text style={{ color: '#008D42', fontSize: 12, fontWeight: 'semibold' }}>All data is encripted</Text>
+                <Text style={{ color: '#008D42', fontSize: 12, fontWeight: 'semibold' }}>Tất cả dữ liệu được mã hóa</Text>
             </View>
 
             {/* Shipping benefit */}
             <View style={st.shippingContainer}>
                 <View style={st.shippingItem}>
                     <Image source={require('../assets/icons/ic_greenCheck.png')} resizeMode='contain' style={{ width: 15, height: 15 }} />
-                    <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#008D42' }}>Free shipping</Text>
+                    <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#008D42' }}>Miễn phí vận chuyển</Text>
                 </View>
                 <Text style={{ fontSize: 12, color: '#737373' }}>|</Text>
                 <View style={st.shippingItem}>
                     <Image source={require('../assets/icons/ic_greenCheck.png')} resizeMode='contain' style={{ width: 15, height: 15 }} />
-                    <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#008D42' }}>Return if item damaged</Text>
+                    <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#008D42' }}>Trả lại nếu sản phẩm bị hư hỏng</Text>
                 </View>
             </View>
 
@@ -339,13 +339,13 @@ const AddAddressScreen = ({ navigation, route }) => {
             <View style={st.inputContainer}>
                 {/* fullname */}
                 <Text style={st.label}>
-                    Full name {' '}
+                Họ tên đầy đủ {' '}
                     <Text style={{ color: '#F91616' }}>*</Text>
-                    {' '}(First and last name)
+                    {' '}(Họ và tên)
                 </Text>
                 <TextField
                     value={fullname}
-                    placeholder="Enter a fullname"
+                    placeholder="Nhập tên đầy đủ"
                     customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }}
                     onChangeText={(text) => {
                         setFullname(text);
@@ -363,13 +363,13 @@ const AddAddressScreen = ({ navigation, route }) => {
 
                 {/* phoneNumber */}
                 <Text style={st.label}>
-                    Phone number {' '}
+                Số điện thoại {' '}
                     <Text style={{ color: '#F91616' }}>*</Text>
                 </Text>
                 <TextField
                     value={phoneNumber}
                     type={TextFieldType.PHONENUMBER}
-                    placeholder="Enter a phone number"
+                    placeholder="Nhập số điện thoại"
                     customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }}
                     onChangeText={(text) => {
                         setPhoneNumber(text);
@@ -387,14 +387,14 @@ const AddAddressScreen = ({ navigation, route }) => {
 
                 {/* city */}
                 <Text style={st.label}>
-                    City {' '}
+                Thành phố {' '}
                     <Text style={{ color: '#F91616' }}>*</Text>
                 </Text>
                 <TextField
                     type={TextFieldType.DROPDOWN}
-                    placeholder="Select a city"
+                    placeholder="Chọn một thành phố"
                     customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }}
-                    value={selectedCity ? selectedCity.name : 'Select'}
+                    value={selectedCity ? selectedCity.name : 'Lựa chọn'}
                     onDropdown={() => { openBottomSheet('city') }}
                     error={cityError.length > 0}
                 />
@@ -407,14 +407,14 @@ const AddAddressScreen = ({ navigation, route }) => {
 
                 {/* district */}
                 <Text style={st.label}>
-                    District {' '}
+                Quận / Huyện {' '}
                     <Text style={{ color: '#F91616' }}>*</Text>
                 </Text>
                 <TextField
                     type={TextFieldType.DROPDOWN}
                     placeholder="Select a district"
                     customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }}
-                    value={selectedDistrict ? selectedDistrict.name : 'Select'}
+                    value={selectedDistrict ? selectedDistrict.name : 'Lựa chọn'}
                     onDropdown={() => { openBottomSheet('district') }}
                     error={districtError.length > 0}
                 />
@@ -427,14 +427,14 @@ const AddAddressScreen = ({ navigation, route }) => {
 
                 {/* ward */}
                 <Text style={st.label}>
-                    Ward {' '}
+                    Phường / Xã {' '}
                     <Text style={{ color: '#F91616' }}>*</Text>
                 </Text>
                 <TextField
                     type={TextFieldType.DROPDOWN}
                     placeholder="Select a ward"
                     customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }}
-                    value={selectedWard ? selectedWard.name : 'Select'}
+                    value={selectedWard ? selectedWard.name : 'Lựa chọn'}
                     onDropdown={() => { openBottomSheet('ward') }}
                     error={wardError.length > 0}
                 />
@@ -447,12 +447,12 @@ const AddAddressScreen = ({ navigation, route }) => {
 
                 {/* street name */}
                 <Text style={st.label}>
-                    Street name {' '}
+                    Tên đường {' '}
                     <Text style={{ color: '#F91616' }}>*</Text>
                 </Text>
                 <TextField
                     value={streetName}
-                    placeholder="Enter street name, building, house no., unit, floor, etc"
+                    placeholder="Nhập tên đường, tòa nhà, số nhà, căn hộ, tầng, v.v."
                     customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }}
                     onChangeText={(text) => {
                         setStreetName(text);

@@ -33,7 +33,7 @@ export const ReviewItem = ({ name, avataruser, date, color, size, review, rating
         <Image source={avataruser} style={st.avatar} />
         <TouchableOpacity style={st.lableuser}>
           <Text style={st.userName}>{name}</Text>
-          <Text style={st.userDetails}>in Vietnam on {date}</Text>
+          <Text style={st.userDetails}>ở Việt Nam vào {date}</Text>
         </TouchableOpacity>
       </View>
 
@@ -52,7 +52,7 @@ export const ReviewItem = ({ name, avataruser, date, color, size, review, rating
       </View>
 
       <Text style={st.productInfo}>
-        Purchased: {color} / Label size: {size}
+      Đã mua: {color} / Kích thước nhãn: {size}
       </Text>
       <Text style={st.reviewText}>{review}</Text>
     </View>
@@ -64,10 +64,10 @@ const ReviewFormUser = () => {
     <View style={st.container}>
       <View style={st.topButtons}>
         <TouchableOpacity style={st.filterButton}>
-          <Text style={st.buttonText}>Winter Wear (2)</Text>
+          <Text style={st.buttonText}>Đồ mặc mùa đông (2)</Text>
         </TouchableOpacity>
         <TouchableOpacity style={st.filterButton}>
-          <Text style={st.buttonText}>Good Quality (2)</Text>
+          <Text style={st.buttonText}>Chất lượng tốt (2)</Text>
         </TouchableOpacity>
       </View>
       <FlatList

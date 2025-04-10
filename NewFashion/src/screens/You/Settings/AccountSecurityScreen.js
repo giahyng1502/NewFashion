@@ -43,9 +43,8 @@ const AccountSecurityScreen = ({navigation}) => {
         <View>
           <Text>{hasPassword ? '******' : ''}</Text>
           <Text style={styles.passwordQuality}>
-            Password quality:{' '}
-            <Text style={{color: color, fontWeight: 'bold'}}>{label}.</Text> A
-            stronger password will protect your account better.
+          Chất lượng mật khẩu:{' '}
+            <Text style={{color: color, fontWeight: 'bold'}}>{label}.</Text> Mật khẩu mạnh hơn sẽ bảo vệ tài khoản của bạn tốt hơn.
           </Text>
         </View>
       );
@@ -72,11 +71,11 @@ const AccountSecurityScreen = ({navigation}) => {
             />
           </View>
           <View style={styles.innerHeading}>
-            <Text style={styles.h2}>Your account is protected</Text>
+            <Text style={styles.h2}>Tài khoản của bạn được bảo vệ</Text>
             <Text style={styles.p}>
-              Your New Fashion account is protected by advanced security.
-              Keeping this information up-to-date safeguards your account even
-              more.
+            Tài khoản New Fashion của bạn được bảo vệ bằng bảo mật nâng cao.
+Việc cập nhật thông tin này sẽ bảo vệ tài khoản của bạn
+tốt hơn.
             </Text>
           </View>
         </View>
@@ -84,7 +83,7 @@ const AccountSecurityScreen = ({navigation}) => {
         <View style={styles.contentContainer}>
           <View style={styles.innerContent}>
             <View style={styles.wrapContent}>
-              <Text style={styles.h3}>Mobile phone number</Text>
+              <Text style={styles.h3}>Số điện thoại di động</Text>
               {hasPhonenumber && (
                 <Text style={[styles.p, {color: '#1E1E1E'}]}>
                   {formatPhoneNumber(phoneNumber)}
@@ -124,7 +123,7 @@ const AccountSecurityScreen = ({navigation}) => {
         <View style={styles.contentContainer}>
           <View style={styles.innerContent}>
             <View style={styles.wrapContent}>
-              <Text style={styles.h3}>Password</Text>
+              <Text style={styles.h3}>Mật khẩu</Text>
               {passwordDescription}
             </View>
             <Pressable

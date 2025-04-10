@@ -29,7 +29,7 @@ const LightningDealItem = ({ item, onPress }) => {
           <Text style={st.labelText}>{`Only ${item.limit} left`}</Text>
         </View>
       <Text style={st.priceText}>{SupportFunctions.convertPrice(item.productId.price)}</Text>
-      <Text style={st.soldText}>{item.productId.sold} sold</Text>
+      <Text style={st.soldText}>{item.productId.sold} bán</Text>
       <View style={st.progressBarBackground}>
         <View style={[st.progressBarFill, { width: `${progress}%` }]}>
           <Image source={require('../assets/icons/ic_clock.png')} style={{ width: 14, height: 14, position: 'absolute', right: -7, top: -4.5 }} />

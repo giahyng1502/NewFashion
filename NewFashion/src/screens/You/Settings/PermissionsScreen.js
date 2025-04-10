@@ -15,7 +15,7 @@ const PermissionsAllowed = ({title, description}) => {
       <View style={styles.wrapTitle}>
         <Text style={styles.title}>{title}</Text>
         <View style={styles.boxStatus}>
-          <Text style={styles.status}>Allowed</Text>
+          <Text style={styles.status}>Cho phép</Text>
         </View>
       </View>
       <View>
@@ -25,7 +25,7 @@ const PermissionsAllowed = ({title, description}) => {
             {opacity: pressed ? 0.5 : 1},
             styles.btnGoToSetting,
           ]}>
-          <Text style={styles.goToSetting}>go to settings</Text>
+          <Text style={styles.goToSetting}>đi đến cài đặt</Text>
           <Image
             style={{
               tintColor: '#FA7806',

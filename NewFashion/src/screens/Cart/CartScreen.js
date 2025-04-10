@@ -196,15 +196,15 @@ const CartScreen = ({ navigation }) => {
 
   const handleDeleteItem = () => {
     Alert.alert(
-      "Confirm Delete",
-      "Are you sure you want to delete the selected items?",
+      "Xác nhận xóa",
+      "Bạn có chắc chắn muốn xóa các mục đã chọn không?",
       [
         {
-          text: "Cancel",
+          text: "Hủy",
           style: "cancel",
         },
         {
-          text: "Delete",
+          text: "Xóa",
           style: "destructive",
           onPress: () => {
             // Xóa các sản phẩm đã chọn
@@ -467,7 +467,7 @@ const CartScreen = ({ navigation }) => {
     <View style={st.container}>
       {/* Header */}
       <BaseHeader
-        title={title}
+        title={'Giỏ hàng'}
         showLeftButton={true}
         onLeftButtonPress={() => navigation.goBack()}
         showRightButton={showDeleteButton}
@@ -484,12 +484,12 @@ const CartScreen = ({ navigation }) => {
         />
 
         <Text style={{ fontSize: 12, fontWeight: 'bold', color: AppManager.shared.isUserLoggedIn() ? '#078809' : 'black', flex: 1 }} >
-          FREE SHIPPING and free returns
+        MIỄN PHÍ VẬN CHUYỂN và miễn phí trả hàng
         </Text>
 
         {AppManager.shared.isUserLoggedIn() && (
           <Text style={{ fontSize: 10, fontWeight: 'semibold', color: '#555' }} >
-            Exclusive offer
+            Ưu đãi độc quyền
           </Text>
         )}
       </View>
@@ -512,11 +512,11 @@ const CartScreen = ({ navigation }) => {
 
                 <View>
                   <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                    Your shopping cart is empty
+                  Giỏ hàng của bạn đang trống
                   </Text>
 
                   <Text style={{ fontSize: 12, color: '#737337' }}>
-                    Add your favorite items in it.
+                  Thêm những mục bạn yêu thích vào đó.
                   </Text>
                 </View>
               </View>
@@ -596,7 +596,7 @@ const CartScreen = ({ navigation }) => {
 
                     {item.disCountSale !== 0 && (
                       <Text style={{ marginLeft: 150, fontSize: 10, color: '#FA7806', marginTop: 5, fontStyle: 'italic', fontWeight: 'bold' }}>
-                        Big sale | Limited time
+                        Khuyến mại lớn | Thời gian có hạn
                       </Text>
                     )}
 
@@ -619,7 +619,7 @@ const CartScreen = ({ navigation }) => {
 
             <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 20, marginVertical: 10 }}>
               <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
-              <Text style={{ marginHorizontal: 10, fontWeight: 'semibold', fontSize: 14, color: '#000' }}>Maybe you will also like</Text>
+              <Text style={{ marginHorizontal: 10, fontWeight: 'semibold', fontSize: 14, color: '#000' }}>Có thể bạn sẽ thích</Text>
               <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
             </View>
           </>

@@ -36,15 +36,15 @@ const AddressesScreen = ({navigation}) => {
 
   const handleDeleteItem = (id) => {
     Alert.alert(
-      "Confirm Delete",
-      "Are you sure you want to delete this address?",
+      "Xác nhận xóa",
+      "Bạn có chắc chắn muốn xóa địa chỉ này không?",
       [
         {
-          text: "Cancel",
+          text: "Hủy bỏ",
           style: "cancel",
         },
         {
-          text: "Delete",
+          text: "Xóa",
           style: "destructive",
           onPress: () => {
             const updateAddress = addresses.filter(item => item._id != id);
@@ -81,7 +81,7 @@ const AddressesScreen = ({navigation}) => {
   return (
     <View style={{backgroundColor:'#fff',flex:1}}>
       <BaseHeader
-        title='Addresses'
+        title='Địa chỉ'
         showLeftButton={true}
         onLeftButtonPress={() => navigation.goBack()}
       />
@@ -90,7 +90,7 @@ const AddressesScreen = ({navigation}) => {
         {personalInfo.information.length === 0 ? (
           <View style={{backgroundColor: "#fff", padding:20,flexDirection:'column',alignItems:'center',width:"100%"}}>
             <Image source={require('../../assets/icons/ic_Adress.png')} style={{width:50,height:50,marginTop:20}}/>
-            <Text style={{color:'#737373',fontSize:18,fontWeight:'bold',marginTop:15}}>You don't have any addresses, please add at least one</Text>
+            <Text style={{color:'#737373',fontSize:18,fontWeight:'bold',marginTop:15}}>Bạn không có địa chỉ nào, vui lòng thêm ít nhất một địa chỉ</Text>
           </View>
         ):(
           <FlatList
@@ -118,7 +118,7 @@ const AddressesScreen = ({navigation}) => {
                 </View>
 
                 <View style={{ marginTop: 15, borderTopColor: '#BBBBBB', borderTopWidth: 0.5, flexDirection: 'row', justifyContent: 'space-between' }}>
-                  {item._id === defaultAddress._id ? (
+                  {item._id === defaultAddress?._id ? (
                           <TouchableOpacity style={{ marginTop: 10, flexDirection: "row", alignItems: "center" }}>
                             <View style={{ width: 18, height: 18, borderRadius: 9, borderWidth: 2, borderColor: "#000", alignItems: "center", justifyContent: "center" }}>
                               <View
@@ -130,7 +130,7 @@ const AddressesScreen = ({navigation}) => {
                                 }}
                               />
                             </View>
-                            <Text style={{ marginLeft: 8, color: "#737373", fontWeight: 'bold' }}>Default</Text>
+                            <Text style={{ marginLeft: 8, color: "#737373", fontWeight: 'bold' }}>Mặc định</Text>
                           </TouchableOpacity>
                         ) : (
                           <TouchableOpacity
@@ -152,7 +152,7 @@ const AddressesScreen = ({navigation}) => {
                                 justifyContent: "center",
                               }}
                             />
-                            <Text style={{ marginLeft: 8, color: "#737373", fontWeight: 'bold' }}>Set as default</Text>
+                            <Text style={{ marginLeft: 8, color: "#737373", fontWeight: 'bold' }}>Đặt làm mặc định</Text>
                           </TouchableOpacity>
                         )}
 
@@ -163,15 +163,15 @@ const AddressesScreen = ({navigation}) => {
                       marginTop: 12,
                     }}
                   >
-                    {item._id === defaultAddress._id ? (
+                    {item._id === defaultAddress?._id ? (
                       <View></View>
                     ) : (
                       <TouchableOpacity onPress={() => handleDeleteItem(item._id)}>
-                        <Text style={{ marginRight: 5, color: "#737373", fontWeight: 'bold' }}>Delete</Text>
+                        <Text style={{ marginRight: 5, color: "#737373", fontWeight: 'bold' }}>Xóa</Text>
                       </TouchableOpacity>
                     )}
                     <TouchableOpacity onPress={() => navigation.navigate('AddAddress', { isFromCheckout: true, info: item })}>
-                      <Text style={{ marginLeft: 5, color: "#737373", fontWeight: 'bold' }}>Edit</Text>
+                      <Text style={{ marginLeft: 5, color: "#737373", fontWeight: 'bold' }}>Sửa</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -185,7 +185,7 @@ const AddressesScreen = ({navigation}) => {
       <View style={{ position: 'absolute', bottom: 0,width: '100%', backgroundColor: '#fff', padding: 15, borderTopColor: '#BBBBBB', borderTopWidth: 0.5 }}>
           <TouchableOpacity style={{ backgroundColor: "#ff7f00", padding: 12, borderRadius: 40, alignItems: "center" }} onPress={() => navigation.navigate('AddAddress', { isFromCheckout: true })}>
             <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 18 }}>
-              Add a new address
+              Thêm địa chỉ mới
             </Text>
           </TouchableOpacity>
       </View>

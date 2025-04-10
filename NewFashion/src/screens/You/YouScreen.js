@@ -61,19 +61,19 @@ const bottomMenuItems = [
     id: '1',
     title: 'Addresses',
     icon: require('../../assets/icons/ic_Adress.png'),
-    h3: 'Đơn hàng của bạn',
+    h3: 'Địa chỉ giao hàng',
   },
   {
     id: '2',
     title: 'Notification',
     icon: require('../../assets/icons/ic_notification.png'),
-    h3: 'Đơn hàng của bạn',
+    h3: 'Thông báo',
   },
   {
     id: '3',
     title: 'Coupons & offers',
     icon: require('../../assets/icons/ic_couponPercent.png'),
-    h3: 'Đơn hàng của bạn',
+    h3: 'Phiếu giảm giá & ưu đãi',
   },
 ];
 

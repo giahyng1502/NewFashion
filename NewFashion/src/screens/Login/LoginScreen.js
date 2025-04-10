@@ -12,9 +12,9 @@ import TextField, { TextFieldType } from '../../components/TextField';
 import PasswordStrengthBar from '../../components/PasswordStrengthBar';
 import { useDispatch } from 'react-redux';
 import AppManager from '../../utils/AppManager';
-import {onGoogleButtonPress} from './signInWithGoogle';
-import {setUser} from '../../redux/reducer/userReducer';
-import {loginWithGoogle} from "../../redux/actions/userActions";
+import { onGoogleButtonPress } from './signInWithGoogle';
+import { setUser } from '../../redux/reducer/userReducer';
+import { loginWithGoogle } from "../../redux/actions/userActions";
 
 const LoginScreen = ({ navigation }) => {
 
@@ -58,14 +58,14 @@ const LoginScreen = ({ navigation }) => {
         console.log(result);
         if (result?.meta.requestStatus === 'fulfilled') {
           AppManager.shared.saveUserInfo(result.payload.token)
-              .then(() => AppManager.shared.getToken())
-              .then((token) => {
-                console.log('token: ', token);
-                navigation.replace('Main');
-              })
-              .catch((err) => {
-                console.log('Error in token processing: ', err);
-              });
+            .then(() => AppManager.shared.getToken())
+            .then((token) => {
+              console.log('token: ', token);
+              navigation.replace('Main');
+            })
+            .catch((err) => {
+              console.log('Error in token processing: ', err);
+            });
         } else {
           console.log('Google login failed:', result);
         }
@@ -94,39 +94,39 @@ const LoginScreen = ({ navigation }) => {
         </View>
 
         <View style={st.infoContainer}>
-          <BenefitsInfoBox icon={require('../../assets/icons/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
-          <BenefitsInfoBox icon={require('../../assets/icons/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
+          <BenefitsInfoBox icon={require('../../assets/icons/ic_freeReturns.png')} title="Trả lại miễn phí" subtitle="Lên đến 90 ngày" />
+          <BenefitsInfoBox icon={require('../../assets/icons/ic_freeShipping.png')} title="Miễn phí vận chuyển" subtitle="Trên tất cả các đơn hàng" />
         </View>
 
-        <OutlinedButton onPress={handleLoginWithGoogle} icon={require('../../assets/bt_google.png')} title="Continue with Google" customStyle={{ width: ScreenSize.width - 40, marginTop: 40 }} />
-        <OutlinedButton icon={require('../../assets/bt_email.png')} title="Continue with Email" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onPress={() => { navigation.navigate('LoginWithEmail'); }} />
+        <OutlinedButton onPress={handleLoginWithGoogle} icon={require('../../assets/bt_google.png')} title="Tiếp tục với Google" customStyle={{ width: ScreenSize.width - 40, marginTop: 40 }} />
+        <OutlinedButton icon={require('../../assets/bt_email.png')} title="Tiếp tục với Email" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onPress={() => { navigation.navigate('LoginWithEmail'); }} />
         {/* <OutlinedButton icon={require('../assets/bt_phone.png')} title="Continue with phone number" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} /> */}
 
 
 
         <TouchableOpacity style={st.troubleContainer} onPress={() => openBottomSheet()} >
-          <Text style={st.troubleText}>Trouble signing in?</Text>
+          <Text style={st.troubleText}>Gặp sự cố khi đăng nhập?</Text>
         </TouchableOpacity>
 
         <Text style={st.termsText}>
-          By continuing, you agree to our{' '}
+          Bằng cách tiếp tục, bạn đồng ý với chúng tôi{' '}
           <Text style={st.linkText} onPress={() => { }}>
-            Terms of Use
+            Điều khoản sử dụng
           </Text>{' '}
           and{' '}
           <Text style={st.linkText} onPress={() => { }}>
-            Privacy Policy
+            Chính sách bảo mật
           </Text>.
         </Text>
 
         <Modal visible={modalVisible} transparent animationType="fade">
           <View style={st.overlay}>
             <View style={st.modalContainer}>
-              <Text style={st.title}>Enjoy these special offers after signing in! Are you sure you want to leave now?</Text>
+              <Text style={st.title}>Tận hưởng những ưu đãi đặc biệt này sau khi đăng nhập! Bạn có chắc chắn muốn rời đi ngay bây giờ không?</Text>
 
               <View style={st.benefitsContainer}>
-                <BenefitsInfoBox icon={require('../../assets/icons/ic_freeShipping.png')} title="Free shipping" subtitle="On all orders" />
-                <BenefitsInfoBox icon={require('../../assets/icons/ic_freeReturns.png')} title="Free returns" subtitle="Up to 90 days" />
+                <BenefitsInfoBox icon={require('../../assets/icons/ic_freeReturns.png')} title="Trả lại miễn phí" subtitle="Lên đến 90 ngày" />
+                <BenefitsInfoBox icon={require('../../assets/icons/ic_freeShipping.png')} title="Miễn phí vận chuyển" subtitle="Trên tất cả các đơn hàng" />
               </View>
 
               <FilledButton title="Continue" customStyle={{ backgroundColor: 'black', width: '100%', marginVertical: 10 }} onPress={() => { setModalVisible(false); }} />
@@ -149,14 +149,14 @@ const LoginScreen = ({ navigation }) => {
             {currentSheet === 'sheet1' && (
               <>
                 <View style={st.modalHeader}>
-                  <Text style={st.troubleTitle}>Trouble signing in?</Text>
+                  <Text style={st.troubleTitle}>Gặp sự cố khi đăng nhập?</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
                     <Image source={require('../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
                 <View style={{ marginHorizontal: 8 }}>
-                  <Text style={st.troubleSubtitle}>If you registered an account with your email address, but forgot your password, you can reset your password.</Text>
+                  <Text style={st.troubleSubtitle}>Nếu bạn đã đăng ký tài khoản bằng địa chỉ email nhưng quên mật khẩu, bạn có thể đặt lại mật khẩu.</Text>
                 </View>
                 <OutlinedButton title="Reset your password" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onPress={() => setCurrentSheet('sheet2')} />
               </>
@@ -164,14 +164,13 @@ const LoginScreen = ({ navigation }) => {
             {currentSheet === 'sheet2' && (
               <>
                 <View style={st.modalHeader}>
-                  <Text style={st.troubleTitle}>Trouble signing in?</Text>
+                  <Text style={st.troubleTitle}>Gặp sự cố khi đăng nhập?</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
                     <Image source={require('../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
-                <Text style={st.troubleSubtitle}>Enter your email address below, and we’ll send you a 6-digit
-                  password reset code.</Text>
+                <Text style={st.troubleSubtitle}>Nhập địa chỉ email của bạn bên dưới và chúng tôi sẽ gửi cho bạn mã đặt lại mật khẩu gồm 6 chữ số.</Text>
                 <TextField placeholder="Enter your email" customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }} />
                 <FilledButton title="Submit" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} onPress={() => setCurrentSheet('sheet3')} />
               </>
@@ -182,14 +181,14 @@ const LoginScreen = ({ navigation }) => {
                   <TouchableOpacity onPress={() => setCurrentSheet('sheet2')}>
                     <Image source={require('../../assets/ic_back.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
-                  <Text style={st.troubleTitle}>Enter the password reset code</Text>
+                  <Text style={st.troubleTitle}>Nhập mã đặt lại mật khẩu</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
                     <Image source={require('../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
-                <Text style={[st.troubleSubtitle, { paddingHorizontal: 10 }]}>Please check your mailbox now! Enter the 6-digit password
-                  reset code sent to dominhhieuhn01@gmail.com. The code expires after 2 hours.</Text>
+                <Text style={[st.troubleSubtitle, { paddingHorizontal: 10 }]}>Vui lòng kiểm tra hộp thư của bạn ngay bây giờ! Nhập mã đặt lại mật khẩu gồm 6 chữ số
+                  được gửi đến dominhhieuhn01@gmail.com. Mã sẽ hết hạn sau 2 giờ.</Text>
 
                 <View style={{ flexDirection: 'row', justifyContent: 'center', padding: 10 }}>
                   {values.map((value, index) => (
@@ -203,18 +202,18 @@ const LoginScreen = ({ navigation }) => {
                   ))}
                 </View>
                 <View>
-                  <Text style={{ alignSelf: 'center' }}>60s Resend code</Text>
+                  <Text style={{ alignSelf: 'center' }}>60 giây Gửi lại mã</Text>
                   <FilledButton title="Submit" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} onPress={() => setCurrentSheet('sheet4')} />
                 </View>
                 <View style={{ marginTop: 60, alignSelf: 'flex-start', padding: 10 }} >
                   <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8 }}>
-                    Didn’t receive the email?</Text>
-                  <Text style={st.text}>1. Make sure your email address is correct.</Text>
-                  <Text style={st.text}>2. Please check your spam folder.</Text>
+                    Không nhận được email?</Text>
+                  <Text style={st.text}>1. Đảm bảo địa chỉ email của bạn là chính xác.</Text>
+                  <Text style={st.text}>2. Vui lòng kiểm tra thư mục thư rác.</Text>
                   <Text style={st.text}>
-                    3. If you still don’t see the code,{' '}
+                    3. Nếu bạn vẫn không thấy mã,{' '}
                     <TouchableOpacity onPress={() => setCurrentSheet('sheet6')}>
-                      <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#000' }}>try another way to verify your identity &gt;</Text>
+                      <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#000' }}>hãy thử một cách khác để xác minh danh tính của bạn &gt;</Text>
                     </TouchableOpacity>
                   </Text>
                 </View>
@@ -226,20 +225,20 @@ const LoginScreen = ({ navigation }) => {
                   <TouchableOpacity onPress={() => setCurrentSheet('sheet3')}>
                     <Image source={require('../../assets/ic_back.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
-                  <Text style={st.troubleTitle}>Create a new password</Text>
+                  <Text style={st.troubleTitle}>Tạo mật khẩu mới</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
                     <Image source={require('../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
                 <View style={{ padding: 10 }} >
-                  <Text style={st.troubleSubtitle}>Enter a new password you would like to associate with
-                    your account below.</Text>
+                  <Text style={st.troubleSubtitle}>Nhập mật khẩu mới mà bạn muốn liên kết với
+                    tài khoản của bạn bên dưới.</Text>
                   <TextField type={TextFieldType.PASSWORD} placeholder="Enter your password" customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }} onChangeText={setPassword} />
                   <PasswordStrengthBar password={password} customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onChangeText={setStrengLabel} />
-                  <Text style={{ fontWeight: 'bold', fontSize: 14, marginTop: 8, alignSelf: 'flex-start', marginVertical: 5 }}>Password quality: {strengLabel}</Text>
+                  <Text style={{ fontWeight: 'bold', fontSize: 14, marginTop: 8, alignSelf: 'flex-start', marginVertical: 5 }}>Chất lượng mật khẩu: {strengLabel}</Text>
                   <Text style={st.passwordQuality}>
-                    Don't use a password from another site, or something too obvious like your pet's name.
+                    Đừng sử dụng mật khẩu của một trang web khác hoặc thứ gì đó quá dễ đoán như tên thú cưng của bạn.
                   </Text>
                   <FilledButton title="Submit" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} onPress={() => setCurrentSheet('sheet5')} />
                 </View>
@@ -250,11 +249,10 @@ const LoginScreen = ({ navigation }) => {
                 <View style={st.modalDone}>
                   <Image source={require('../../assets/ic_done.png')} style={st.doneIcon} />
 
-                  <Text style={st.doneTitle}>Your password has been reset</Text>
+                  <Text style={st.doneTitle}>Mật khẩu của bạn đã được đặt lại</Text>
                   <Text style={st.doneText}>
-                    Your email <Text style={st.doneEmail}>dominhhieuhn01@gmail.com</Text> might not have been
-                    able to receive our New Fashion emails. You can always edit the email on your New Fashion
-                    account to another one.
+                    Your email <Text style={st.doneEmail}>dominhhieuhn01@gmail.com</Text> có thể không nhận được email Thời trang mới của chúng tôi. Bạn luôn có thể chỉnh sửa email trên tài khoản Thời trang mới của mình
+                    thành một tài khoản khác.
                   </Text>
                   <FilledButton title="Continue Shopping" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} />
                 </View>
@@ -267,19 +265,18 @@ const LoginScreen = ({ navigation }) => {
                   <TouchableOpacity onPress={() => setCurrentSheet('sheet3')}>
                     <Image source={require('../../assets/ic_back.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
-                  <Text style={st.troubleTitle}>Verify your identity</Text>
+                  <Text style={st.troubleTitle}>Xác minh danh tính của bạn</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
                     <Image source={require('../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
                 <View style={{ margin: 6 }}>
-                  <Text style={st.troubleSubtitle}>For your account security, we need to make sure it’s really
-                    you, you have another way to verify your identity.</Text>
+                  <Text style={st.troubleSubtitle}>Để bảo mật tài khoản của bạn, chúng tôi cần đảm bảo rằng bạn thực sự là người đó, bạn có cách khác để xác minh danh tính của mình.</Text>
                   <TouchableOpacity style={st.verifyContainer} onPress={() => setCurrentSheet('sheet7')}>
                     <View style={st.verifyText}>
-                      <Text style={st.verifyTitle}>Use SMS verification code to verify identity</Text>
-                      <Text style={st.verifySubtitle}>We will send an SMS verification code to +84 975****96</Text>
+                      <Text style={st.verifyTitle}>Sử dụng mã xác minh SMS để xác minh danh tính</Text>
+                      <Text style={st.verifySubtitle}>Chúng tôi sẽ gửi mã xác minh SMS tới +84 975****96</Text>
                     </View>
                     {/* Icon mũi tên bên phải */}
                     <Image source={require('../../assets/ic_arrowRight.png')} style={st.closeIcon} />
@@ -294,15 +291,15 @@ const LoginScreen = ({ navigation }) => {
                   <TouchableOpacity onPress={() => setCurrentSheet('sheet6')}>
                     <Image source={require('../../assets/ic_back.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
-                  <Text style={st.troubleTitle}>Enter the verification code</Text>
+                  <Text style={st.troubleTitle}>Nhập mã xác minh</Text>
                   <TouchableOpacity onPress={() => closeBottomSheet()}>
                     <Image source={require('../../assets/bt_exit.png')} style={st.closeIcon1} />
                   </TouchableOpacity>
                 </View>
                 <View style={st.separator} />
-                <Text style={[st.troubleSubtitle, { paddingHorizontal: 10 }]}>To continue, complete this verification step. We’ve sent a
-                  verification code to the phone number +84 0975 953 696.
-                  Please enter it below.</Text>
+                <Text style={[st.troubleSubtitle, { paddingHorizontal: 10 }]}>Để tiếp tục, hãy hoàn tất bước xác minh này. Chúng tôi đã gửi
+                  mã xác minh đến số điện thoại +84 0975 953 696.
+                  Vui lòng nhập mã bên dưới.</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'center', padding: 10 }}>
                   {values.map((value, index) => (
                     <TextInput
@@ -315,7 +312,7 @@ const LoginScreen = ({ navigation }) => {
                   ))}
                 </View>
                 <View>
-                  <Text style={{ alignSelf: 'center' }}>60s Resend code</Text>
+                  <Text style={{ alignSelf: 'center' }}>60 giây Gửi lại mã</Text>
                 </View>
               </>
             )}
