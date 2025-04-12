@@ -7,7 +7,7 @@ export const fetchCart = createAsyncThunk(
     async (_, thunkAPI) => {
         try {
             const response = await axios.get('/cart/getCart');            
-            return response.data.products;
+            return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
         }
@@ -18,8 +18,8 @@ export const addToCart = createAsyncThunk(
     'cart/addToCart',
     async (data, thunkAPI) => {
         try {
-            const response = await axios.post('/cart/addToCart', data);            
-            return response.cart.products;
+            const response = await axios.post('/cart/addToCart', data);
+            return response.cart;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
         }
@@ -31,7 +31,7 @@ export const updateCart = createAsyncThunk(
     async (data, thunkAPI) => {
         try {
             const response = await axios.put('/cart/updatecart/', data);            
-            return response.cart.products;
+            return response.cart;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
         }
@@ -43,7 +43,7 @@ export const deleteCart = createAsyncThunk(
     async (_, thunkAPI) => {
         try {
             const response = await axios.delete('/cart/removeFromCart/');            
-            return response.cart.products;
+            return response.cart;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
         }

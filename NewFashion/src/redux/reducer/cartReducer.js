@@ -23,6 +23,7 @@ const cartSlice = createSlice({
             // Add to cart
             .addCase(addToCart.fulfilled, (state, action) => {
                 state.carts = action.payload;
+                console.log(state.carts)
             })
             .addCase(addToCart.rejected, (state, action) => {
                 // console.log('Add to cart failed: ', action.payload);

@@ -49,7 +49,14 @@ const CheckoutScreen = ({ navigation }) => {
     const [isEnabled, setIsEnabled] = useState(false);
     const [payment, setOnPayment] = useState('direct');
     const socket = useSocket();
-    const [newCart, setNewCart] = useState(carts);
+    const [newCart, setNewCart] = useState({
+        finalTotal : carts.total,
+        maxDiscount : 0,
+        total : carts.total,
+    });
+    useEffect(() => {
+        console.log(carts)
+    }, []);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -89,10 +96,6 @@ const CheckoutScreen = ({ navigation }) => {
             setIsLoading(false);
         }
     }, [isLoadingCoupon, isLoadingCart, isLoadingAddress]);
-
-    useEffect(() => {
-        console.log(payment);
-    }, [payment]);
 
     function formatDate(isoString) {
         const date = new Date(isoString);
@@ -236,29 +239,6 @@ const CheckoutScreen = ({ navigation }) => {
         outputRange: [bottomSheetHeight, 0]
     });
 
-    const getFinalPriceOfSelectedItems = () => {
-        return newCart
-            .filter(item => item.isSelected)
-            .reduce((total, item) => {
-                const discountMultiplier = item.disCountSale > 0 ? (1 - item.disCountSale / 100) : 1;
-                const itemPrice = item.price * discountMultiplier * item.quantity;
-                return total + itemPrice;
-            }, 0);
-    }
-
-    const getOriginalPriceOfSelectedItems = () => {
-        return carts
-            .filter(item => item.isSelected)
-            .reduce((total, item) => {
-                const itemPrice = item.price * item.quantity;
-                return total + itemPrice;
-            }, 0);
-    }
-
-    const getDiscountPriceOfSelectedItems = () => {
-        return getOriginalPriceOfSelectedItems() - getFinalPriceOfSelectedItems();
-    }
-
     const getDefaultInformation = () => {
         const defaultInformation = personalInfo.information.filter(infor => infor.isDefault);
 
@@ -317,20 +297,23 @@ const CheckoutScreen = ({ navigation }) => {
     };
 
     const applyVoucherToCart = (voucher) => {
-        const updatedCart = carts.map(item => {
-          const discountAmount = (item.price * voucher.discount) / 100;
-          const appliedDiscount = Math.min(discountAmount, voucher.maxDiscountPrice);
-          const actualDiscountPercent = (appliedDiscount / item.price) * 100;
+        if (!voucher || !carts || !carts.total) return;
 
-          return {
-            ...item,
-            disCountSale: actualDiscountPercent, // Cập nhật phần trăm đã giảm
-          };
-        });
+        const discountPercent = voucher.discount || 0;
+        const maxDiscountPrice = voucher.maxDiscountPrice || 0;
 
-        // Cập nhật state
-        setNewCart(updatedCart);
+        const discount = (carts.total * discountPercent) / 100;
+        const maxDiscount = Math.min(discount, maxDiscountPrice);
+
+        const finalTotal = Math.max(0, carts.total - maxDiscount); // Không cho âm
+
+        setNewCart(prevCart => ({
+            ...prevCart,
+            finalTotal,
+            maxDiscount
+        }));
     };
+
 
     const handleSelectVoucher = (voucher) => {
         if (voucher) {
@@ -357,8 +340,8 @@ const CheckoutScreen = ({ navigation }) => {
 
             {/* body */}
             <ScrollView>
-                <BuyerDetail products={carts} onClickShowPopup={[toggleAdressSheet, toggleBottomSheet]} information={selectedAddress} />
-                <PaymentAnhCoupon onPayment={setOnPayment} products={newCart} personalInfo={personalInfo} onSwitch={setIsEnabled} onClickShowPopup={toggleCouponSheet} />
+                <BuyerDetail products={carts.products} onClickShowPopup={[toggleAdressSheet, toggleBottomSheet]} information={selectedAddress} />
+                <PaymentAnhCoupon onPayment={setOnPayment} newCart={newCart} personalInfo={personalInfo} onSwitch={setIsEnabled} onClickShowPopup={toggleCouponSheet} />
                 <SubInfor />
             </ScrollView>
 
@@ -368,15 +351,13 @@ const CheckoutScreen = ({ navigation }) => {
                 <View style={styles.priceContainer}>
                     <View style={styles.realPriceContainer}>
                         <Text style={styles.totalPrice}>{SupportFunctions.convertPrice((
-                            (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
-                                ? 0
-                                : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
+                            (isEnabled ? newCart.finalTotal - personalInfo.point : newCart.finalTotal)
                         ))}</Text>
                         <TouchableOpacity onPress={toggleBottomSheet}>
                             <Image source={require('../../assets/icons/ic_arrowUp.png')} resizeMode='cover' style={styles.arrowButton} />
                         </TouchableOpacity>
                     </View>
-                    <Text style={styles.savedAmount}>Saved {SupportFunctions.convertPrice(getDiscountPriceOfSelectedItems() + (isEnabled ? personalInfo?.point : 0)) }</Text>
+                    <Text style={styles.savedAmount}>Saved {SupportFunctions.convertPrice(newCart.maxDiscount + (isEnabled ? personalInfo.point : 0))}</Text>
                 </View>
                 {/* Nút Submit Order */}
                 <TouchableOpacity style={styles.submitButton} onPress={() => createAnOrder()}>
@@ -407,7 +388,7 @@ const CheckoutScreen = ({ navigation }) => {
                                 </Text>
 
                                 <FlatList
-                                    data={carts.filter(item => item.isSelected)}
+                                    data={carts.products.filter(item => item.isSelected)}
                                     keyExtractor={item => item._id}
                                     horizontal
                                     style={{ marginTop: 5 }}
@@ -434,7 +415,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#737373' }}>
                                         {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice(getOriginalPriceOfSelectedItems())}
+                                        {SupportFunctions.convertPrice(newCart.total)}
                                     </Text>
                                 </View>
 
@@ -445,7 +426,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#FA7806' }}>
                                         {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice(getDiscountPriceOfSelectedItems())}
+                                        {SupportFunctions.convertPrice(newCart.maxDiscount)}
                                     </Text>
                                 </View>
 
@@ -467,11 +448,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#FA7806' }}>
                                         {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice((
-                                            (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
-                                                ? 0
-                                                : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
-                                        ))}
+                                        {SupportFunctions.convertPrice(Math.max(0,newCart.finalTotal - personalInfo.point))}
                                     </Text>
                                 </View>
 
@@ -484,11 +461,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                                         {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice((
-                                            (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
-                                                ? 0
-                                                : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
-                                        ))}
+                                        {SupportFunctions.convertPrice(newCart.finalTotal)}
                                     </Text>
                                 </View>
 
