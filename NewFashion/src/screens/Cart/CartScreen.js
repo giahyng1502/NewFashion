@@ -1,5 +1,5 @@
-import { ActivityIndicator, Alert, Animated, FlatList, Image, Pressable, ScrollView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import { ActivityIndicator, Alert, Animated, FlatList, Image, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import BaseHeader from '../../components/BaseHeader'
 import FilledButton from '../../components/FilledButton'
@@ -7,17 +7,16 @@ import ScreenSize from '../../contants/ScreenSize'
 import OutlinedButton from '../../components/OutlinedButton'
 import ProductCard from '../../components/ProductCard';
 import AppManager from '../../utils/AppManager';
-import {deleteCart, fetchCart, updateCart} from '../../redux/actions/cartActions';
+import {deleteCart, updateCart} from '../../redux/actions/cartActions';
 import SupportFunctions from '../../utils/SupportFunctions';
 import { fetchProducts } from '../../redux/actions/productActions';
 
 
 const CartScreen = ({ navigation }) => {
-  const [title, setTitle] = React.useState('Cart')
+  const [title, setTitle] = React.useState('Giỏ hàng')
   const [showDeleteButton, setShowDeleteButton] = React.useState(false)
-  const categories = useSelector(state => state.category.categories);
   const [isSelectedAll, setIsSelectedAll] = React.useState(false)
-  const [checkOutTitleButton, setCheckOutTitleButton] = React.useState('Checkout')
+  const [checkOutTitleButton, setCheckOutTitleButton] = React.useState('Thanh toán')
   const [selectedCartItem, setSelectedCartItem] = React.useState(null)
   const [selectedColor, setSelectedColor] = React.useState(null);
   const [selectedSize, setSelectedSize] = React.useState(null);
@@ -43,11 +42,13 @@ const CartScreen = ({ navigation }) => {
   useEffect(() => {
     if (personalInfo) {
       setCartItems(carts.products);
-      setTitle(carts.products.filter(item => item.isSelected).length > 0 ? `Cart (${carts.products.filter(item => item.isSelected).length})` : 'Cart');
-      setCheckOutTitleButton(carts.products.filter(item => item.isSelected).length > 0 ? `Checkout (${carts.products.filter(item => item.isSelected).length})` : 'Checkout');
+      setTitle(carts.products.filter(item => item.isSelected).length > 0 ? `Giỏ hàng (${carts.products.filter(item => item.isSelected).length})` : 'Giỏ hàng');
+      setCheckOutTitleButton(carts.products.filter(item => item.isSelected).length > 0 ? `Thanh toán (${carts.products.filter(item => item.isSelected).length})` : 'Thanh toán');
       setShowDeleteButton(carts.products.filter(item => item.isSelected).length > 0);
       setIsSelectedAll(carts.products.filter(item => item.isSelected).length === carts.products.length);
       setIsLoading(false);
+    }else{
+      setIsLoading(false)
     }
   }, []);
 
@@ -183,8 +184,8 @@ const CartScreen = ({ navigation }) => {
         .then((result) => {
           console.log(result);
           const selectedCartItems = updatedCart.filter(item => item.isSelected);
-          setTitle(selectedCartItems.length > 0 ? `Cart (${selectedCartItems.length})` : 'Cart');
-          setCheckOutTitleButton(selectedCartItems.length > 0 ? `Checkout (${selectedCartItems.length})` : 'Checkout');
+          setTitle(selectedCartItems.length > 0 ? `Cart (${selectedCartItems.length})` : 'Giỏ hàng');
+          setCheckOutTitleButton(selectedCartItems.length > 0 ? `Thanh toán (${selectedCartItems.length})` : 'Thanh toán');
           setShowDeleteButton(selectedCartItems.length > 0);
           setIsSelectedAll(selectedCartItems.length === updatedCart.length);
         })
@@ -215,8 +216,8 @@ const CartScreen = ({ navigation }) => {
             dispatch(deleteCart())
               .then((result) => {
                 console.log(result);
-                setTitle('Cart');
-                setCheckOutTitleButton('Checkout');
+                setTitle('Giỏ hàng');
+                setCheckOutTitleButton('Thanh toán');
                 setShowDeleteButton(false);
                 setIsSelectedAll(false);
               })
@@ -357,8 +358,8 @@ const CartScreen = ({ navigation }) => {
     setCartItems(updatedCart);
 
     // Cập nhật các tiêu đề và nút hành động dựa trên trạng thái chọn
-    setTitle(!isSelectedAll ? `Cart (${updatedCart.length})` : 'Cart');
-    setCheckOutTitleButton(!isSelectedAll ? `Checkout (${updatedCart.length})` : 'Checkout');
+    setTitle(!isSelectedAll ? `Giỏ hàng (${updatedCart.length})` : 'Giỏ hàng');
+    setCheckOutTitleButton(!isSelectedAll ? `Thanh toán (${updatedCart.length})` : 'Thanh toán');
     setShowDeleteButton(!isSelectedAll);
     setIsSelectedAll(!isSelectedAll); // Đảo ngược trạng thái chọn tất cả
     setIsShowPriceBottomSheet(false); // Ẩn BottomSheet nếu cần
@@ -492,7 +493,7 @@ const CartScreen = ({ navigation }) => {
         ListHeaderComponent={() => (
           <>
             {/* empty view */}
-            {(!AppManager.shared.isUserLoggedIn() || carts.length === 0) && (
+            {(!AppManager.shared.isUserLoggedIn() || carts.products.length === 0) && (
               <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, paddingVertical: 20 }}>
                 <Image
                   source={require("../../assets/icons/ic_emptyCart.png")}
@@ -599,8 +600,8 @@ const CartScreen = ({ navigation }) => {
             {/* button sign in/register */}
             {!AppManager.shared.isUserLoggedIn() && (
               <>
-                <FilledButton title={'Sign in / Register'} onPress={() => navigation.navigate('Login')} customStyle={{ backgroundColor: '#FA7806', width: ScreenSize.width - 100, alignSelf: 'center' }} />
-                <OutlinedButton title={'Start shopping'} onPress={() => navigation.goBack()} customStyle={{ width: ScreenSize.width - 100, alignSelf: 'center', marginTop: 10 }} />
+                <FilledButton title={'Đăng nhập / Đăng ký'} onPress={() => navigation.navigate('Login')} customStyle={{ backgroundColor: '#FA7806', width: ScreenSize.width - 100, alignSelf: 'center' }} />
+                <OutlinedButton title={'Bắt đầu mua sắm'} onPress={() => navigation.goBack()} customStyle={{ width: ScreenSize.width - 100, alignSelf: 'center', marginTop: 10 }} />
               </>
             )}
 
@@ -630,7 +631,7 @@ const CartScreen = ({ navigation }) => {
       />
 
       {/* check out container */}
-      {(cartItems.length > 0) && (
+      {(AppManager.shared.isUserLoggedIn() || cartItems?.length > 0) && (
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 10, alignItems: 'center' }}>
           {/* select all button */}
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -643,7 +644,7 @@ const CartScreen = ({ navigation }) => {
             </TouchableOpacity>
 
             <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 5 }}>
-              All
+              Tất cả
             </Text>
           </View>
 
@@ -685,7 +686,7 @@ const CartScreen = ({ navigation }) => {
           {/* content */}
           <Animated.View style={{ transform: [{ translateY: sheetTranslateY }], backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomWidth: 1, borderBottomColor: '#BBB' }}>
             <BaseHeader
-              title="Price Detail"
+              title="Chi tiết đơn hàng"
               showRightButton={true}
               rightIcon={require('../../assets/bt_exit.png')}
               onRightButtonPress={closePriceBottomSheet}
@@ -721,7 +722,7 @@ const CartScreen = ({ navigation }) => {
 
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
                 <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-                  Item (s) total:
+                  Giá gốc:
                 </Text>
 
                 <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#737373' }}>
@@ -732,7 +733,7 @@ const CartScreen = ({ navigation }) => {
 
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
                 <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-                  Item (s) discount:
+                  Chiếu khấu:
                 </Text>
 
                 <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#FA7806' }}>
@@ -745,7 +746,7 @@ const CartScreen = ({ navigation }) => {
 
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
                 <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-                  Total:
+                  Tổng đơn hàng:
                 </Text>
 
                 <Text style={{ fontSize: 14, fontWeight: 'bold' }}>

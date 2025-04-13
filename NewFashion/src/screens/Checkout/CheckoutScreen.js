@@ -9,7 +9,6 @@ import {
     Animated,
     FlatList,
     ActivityIndicator,
-    TextInput,
     Linking
 } from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
@@ -23,7 +22,6 @@ import { deleteInformation, updateDefaultInformation } from '../../redux/actions
 import { fetchCoupon } from '../../redux/actions/voucherAction'
 import {cancelOrder, createOrder} from '../../redux/actions/orderActions'
 import { fetchCart } from '../../redux/actions/cartActions'
-import axios from "../../service/axios";
 import {useSocket} from "../../context/socketContext";
 import generatePaymentCode from "../../until/genaratePaymentCode";
 import {createPayment} from "../../redux/actions/paymentAction";
@@ -280,15 +278,15 @@ const CheckoutScreen = ({ navigation }) => {
 
     const handleDeleteItem = (id) => {
         Alert.alert(
-            "Confirm Delete",
-            "Are you sure you want to delete this address?",
+            "Xác nhận xóa",
+            "Bạn muốn xóa địa chỉ này?",
             [
                 {
-                    text: "Cancel",
+                    text: "Hủy",
                     style: "cancel",
                 },
                 {
-                    text: "Delete",
+                    text: "Xóa",
                     style: "destructive",
                     onPress: () => {
                         const updateAddress = addresses.filter(item => item._id != id);
@@ -358,7 +356,12 @@ const CheckoutScreen = ({ navigation }) => {
     const handleSelectedCoupon = (item) => {
         if (selectedCoupon === item) {
             setSelectedCoupon(null);
-            handleSelectVoucher(null); // Bỏ chọn
+            handleSelectVoucher(null);
+            setNewCart({
+                finalTotal : carts.total,
+                maxDiscount : 0,
+                total : carts.total,
+            }) // Bỏ chọn
           } else {
             setSelectedCoupon(item);
             handleSelectVoucher(item); // Dùng item trực tiếp, không dùng selectedCoupon
@@ -405,7 +408,7 @@ const CheckoutScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             {/* header */}
-            <BaseHeader title="Checkout" showLeftButton={true} onLeftButtonPress={() => { navigation.goBack() }} />
+            <BaseHeader title="Thông tin thanh toán" showLeftButton={true} onLeftButtonPress={() => { navigation.goBack() }} />
 
             {/* body */}
             <ScrollView>
@@ -442,11 +445,11 @@ const CheckoutScreen = ({ navigation }) => {
                                 <Image source={require('../../assets/icons/ic_arrowUp.png')} resizeMode='cover' style={styles.arrowButton} />
                             </TouchableOpacity>
                         </View>
-                        <Text style={styles.savedAmount}>Saved {SupportFunctions.convertPrice(newCart.maxDiscount + (isEnabled ? personalInfo.point : 0))}</Text>
+                        <Text style={styles.savedAmount}>Tiết kiệm {SupportFunctions.convertPrice(newCart.maxDiscount + (isEnabled ? personalInfo.point : 0))}</Text>
                     </View>
                     {/* Nút Submit Order */}
                     <TouchableOpacity style={[styles.submitButton,{backgroundColor : '#ff6600',}]} onPress={() => createAnOrder()}>
-                        <Text style={styles.buttonText}>Submit order</Text>
+                        <Text style={styles.buttonText}>Thanh toán</Text>
                     </TouchableOpacity>
 
                     {isShowPriceBottomSheet && (
@@ -459,7 +462,7 @@ const CheckoutScreen = ({ navigation }) => {
                             {/* content */}
                             <Animated.View style={{ transform: [{ translateY: sheetTranslateY }], backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomWidth: 1, borderBottomColor: '#BBB' }}>
                                 <BaseHeader
-                                    title="Price Detail"
+                                    title="Chi tiết đơn hàng"
                                     showRightButton={true}
                                     rightIcon={require('../../assets/bt_exit.png')}
                                     onRightButtonPress={closePriceBottomSheet}
@@ -469,7 +472,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                 <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
                                     <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-                                        Cart
+                                        Giỏ hàng
                                     </Text>
 
                                     <FlatList
@@ -495,7 +498,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
                                         <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-                                            Item (s) total:
+                                            Giá gốc:
                                         </Text>
 
                                         <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#737373' }}>
@@ -506,7 +509,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
                                         <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-                                            Item (s) discount:
+                                            Chiết khấu:
                                         </Text>
 
                                         <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#FA7806' }}>
@@ -517,7 +520,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
                                         <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-                                            Points:
+                                            Điểm:
                                         </Text>
 
                                         <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#FA7806' }}>
@@ -528,7 +531,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
                                         <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-                                            Subtotal:
+                                            Tổng đơn hàng:
                                         </Text>
 
                                         <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#FA7806' }}>
@@ -541,7 +544,7 @@ const CheckoutScreen = ({ navigation }) => {
 
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
                                         <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-                                            Total:
+                                            Thanh toán:
                                         </Text>
 
                                         <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
@@ -569,7 +572,7 @@ const CheckoutScreen = ({ navigation }) => {
                     {/* content */}
                     <Animated.View style={{ transform: [{ translateY: sheetTranslateY }], backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomWidth: 1, borderBottomColor: '#BBB' }}>
                         <BaseHeader
-                            title="Addresses"
+                            title="Danh sách địa chỉ"
                             showRightButton={true}
                             rightIcon={require('../../assets/bt_exit.png')}
                             onRightButtonPress={closeAdressSheet}
@@ -604,7 +607,7 @@ const CheckoutScreen = ({ navigation }) => {
                                                         style={{ backgroundColor: "#ff7f00", paddingVertical: 8, paddingHorizontal: 18, alignItems: "center", borderRadius: 30 }}
                                                     >
                                                         <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 12 }}>
-                                                            Use
+                                                            Sử dụng
                                                         </Text>
                                                     </TouchableOpacity>
                                                 )}
@@ -624,7 +627,7 @@ const CheckoutScreen = ({ navigation }) => {
                                                             }}
                                                         />
                                                     </View>
-                                                    <Text style={{ marginLeft: 8, color: "#737373", fontWeight: 'bold' }}>Default</Text>
+                                                    <Text style={{ marginLeft: 8, color: "#737373", fontWeight: 'bold' }}>Địa chỉ mặc định</Text>
                                                 </TouchableOpacity>
                                             ) : (
                                                 <TouchableOpacity
@@ -646,7 +649,7 @@ const CheckoutScreen = ({ navigation }) => {
                                                             justifyContent: "center",
                                                         }}
                                                     />
-                                                    <Text style={{ marginLeft: 8, color: "#737373", fontWeight: 'bold' }}>Set as default</Text>
+                                                    <Text style={{ marginLeft: 8, color: "#737373", fontWeight: 'bold' }}>Đặt làm mặc định</Text>
                                                 </TouchableOpacity>
                                             )}
 
@@ -661,11 +664,11 @@ const CheckoutScreen = ({ navigation }) => {
                                                     <View></View>
                                                 ) : (
                                                     <TouchableOpacity onPress={() => handleDeleteItem(item._id)}>
-                                                        <Text style={{ marginRight: 5, color: "#737373", fontWeight: 'bold' }}>Delete</Text>
+                                                        <Text style={{ marginRight: 5, color: "#737373", fontWeight: 'bold' }}>Xóa</Text>
                                                     </TouchableOpacity>
                                                 )}
                                                 <TouchableOpacity onPress={() => navigation.navigate('AddAddress', { isFromCheckout: true, info: item })}>
-                                                    <Text style={{ marginLeft: 5, color: "#737373", fontWeight: 'bold' }}>Edit</Text>
+                                                    <Text style={{ marginLeft: 5, color: "#737373", fontWeight: 'bold' }}>Sửa</Text>
                                                 </TouchableOpacity>
                                             </View>
                                         </View>
@@ -676,7 +679,7 @@ const CheckoutScreen = ({ navigation }) => {
                             <View style={{ width: '100%', backgroundColor: '#fff', padding: 15, borderTopColor: '#BBBBBB', borderTopWidth: 0.5 }}>
                                 <TouchableOpacity style={{ backgroundColor: "#ff7f00", padding: 12, borderRadius: 40, alignItems: "center" }} onPress={() => navigation.navigate('AddAddress', { isFromCheckout: true })}>
                                     <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 18 }}>
-                                        Add a new address
+                                        Thêm địa chỉ mới
                                     </Text>
                                 </TouchableOpacity>
                             </View>
@@ -696,30 +699,25 @@ const CheckoutScreen = ({ navigation }) => {
                     {/* content */}
                     <Animated.View style={{ transform: [{ translateY: sheetTranslateY }], backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomWidth: 1, borderBottomColor: '#BBB' }}>
                         <BaseHeader
-                            title="Apply coupon"
+                            title="Ưu đãi và giảm giá"
                             showRightButton={true}
                             rightIcon={require('../../assets/bt_exit.png')}
-                            onRightButtonPress={()=>{
-
-                                    closeCouponSheet()
-
-                                }
-                            }
+                            onRightButtonPress={()=>{closeCouponSheet()}}
                         />
 
                         <View style={{ backgroundColor: "#FFF", maxHeight: 500, borderTopColor: '#BBBBBB', borderTopWidth: 0.5 }}>
 
                             {/* Ghi chú */}
                             <Text style={{ fontSize: 14, marginVertical: 10, marginHorizontal: 15, color: '#000', fontWeight: 'bold' }}>
-                                Limit 1 coupon per purchase. Coupon cannot be applied to shipping fees.
+                                Giới hạn 1 phiếu giảm giá cho mỗi lần mua hàng. Phiếu giảm giá không thể áp dụng cho phí vận chuyển.
                             </Text>
 
                             <View style={{ height: 400 }}>
                                 {coupons.length === 0 ? (
                                     <View style={{ flexDirection: 'column', alignItems: 'center', padding: 10, justifyContent: 'center', marginBottom: 20, height: "100%" }}>
                                         <Image source={require("../../assets/icons/ic_nonvoucher.png")} style={{ width: 120, height: 120 }} />
-                                        <Text style={{ fontWeight: "800", fontSize: 18, color: '#000' }}>It's empty</Text>
-                                        <Text style={{ fontSize: 14, marginTop: 5, color: '#737373', fontWeight: 'bold' }}>There is no coupons here</Text>
+                                        <Text style={{ fontWeight: "800", fontSize: 18, color: '#000' }}>Danh sách trống</Text>
+                                        <Text style={{ fontSize: 14, marginTop: 5, color: '#737373', fontWeight: 'bold' }}>Không có phiếu giảm giá nào</Text>
                                     </View>
                                 ) : (
                                     <FlatList
@@ -729,7 +727,7 @@ const CheckoutScreen = ({ navigation }) => {
                                         renderItem={({ item }) => (
                                             <View style={{ borderTopWidth: 3, marginVertical: 10, marginHorizontal: 12, borderTopColor: '#FA7806', borderRadius: 2, backgroundColor: "#F0FFEB", height: 150, gap: 5 }}>
                                                 <View style={{ backgroundColor: '#FA7806', width: 30, borderBottomLeftRadius: 3, borderBottomRightRadius: 3 }}>
-                                                    <Text style={{ fontWeight: "bold", color: "#fff", textAlign: "center", fontSize: 10 }}>NEW</Text>
+                                                    <Text style={{ fontWeight: "bold", color: "#fff", textAlign: "center", fontSize: 10 }}>Mới</Text>
                                                 </View>
                                                 <View style={{ paddingHorizontal: 15 }}>
                                                     <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
@@ -744,20 +742,20 @@ const CheckoutScreen = ({ navigation }) => {
                                                             onPress={() => handleSelectedCoupon(item)}
                                                             style={{
                                                                 backgroundColor: selectedCoupon === item ? '#aaa' : '#FA7806',
-                                                                height: 25,
-                                                                width: 54,
-                                                                borderRadius: 15,
+                                                                padding: 7,
+                                                                height:35,
+                                                                borderRadius: 20,
                                                                 justifyContent: 'center',
                                                             }}
                                                         >
                                                             <Text style={{ color: "#fff", fontWeight: "bold", textAlign: "center" }}>
-                                                                {selectedCoupon === item ? 'Cancel' : 'Use'}
+                                                                {selectedCoupon === item ? 'Hủy' : 'Sử dụng'}
                                                             </Text>
                                                         </TouchableOpacity>
                                                     </View>
                                                     <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
-                                                        <Text style={{ color: "#737373", fontWeight: "bold", fontSize: 12 }}>For all items</Text>
-                                                        <Text style={{ fontWeight: "bold" }}><Text style={{ color: "#737373", fontSize: 12 }}>Code: </Text>{item._id}</Text>
+                                                        <Text style={{ color: "#737373", fontWeight: "bold", fontSize: 12 }}>Cho tất cả sản phẩm</Text>
+                                                        <Text style={{ fontWeight: "bold" }}><Text style={{ color: "#737373", fontSize: 12 }}>Mã: </Text>{item._id}</Text>
                                                     </View>
                                                 </View>
                                             </View>

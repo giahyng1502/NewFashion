@@ -64,10 +64,10 @@ const BuyerDetail = ({ products, onClickShowPopup, information }) => {
                 {/* Chân */}
                 <View style={[styles.nameAndPhone, { marginBottom: 0 }]}>
                     <Text style={[styles.addressText, { fontSize: 16, color: '#078809' }]}>
-                        Standard shipping: FREE,
+                        Miễn phí vận chuyển,
                     </Text>
                     <Text style={[styles.addressText, { marginHorizontal: 5 }]}>
-                        delivery: 4-9 business days
+                        nhận hàng sau 2-4 ngày
                     </Text>
                 </View>
             </View>

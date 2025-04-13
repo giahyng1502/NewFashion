@@ -8,8 +8,6 @@ if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental
 const DetailProduct = ({ item }) => {
     const [expanded, setExpanded] = useState(false);
 
-    const [saved, setSaved] = useState(false)
-
     const toggleExpand = () => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setExpanded(!expanded);
@@ -105,7 +103,7 @@ const DetailProduct = ({ item }) => {
             )}
 
             <TouchableOpacity onPress={toggleExpand} style={st.button}>
-                <Text style={st.buttontext}>{expanded ? "See less ▲" : "See all ▼"}</Text>
+                <Text style={st.buttontext}>{expanded ? "Thu gọn ▲" : "Xem tất cả ▼"}</Text>
             </TouchableOpacity>
         </View>
     )

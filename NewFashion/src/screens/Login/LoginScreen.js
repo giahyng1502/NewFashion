@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Pressable } from 'react-native';
+import { useState, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Linking } from 'react-native';
 import BenefitsInfoBox from '../../components/BenefitsInfoBox';
 import OutlinedButton from '../../components/OutlinedButton';
 import ScreenSize from '../../contants/ScreenSize';
@@ -13,7 +13,6 @@ import PasswordStrengthBar from '../../components/PasswordStrengthBar';
 import { useDispatch } from 'react-redux';
 import AppManager from '../../utils/AppManager';
 import { onGoogleButtonPress } from './signInWithGoogle';
-import { setUser } from '../../redux/reducer/userReducer';
 import { loginWithGoogle } from "../../redux/actions/userActions";
 
 const LoginScreen = ({ navigation }) => {
@@ -110,11 +109,11 @@ const LoginScreen = ({ navigation }) => {
 
         <Text style={st.termsText}>
           Bằng cách tiếp tục, bạn đồng ý với chúng tôi{' '}
-          <Text style={st.linkText} onPress={() => { }}>
+          <Text style={st.linkText} onPress={() => {Linking.openURL('https://www.freeprivacypolicy.com/live/a1f3fc15-3468-4c50-897d-7d126f8de39e')}}>
             Điều khoản sử dụng
           </Text>{' '}
-          and{' '}
-          <Text style={st.linkText} onPress={() => { }}>
+          và{' '}
+          <Text style={st.linkText} onPress={() => {Linking.openURL('https://www.freeprivacypolicy.com/live/9e7e7430-63f1-4258-beae-999dd85300cc')}}>
             Chính sách bảo mật
           </Text>.
         </Text>
@@ -126,11 +125,12 @@ const LoginScreen = ({ navigation }) => {
 
               <View style={st.benefitsContainer}>
                 <BenefitsInfoBox icon={require('../../assets/icons/ic_freeReturns.png')} title="Trả lại miễn phí" subtitle="Lên đến 90 ngày" />
+                <View style={{width:10}}/>
                 <BenefitsInfoBox icon={require('../../assets/icons/ic_freeShipping.png')} title="Miễn phí vận chuyển" subtitle="Trên tất cả các đơn hàng" />
               </View>
 
-              <FilledButton title="Continue" customStyle={{ backgroundColor: 'black', width: '100%', marginVertical: 10 }} onPress={() => { setModalVisible(false); }} />
-              <OutlinedButton title="Leave" customStyle={{ width: '100%' }} onPress={() => { navigation.goBack(); }} />
+              <FilledButton title="Đăng nhập" customStyle={{ backgroundColor: 'black', width: '100%', marginVertical: 10 }} onPress={() => { setModalVisible(false); }} />
+              <OutlinedButton title="Tiếp tục trạng thái chưa đăng nhập" customStyle={{ width: '100%' }} onPress={() => { navigation.goBack(); }} />
             </View>
           </View>
         </Modal>
@@ -158,7 +158,7 @@ const LoginScreen = ({ navigation }) => {
                 <View style={{ marginHorizontal: 8 }}>
                   <Text style={st.troubleSubtitle}>Nếu bạn đã đăng ký tài khoản bằng địa chỉ email nhưng quên mật khẩu, bạn có thể đặt lại mật khẩu.</Text>
                 </View>
-                <OutlinedButton title="Reset your password" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onPress={() => setCurrentSheet('sheet2')} />
+                <OutlinedButton title="Đặt lại mật khẩu" customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onPress={() => setCurrentSheet('sheet2')} />
               </>
             )}
             {currentSheet === 'sheet2' && (

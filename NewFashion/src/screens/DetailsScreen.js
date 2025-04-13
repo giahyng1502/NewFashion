@@ -1,13 +1,5 @@
-import { Alert, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import ImageDetailProduct from '../components/ImageDetailProduct'
-import BannerAdsProduct from '../components/BannerAdsProduct'
-import InfoProduct from '../components/InfoProduct'
-import ProductSelection from '../components/ProductSelection'
-import ShipDetail from './ShipDetail'
-import ReviewDetail, { Ratingbar } from '../components/ReviewDetail'
-import ReviewFormUser, { ReviewItem } from '../components/ReviewFormUser'
-import AboutShop from '../components/AboutShop'
 import DetailProduct from '../components/DetailProduct'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchProducts, fetchProductById } from '../redux/actions/productActions'
@@ -44,11 +36,13 @@ const DetailsScreen = ({ navigation, route }) => {
 
     function formatDate(isoString) {
         const date = new Date(isoString);
-
-        return date.toLocaleDateString('en-US', {
+    
+        // Chuyển về giờ Việt Nam (GMT+7)
+        return date.toLocaleDateString('vi-VN', {
+            timeZone: 'Asia/Ho_Chi_Minh', // Múi giờ Việt Nam
+            year: 'numeric',
             month: 'short',
-            day: '2-digit',
-            year: 'numeric'
+            day: '2-digit'
         });
     }
 
@@ -89,7 +83,7 @@ const DetailsScreen = ({ navigation, route }) => {
         }
 
         if (!selectedColor || !selectedSize) {
-            alert('Please select color and size');
+            Alert.alert('Thông báo','Vui lòng chọn màu sắc và kích cỡ');
             return;
         }
 
@@ -102,10 +96,10 @@ const DetailsScreen = ({ navigation, route }) => {
 
         dispatch(addToCart(cartItem))
             .then(() => {
-                alert('Add to cart successfully');
+                Alert.alert('Thông báo','Thêm vào giỏ hàng thành công');
             })
             .catch((error) => {
-                alert('Add to cart failed');
+                Alert.alert('Thông báo','Thêm vào giỏ hàng thất bại');
             })
     }
 
@@ -129,8 +123,8 @@ const DetailsScreen = ({ navigation, route }) => {
 
         // Hiển thị thông báo
         Alert.alert(
-            "Flash Sale Ended",
-            "The flash sale has ended.",
+            "Thông báo",
+            "Chương trình giảm giá đã kết thúc",
             [
                 {
                     text: "OK",
@@ -159,15 +153,11 @@ const DetailsScreen = ({ navigation, route }) => {
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <TouchableOpacity onPress={handleSelectCartButton} style={{ marginRight: 10 }}>
                         <Image source={require('../assets/buttons/bt_cart.png')} style={{ width: 35, height: 35 }} />
-                        {(AppManager.shared.isUserLoggedIn() && carts.length > 0) && (
+                        {(AppManager.shared.isUserLoggedIn() && carts.products.length > 0) && (
                             <View style={{ position: 'absolute', top: 2, right: 2, backgroundColor: 'red', width: 16, height: 16, borderRadius: 8, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#fff' }}>
-                                <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>{carts.length}</Text>
+                                <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>{carts.products.length}</Text>
                             </View>
                         )}
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={{ width: 35, height: 35 }}>
-                        <Image source={require('../assets/icons/ic_share.png')} style={{ width: 35, height: 35 }} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -216,7 +206,7 @@ const DetailsScreen = ({ navigation, route }) => {
                         {expire &&
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: "#ff5722", paddingHorizontal: 10, paddingVertical: 5 }}>
                                 <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
-                                    Flash sale
+                                    Chương trình giảm giá
                                 </Text>
 
                                 <CountdownTimer expire={expire} onExpire={onExpire} />
@@ -227,7 +217,7 @@ const DetailsScreen = ({ navigation, route }) => {
                         <Text style={{ marginHorizontal: 20, marginTop: 10, fontSize: 16, fontWeight: 'medium' }} numberOfLines={2}>{item.name}</Text>
 
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20, marginTop: 10 }}>
-                            <Text style={{ fontSize: 14, fontWeight: 'medium' }}>{item.sold} sold</Text>
+                            <Text style={{ fontSize: 14, fontWeight: 'medium' }}>{item.sold} đã bán</Text>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={{ fontSize: 14, fontWeight: 'medium', marginRight: 5 }}>{item.rating}</Text>
                                 <StarRating rating={item.rating} />
@@ -241,7 +231,7 @@ const DetailsScreen = ({ navigation, route }) => {
                             {discount &&
                                 <>
                                     <View style={{ paddingHorizontal: 10, paddingVertical: 3, marginLeft: 8, backgroundColor: '#FE7018', borderRadius: 3 }}>
-                                        <Text style={{ fontSize: 12, fontWeight: 'medium', color: 'white' }}>{discount}% OFF</Text>
+                                        <Text style={{ fontSize: 12, fontWeight: 'medium', color: 'white' }}>{discount}% giảm giá</Text>
                                     </View>
 
                                     <Text style={{ fontSize: 14, fontWeight: 'medium', color: '#737373', marginLeft: 8, textDecorationLine: 'line-through' }}>{getOriginalPrice(item)}</Text>
@@ -252,7 +242,7 @@ const DetailsScreen = ({ navigation, route }) => {
 
                         {/* color */}
                         <View style={{ marginHorizontal: 20, marginTop: 10 }}>
-                            <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#000' }}>Color: {selectedColor?.nameColor}</Text>
+                            <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#000' }}>Màu sắc: {selectedColor?.nameColor}</Text>
                             <View style={{ marginTop: 10 }}>
                                 <FlatList
                                     data={item.color}
@@ -278,11 +268,7 @@ const DetailsScreen = ({ navigation, route }) => {
                         {/* size */}
                         <View style={{ marginHorizontal: 20, marginTop: 10 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#000', flexShrink: 1 }}>Size: </Text>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', padding: 5, gap: 5, borderRadius: 5, backgroundColor: '#F0F0F0' }}>
-                                    <Image source={require('../assets/icons/ic_ruler.png')} style={{ width: 16, height: 16 }} />
-                                    <Text style={{ fontSize: 10, fontWeight: 'semibold' }}>Size guide</Text>
-                                </View>
+                                <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#000', flexShrink: 1 }}>Kích thước: </Text>
                             </View>
                             <View style={{ marginTop: 10 }}>
                                 <FlatList
@@ -303,7 +289,7 @@ const DetailsScreen = ({ navigation, route }) => {
 
                         {/* Quantity */}
                         <View style={{ marginHorizontal: 20, marginTop: 20, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                            <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#000' }}>Qty: </Text>
+                            <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#000' }}>Số lượng: </Text>
                             <View style={{ flexDirection: 'row', alignItems: 'center', borderRadius: 5, borderWidth: 1, borderColor: '#73733760' }}>
                                 <TouchableOpacity
                                     style={{ backgroundColor: '#F0F0F0', width: 30, height: 30, opacity: quantity === 1 ? 0.5 : 1, justifyContent: 'center' }}
@@ -345,23 +331,23 @@ const DetailsScreen = ({ navigation, route }) => {
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Image source={require('../assets/icons/ic_ship.png')} style={{ width: 18, height: 18 }} />
-                                    <Text style={{ fontWeight: '700', color: '#007637', marginLeft: 10, textAlign: 'center' }}>Free shipping on all orders</Text>
+                                    <Text style={{ fontWeight: '700', color: '#007637', marginLeft: 10, textAlign: 'center' }}>Miễn phí vận chuyển tất cả đơn hàng</Text>
                                 </View>
                                 <Image style={{ marginLeft: 165 }} source={require('../assets/icons/ic_next.png')} />
                             </View>
 
                             <Text style={{ fontWeight: 'bold', fontSize: 12, color: '#000', marginTop: 10 }}>
-                                <Text style={{ color: '#737373' }}>Delivery:</Text>
-                                Jan 25 - Feb 5
+                                <Text style={{ color: '#737373' }}>Thời gian giao hàng dự kiến: </Text>
+                                2 - 4 ngày
                             </Text>
 
                             <Text style={{ fontWeight: 'bold', fontSize: 12, color: '#737373', marginTop: 10 }}>
-                                Get a 25.000đ credit for late delivery
+                                Nhận 25000 cho đơn hàng giao muộn
                             </Text>
 
                             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                                 <Text style={{ fontWeight: 'bold', fontSize: 12, color: '#000' }}>
-                                    <Text style={{ color: '#737373' }}>Courier company: </Text>
+                                    <Text style={{ color: '#737373' }}>Đơn vị vận chuyển: </Text>
                                 </Text>
                                 <Image source={require('../assets/icons/ic_j&t.png')} style={{ width: 15, height: 15, marginLeft: 5 }} resizeMode='contain' />
                                 <Text style={{ fontWeight: 'bold', fontSize: 12, color: '#000', marginLeft: 5 }}>BEST EXPRESS</Text>
@@ -387,9 +373,9 @@ const DetailsScreen = ({ navigation, route }) => {
 
                         <View style={{ marginHorizontal: 20, marginTop: 10 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Text style={{ fontWeight: 'bold', fontSize: 14, color: '#000' }}>Item reviews</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: 14, color: '#000' }}>Đánh giá sản phẩm</Text>
                                 <TouchableOpacity>
-                                    <Text style={{ fontWeight: 'medium', fontSize: 12, color: '#000' }}>See all</Text>
+                                    <Text style={{ fontWeight: 'medium', fontSize: 12, color: '#000' }}>Xem tất cả</Text>
                                 </TouchableOpacity>
                             </View>
 
@@ -404,7 +390,7 @@ const DetailsScreen = ({ navigation, route }) => {
                                         <View style={{ flexDirection: "row", gap: 5, alignItems: "center" }}>
                                             <Image source={{ uri: item.userId.avatar }} style={{ width: 28, height: 28 }} />
                                             <Text style={{ fontWeight: "700", fontSize: 12 }}>{item.userId.name}</Text>
-                                            <Text style={{ color: "#737373", fontSize: 10, fontWeight: "500" }}>on {formatDate(item.reviewDate)}</Text>
+                                            <Text style={{ color: "#737373", fontSize: 10, fontWeight: "500" }}>{formatDate(item.reviewDate)}</Text>
                                         </View>
                                         <StarRating rating={item.rate} />
                                         <Text style={{ color: "#737373", fontWeight: "500", fontSize: 10 }}>{item.purchased}</Text>
@@ -423,7 +409,7 @@ const DetailsScreen = ({ navigation, route }) => {
 
                         {/* About product */}
                         <View style={{ marginHorizontal: 20, marginTop: 10 }}>
-                            <Text style={{ fontWeight: 'bold', fontSize: 14, color: '#000' }}>Product details</Text>
+                            <Text style={{ fontWeight: 'bold', fontSize: 14, color: '#000' }}>Chi tiết sản phẩm</Text>
                         </View>
 
                         <View style={{ width: '100%', height: 1, backgroundColor: '#BBBBBB', marginTop: 10 }} />
@@ -434,14 +420,14 @@ const DetailsScreen = ({ navigation, route }) => {
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 20, marginVertical: 10 }}>
                             <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
-                            <Text style={{ marginHorizontal: 10, fontWeight: 'semibold', fontSize: 14, color: '#000' }}>Maybe you will also like</Text>
+                            <Text style={{ marginHorizontal: 10, fontWeight: 'semibold', fontSize: 14, color: '#000' }}>Có thể bạn sẽ thích</Text>
                             <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
                         </View>
                     </>
                 }
             />
             <TouchableOpacity style={st.addToCartButton} onPress={addToCartHandle}>
-                <Text style={st.addToCartText}>Add to cart</Text>
+                <Text style={st.addToCartText}>Thêm vào giỏ hàng</Text>
             </TouchableOpacity>
         </View>
     )

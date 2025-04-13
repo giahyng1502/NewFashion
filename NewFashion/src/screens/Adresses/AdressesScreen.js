@@ -30,6 +30,7 @@ const AddressesScreen = ({navigation}) => {
       setAddresses(personalInfo.information)
       setIsLoading(false);
     } else {
+      setIsLoading(false);
       console.log('No personalInfo data or empty information array');
     }
   }, [personalInfo]);
@@ -87,14 +88,14 @@ const AddressesScreen = ({navigation}) => {
       />
 
       <View style={{ backgroundColor: "#F5F5F5", borderTopColor: '#BBBBBB', borderTopWidth: 0.5 }}>
-        {personalInfo.information.length === 0 ? (
+        {personalInfo?.information.length === 0 ? (
           <View style={{backgroundColor: "#fff", padding:20,flexDirection:'column',alignItems:'center',width:"100%"}}>
             <Image source={require('../../assets/icons/ic_Adress.png')} style={{width:50,height:50,marginTop:20}}/>
             <Text style={{color:'#737373',fontSize:18,fontWeight:'bold',marginTop:15}}>Bạn không có địa chỉ nào, vui lòng thêm ít nhất một địa chỉ</Text>
           </View>
         ):(
           <FlatList
-            data={personalInfo.information}
+            data={personalInfo?.information}
             keyExtractor={(item,index) =>`${item._id}${index} information in addressScreen`}
 
             renderItem={({ item }) => (

@@ -21,10 +21,10 @@ const PaymentAndCoupon = ({onPayment, newCart, personalInfo, onSwitch, onClickSh
       {/* payment */}
       <View style={styles.paymentContainer}>
         {/* title */}
-        <Text style={styles.sectionTitle}>Payment methods</Text>
+        <Text style={styles.sectionTitle}>Phương thức thanh toán</Text>
         <View style={styles.titleContainer}>
           <Image source={require("../../assets/icons/ic_important.png")} style={styles.importantIcon} />
-          <Text style={styles.subTitle}>Please select a payment method</Text>
+          <Text style={styles.subTitle}>Vui lòng chọn phương thức thanh toán</Text>
         </View>
 
         {/* Direct Payment */}
@@ -38,7 +38,7 @@ const PaymentAndCoupon = ({onPayment, newCart, personalInfo, onSwitch, onClickSh
             }}
           />
           <Image source={require("../../assets/icons/ic_cash.png")} style={styles.paymentIcon} />
-          <Text style={styles.paymentText}>Direct payment</Text>
+          <Text style={styles.paymentText}>Thanh toán khi nhận hàng</Text>
         </View>
 
         {/* MoMo E-wallet */}
@@ -52,7 +52,7 @@ const PaymentAndCoupon = ({onPayment, newCart, personalInfo, onSwitch, onClickSh
             }}
           />
           <Image source={require("../../assets/icons/ic_momo.png")} style={styles.paymentIcon} />
-          <Text style={styles.paymentText}>Momo e-wallet</Text>
+          <Text style={styles.paymentText}>Ví điện tử Momo</Text>
         </View>
       </View>
 
@@ -61,7 +61,7 @@ const PaymentAndCoupon = ({onPayment, newCart, personalInfo, onSwitch, onClickSh
 
       {/* Coupon */}
       <View style={[styles.titleContainer, { marginBottom: 0, padding: 15, justifyContent: 'space-between', alignItems: 'center' }]}>
-        <Text style={styles.couponText}>Apply coupon</Text>
+        <Text style={styles.couponText}>Áp dụng mã giảm giá</Text>
         <TouchableOpacity onPress={()=>onClickShowPopup()}>
           <Image source={require('../../assets/ic_arrowRight.png')} style={styles.importantIcon} />
         </TouchableOpacity>
@@ -73,7 +73,7 @@ const PaymentAndCoupon = ({onPayment, newCart, personalInfo, onSwitch, onClickSh
           style={styles.icon}
         />
         <Text style={styles.text}>
-          You have <Text style={styles.points}>{personalInfo?.point}</Text> points that can be used
+          Bạn có <Text style={styles.points}>{personalInfo?.point}</Text> điểm có thể sử dụng
         </Text>
         <Switch
           trackColor={{ false: "#767577", true: "#81b0ff" }}
@@ -89,35 +89,35 @@ const PaymentAndCoupon = ({onPayment, newCart, personalInfo, onSwitch, onClickSh
       {/* Summary */}
       <View style={styles.summaryContainer}>
         <View style={styles.summaryRow}>
-          <Text style={styles.textBold}>Item(s) total:</Text>
+          <Text style={styles.textBold}>Giá ban đầu:</Text>
           <Text style={[styles.textBold, { textDecorationLine: 'line-through', color: '#737373' }]}>{SupportFunctions.convertPrice(newCart.total)}</Text>
         </View>
 
         <View style={styles.summaryRow}>
-          <Text style={styles.textBold}>Item(s) discount:</Text>
+          <Text style={styles.textBold}>Ưu đãi:</Text>
           <Text style={[styles.textBold, { textDecorationLine: 'line-through', color: '#D96923' }]}>{SupportFunctions.convertPrice(newCart.maxDiscount)}</Text>
         </View>
 
         <View style={styles.summaryRow}>
-          <Text style={styles.textBold}>Points:</Text>
+          <Text style={styles.textBold}>Điểm:</Text>
           <Text style={[styles.textBold, { textDecorationLine: 'line-through', color: '#D96923' }]}>{SupportFunctions.convertPrice(isEnabled ? personalInfo.point : 0)}</Text>
         </View>
 
         <View style={styles.summaryRow}>
-          <Text style={styles.textBold}>Subtotal:</Text>
+          <Text style={styles.textBold}>Tổng sản phẩm:</Text>
           <Text style={styles.textBold}>{SupportFunctions.convertPrice((
               Math.max((newCart.finalTotal - (isEnabled ? personalInfo.point : 0)),0)
           ))}</Text>
         </View>
 
         <View style={[styles.summaryRow, { borderTopWidth: 1, borderBottomWidth: 1, paddingVertical: 15, borderColor: '#D7D7D7' }]}>
-          <Text style={styles.textBold}>Shipping:</Text>
-          <Text style={[styles.textBold, { color: '#078809' }]}>FREE</Text>
+          <Text style={styles.textBold}>Phí vận chuyển:</Text>
+          <Text style={[styles.textBold, { color: '#078809' }]}>miễn phí</Text>
         </View>
 
         <View style={{ width: '100%', flexDirection: 'column' }}>
           <View style={styles.summaryRow}>
-            <Text style={[styles.textBold, { fontSize: 20 }]}>Order total:</Text>
+            <Text style={[styles.textBold, { fontSize: 20 }]}>Tổng đơn hàng:</Text>
             <Text style={[styles.textBold, { fontSize: 20 }]}>{SupportFunctions.convertPrice((
                 Math.max((newCart.finalTotal - (isEnabled ? personalInfo.point : 0)),0)
             ))}</Text>

@@ -1,13 +1,14 @@
 import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Linking } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect,useRef } from 'react'
 import ProductCard from '../../components/ProductCard';
 import BaseHeader from '../../components/BaseHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts } from '../../redux/actions/productActions';
 import { Dimensions } from 'react-native';
 import { fetchOrders,cancelOrder } from '../../redux/actions/orderActions';
-import { createPayment } from '../../redux/actions/paymentActions';
+import { createPayment } from '../../redux/actions/paymentAction';
 import SupportFunctions from '../../utils/SupportFunctions'
+import generatePaymentCode from '../../until/genaratePaymentCode';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -29,10 +30,11 @@ const OrderScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const { products, loading, page, hasMore } = useSelector(state => state.product);
   const [isLoading, setIsLoading] = useState(true)
+  const momoReturn = useRef(null);
   const orderStatus = [
     { id: -2, name: 'Tất cả các đơn hàng' },
     { id: 6, name: 'Đang chờ thanh toán' },
-    { id: 0, name: 'Đang Xử lý' },
+    { id: 0, name: 'Đang xử lý' },
     { id: 1, name: 'Chờ giao hàng' },
     { id: 2, name: 'Đang giao hàng' },
     { id: 3, name: 'Đã giao hàng' },
@@ -69,7 +71,7 @@ const OrderScreen = ({ navigation }) => {
         "Bạn có chắc chắn muốn hủy đơn hàng này không?",
         [
           {
-            text: "Hủy bỏ",
+            text: "Không",
             style: "cancel",
           },
           {
@@ -109,16 +111,27 @@ const OrderScreen = ({ navigation }) => {
     )
   }
 
-   const createOrder = async ({priceProduct,rawOrderId})=>{
-      try {
-        const res = await createPayment({priceProduct,rawOrderId})
-        console.log('res',res);
-        Linking.openURL(res.payUrl);
-        
-      } catch (error) {
-        console.log('error',error);        
-      }
-   }
+  const handleMoMoPayment = async (orderData) => {
+    console.log('order data',orderData);
+    try {
+        const response = await createPayment({
+            priceProduct: orderData.totalPrice,
+            rawOrderId: generatePaymentCode(),
+            idOrder: orderData._id,
+        });
+
+        if (response && response.resultCode === 0) {
+            momoReturn.current = response;
+            Linking.openURL(momoReturn.current.payUrl);
+        } else {
+          console.log('res',response);
+            Alert.alert('Thông báo', 'Không thể thanh toán bằng hình thức momo lúc này');
+        }
+    } catch (error) {
+        Alert.alert('Lỗi', 'Có lỗi xảy ra khi tạo thanh toán MoMo');
+        console.log('lỗi',error);
+    }
+};
 
   const OrderItem = ({ order, orderStatus }) => (
     <View style={{ backgroundColor: '#fff', width: screenWidth }}>
@@ -135,7 +148,7 @@ const OrderScreen = ({ navigation }) => {
 
       </View>
 
-      <Text style={{ fontSize: 16, color: '#FA7806', padding: 10, fontWeight: 'bold' }}>Delivery: {formatDate(order.dateCreated)}</Text>
+      <Text style={{ fontSize: 16, color: '#FA7806', padding: 10, fontWeight: 'bold' }}>Giao hàng lúc: {formatDate(order.dateCreated)}</Text>
 
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10 }}>
         <Image source={{ uri: order.items[0].color.imageColor }} style={styles.productImage} />
@@ -160,7 +173,7 @@ const OrderScreen = ({ navigation }) => {
         {order.status === 6 ? (
           <TouchableOpacity style={{ marginHorizontal: 5, marginRight: 10, paddingVertical: 5, paddingHorizontal: 12, borderWidth: 1, borderColor: 'black', borderRadius: 18, alignSelf: 'flex-end' }}
             onPress={() => {console.log('order',order);
-              createOrder({priceProduct:order.totalPrice,rawOrderId:order._id})}}>
+              handleMoMoPayment(order)}}>
             <Text style={[styles.textHeader, { fontSize: 16 }]}>Thanh toán ngay</Text>
           </TouchableOpacity>
         ) : (<View />)}

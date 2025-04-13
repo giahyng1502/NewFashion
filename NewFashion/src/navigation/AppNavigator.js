@@ -6,7 +6,6 @@ import LoginScreen from '../screens/Login/LoginScreen';
 import RegisterWithEmailScreen from '../screens/RegisterWithEmailScreen';
 import LoginWithEmailScreen from '../screens/LoginWithEmailScreen';
 import MainScreen from '../screens/MainScreen';
-import LoginWithPhoneNumber from '../screens/LoginWithPhoneNumber';
 import DetailsScreen from '../screens/DetailsScreen';
 import ChatScreen from '../screens/Chat/ChatScreen';
 import ChatDetail from '../screens/Chatdetail/ChatDetail';
@@ -85,10 +84,6 @@ const AppNavigator = () => {
         />
         <Stack.Screen name="LoginWithEmail" component={LoginWithEmailScreen} />
         <Stack.Screen name="ProductDetail" component={DetailsScreen} />
-        <Stack.Screen
-          name="LoginWithPhoneNumber"
-          component={LoginWithPhoneNumber}
-        />
         <Stack.Screen name="Messages" component={ChatScreen} />
         <Stack.Screen name="ChatDetail" component={ChatDetail} />
         <Stack.Screen name="PostDetail" component={CommentScreen} />

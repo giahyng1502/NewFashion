@@ -1,32 +1,34 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Linking } from 'react-native';
 
 const SubInfor = () => {
   const sections = [
     {
-      title: 'Delivery guarantee',
+      title: 'Đảm bảo giao hàng',
       image: require("../../assets/icons/ic_greenTruck.png"),
       items: [
-        '25.000đ Credit for delay',
-        'Return if item damaged',
-        '15-day no update refund',
-        '30-day no delivery refund',
+        '25.000đ tín dụng do giao hàng chậm',
+        'Hoàn trả nếu hàng bị hư hỏng',
+        'Hoàn tiền nếu không có cập nhật trong 15 ngày',
+        'Hoàn tiền nếu không giao hàng trong 30 ngày',
       ],
       showLearnMore: false, // Không hiển thị Learn More
     },
     {
-      title: 'Secure privacy',
+      title: 'Chính sách bảo mật',
       image: require("../../assets/icons/ic_greenLock.png"),
       description:
-        'Protecting your privacy is important to us! Please be assured that your information will be kept secured and uncompromised. We do not sell your personal information for money and will only use your information in accordance with our privacy and cookie policy to provide and improve our services to you.',
-      showLearnMore: true, // Hiển thị Learn More
+        'Việc bảo vệ quyền riêng tư của bạn là rất quan trọng đối với chúng tôi! Xin hãy yên tâm rằng thông tin của bạn sẽ được giữ an toàn và không bị xâm phạm. Chúng tôi không bán thông tin cá nhân của bạn để lấy tiền và chỉ sử dụng thông tin đó theo chính sách quyền riêng tư và cookie của chúng tôi nhằm cung cấp và cải thiện các dịch vụ dành cho bạn.',
+      showLearnMore: true,
+      link:'https://www.freeprivacypolicy.com/live/9e7e7430-63f1-4258-beae-999dd85300cc' // Hiển thị Learn More
     },
     {
-      title: 'New Fashion purchase protection',
+      title: 'New Fashion bảo vệ người mua',
       image: require("../../assets/icons/ic_greenLock.png"),
       description:
-        'Shop confidently on New Fashion knowing that if something goes wrong, we’ve always got your back.',
-      showLearnMore: true, // Hiển thị Learn More
+        'Yên tâm mua sắm tại New Fashion vì nếu có bất kỳ sự cố nào xảy ra, chúng tôi luôn sẵn sàng hỗ trợ bạn.',
+      showLearnMore: true,
+      link:'https://www.freeprivacypolicy.com/live/a1f3fc15-3468-4c50-897d-7d126f8de39e' // Hiển thị Learn More
     },
   ];
 
@@ -57,8 +59,8 @@ const SubInfor = () => {
           {/* Nút Learn More (chỉ hiển thị khi cần) */}
           {item.showLearnMore && (
             <View style={[styles.header,{marginBottom:0}]}>
-              <Text style={[styles.listText,{marginRight:8}]}>Learn more</Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={()=>{Linking.openURL(item.link)}} style={{flexDirection:'row',alignItems:'center'}}>
+                <Text style={[styles.listText,{marginRight:8}]}>Tìm hiểu thêm</Text>
                 <Image source={require('../../assets/ic_arrowRight.png')} style={styles.subIcon}/>
               </TouchableOpacity>
             </View>

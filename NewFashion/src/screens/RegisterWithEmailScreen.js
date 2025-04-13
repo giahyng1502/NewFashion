@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import TextField, { TextFieldType } from "../components/TextField";
 import ScreenSize from "../contants/ScreenSize";
 import PasswordStrengthBar from "../components/PasswordStrengthBar";

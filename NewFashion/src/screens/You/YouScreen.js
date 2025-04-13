@@ -15,7 +15,6 @@ import ProductCard from '../../components/ProductCard';
 import AppManager from '../../utils/AppManager';
 import {useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {id} from '@gorhom/bottom-sheet/lib/typescript/utilities/id';
 import {menuItems, bottomMenuItems} from './optionsData';
 
 const YouScreen = ({navigation}) => {
@@ -99,22 +98,22 @@ const YouScreen = ({navigation}) => {
                 <View>
                   <View style={st.header}>
                     <Text style={st.title}>
-                      Sign in for the best experience
+                      Đăng nhập để có được trải nghiệm tốt nhất
                     </Text>
                     <View style={st.infoContainer}>
                       <BenefitsInfoBox
                         icon={require('../../assets/icons/ic_freeReturns.png')}
-                        title="Free returns"
-                        subtitle="Up to 90 days"
+                        title="Miễn phí hoàn hàng"
+                        subtitle="Trong vòng 90 ngày"
                       />
                       <BenefitsInfoBox
                         icon={require('../../assets/icons/ic_freeShipping.png')}
-                        title="Free shipping"
-                        subtitle="On all orders"
+                        title="Miễn phí vận chuyển"
+                        subtitle="Cho tất cả đơn hàng"
                       />
                     </View>
                     <FilledButton
-                      title="Sign in / Register"
+                      title="Đăng nhập / Đăng ký"
                       customStyle={{
                         backgroundColor: 'black',
                         width: '100%',
@@ -129,11 +128,11 @@ const YouScreen = ({navigation}) => {
                     <MenuItem
                       key={item.id}
                       item={item}
-                      onPress={item => handleNavigate(item)}
+                      onPress={() => navigation.navigate('Login')}
                     />
                   ))}
                   <View style={st.historyItem}>
-                    <Text style={st.sectionTitle}>Browsing history</Text>
+                    <Text style={st.sectionTitle}>Sản phẩm đã xem</Text>
                     <View style={{flexDirection: 'row'}}>
                       <Text
                         style={{
@@ -142,7 +141,7 @@ const YouScreen = ({navigation}) => {
                           fontWeight: '700',
                           flex: 1,
                         }}>
-                        Sign in to view recently viewed items
+                        Bạn cần đăng nhập để xem sản phẩm đã xem
                       </Text>
                       <Image
                         source={require('../../assets/icons/ic_next.png')}
@@ -207,15 +206,17 @@ const YouScreen = ({navigation}) => {
                       <TouchableOpacity
                         key={item.id}
                         style={st.bottomMenuItem}
-                        onPress={() => navigation.navigate(item.title)}>
+                        onPress={() => {
+                          navigation.navigate(item.title)
+                        }}>
                         <Image source={item.icon} style={st.menuIcon} />
-                        <Text style={st.menuText}>{item.title}</Text>
+                        <Text style={st.menuText}>{item.text}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
                   <Text
                     style={[st.sectionTitle, {marginLeft: 15, marginTop: 5}]}>
-                    Browsing history
+                    Sản phẩm đã xem
                   </Text>
 
                   {browsingHistory.length === 0 && (
@@ -228,7 +229,7 @@ const YouScreen = ({navigation}) => {
                         marginTop: 100,
                         textAlign: 'center',
                       }}>
-                      No items in browsing history
+                      Không có sản phẩm đã xem
                     </Text>
                   )}
                 </View>
@@ -248,7 +249,7 @@ const MenuItem = ({item, onPress}) => (
       onPress(item);
     }}>
     <Image source={item.image} style={st.menuIcon} />
-    <Text style={st.menuText}>{item.text}</Text>
+    <Text style={st.menuText}>{item.title}</Text>
     <Image
       source={require('../../assets/icons/ic_next.png')}
       style={{height: 15, width: 15}}

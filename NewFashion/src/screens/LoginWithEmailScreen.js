@@ -1,14 +1,13 @@
 import React, { useState, useRef } from 'react';
-import { Animated, Text, View, TouchableOpacity, Image, StyleSheet, Alert, ActivityIndicator, InteractionManager, Keyboard } from 'react-native';
+import { Animated, Text, View, TouchableOpacity, Image, StyleSheet, Alert, ActivityIndicator, InteractionManager, Keyboard, Linking } from 'react-native';
 import TextField, { TextFieldType } from '../components/TextField';
 import ScreenSize from '../contants/ScreenSize';
 import FilledButton from '../components/FilledButton';
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import BenefitsInfoBox from '../components/BenefitsInfoBox';
 import { checkEmail, loginWithEmail, register } from '../redux/actions/userActions';
 import PasswordStrengthBar from '../components/PasswordStrengthBar';
 import AppManager from '../utils/AppManager'
-import { setUser } from "../redux/reducer/userReducer";
 import { fetchInformation } from '../redux/actions/infomationActions';
 
 const LoginWithEmailScreen = ({ navigation }) => {
@@ -227,13 +226,13 @@ const LoginWithEmailScreen = ({ navigation }) => {
           } catch (err) {
             console.log('Error in saving or retrieving token: ', err);
             setIsLoading(false);
-            Alert.alert('Error', 'Lỗi khi lưu hoặc lấy token. Vui lòng thử lại.');
+            Alert.alert('Thông báo', 'Lỗi khi lưu hoặc lấy token. Vui lòng thử lại.');
           }
         })
         .catch((err) => {
           console.log('Register error: ', err);
           setIsLoading(false);
-          Alert.alert('Register failed', 'Có lỗi xảy ra khi đăng ký.');
+          Alert.alert('Thông báo', 'Có lỗi xảy ra khi đăng ký.');
         });
     });
   };  
@@ -327,17 +326,13 @@ const LoginWithEmailScreen = ({ navigation }) => {
         customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }}
       />
 
-      <TouchableOpacity style={st.troubleContainer}>
-        <Text style={st.troubleText}>Gặp sự cố khi đăng nhập?</Text>
-      </TouchableOpacity>
-
       <Text style={st.termsText}>
       Bằng cách tiếp tục, bạn đồng ý với chúng tôi{' '}
-        <Text style={st.linkText} onPress={() => { }}>
+        <Text style={st.linkText} onPress={() => {Linking.openURL('https://www.freeprivacypolicy.com/live/a1f3fc15-3468-4c50-897d-7d126f8de39e')}}>
         Điều khoản sử dụng
         </Text>{' '}
-        Và{' '}
-        <Text style={st.linkText} onPress={() => { }}>
+        và{' '}
+        <Text style={st.linkText} onPress={() => {Linking.openURL('https://www.freeprivacypolicy.com/live/9e7e7430-63f1-4258-beae-999dd85300cc')}}>
         Chính sách bảo mật
         </Text>.
       </Text>

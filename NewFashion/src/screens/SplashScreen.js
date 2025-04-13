@@ -1,10 +1,9 @@
-import { StyleSheet, Image, View, Animated, Alert } from 'react-native'
+import { StyleSheet, View, Animated, Alert } from 'react-native'
 import React, { useEffect, useRef } from 'react'
 import { fetchCategories } from '../redux/actions/categoryActions';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import AppManager from '../utils/AppManager';
 import { fetchProducts, fetchSaleProducts } from '../redux/actions/productActions';
-import { fetchOrders } from '../redux/actions/orderActions';
 import { fetchInformation } from '../redux/actions/infomationActions';
 import { fetchCoupon } from '../redux/actions/voucherAction';
 
@@ -19,13 +18,21 @@ const SplashScreen = ({ navigation }) => {
                 const isSuccess = await loadData();
                 if (isSuccess) {
                     animate();
+                }else{
+                    Alert.alert(
+                        'Lỗi',
+                        'Không tải được dữ liệu. Vui lòng thử lại',
+                        [
+                            { text: 'Thử lại', onPress: loadDataAndAnimate },
+                        ]
+                    );
                 }
             } catch (error) {
                 Alert.alert(
-                    'Error',
-                    'Failed to load data. Please try again.',
+                    'Lỗi',
+                    'Không tải được dữ liệu. Vui lòng thử lại',
                     [
-                        { text: 'Try Again', onPress: loadDataAndAnimate },
+                        { text: 'Thử lại', onPress: loadDataAndAnimate },
                     ]
                 );
             }
@@ -91,7 +98,7 @@ const SplashScreen = ({ navigation }) => {
             })
         ]).start(() => {
             setTimeout(() => {
-                navigation.navigate('Main');
+                navigation.replace('Main');
             }, 3000);
         });
     };

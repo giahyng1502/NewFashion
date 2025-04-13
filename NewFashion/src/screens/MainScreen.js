@@ -1,9 +1,8 @@
-import { Image, StyleSheet, Text, View } from 'react-native'
+import { Image, StyleSheet, View } from 'react-native'
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import HomeScreen from './Home/HomeScreen'
 import CategoryScreen from './Category/CategoryScreen'
-import NotificationScreen from './Notification/notification-screen'
 import YouScreen from './You/YouScreen'
 import NewScreen from "./Post/NewScreen";
 

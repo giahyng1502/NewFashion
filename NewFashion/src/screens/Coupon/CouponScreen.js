@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, Text, View, ActivityIndicator,TouchableOpacity} from 'react-native'
+import { FlatList, StyleSheet, Text, View, ActivityIndicator, Linking} from 'react-native'
 import React, { useEffect } from 'react'
 import BaseHeader from '../../components/BaseHeader'
 import { fetchProducts } from '../../redux/actions/productActions';
@@ -11,7 +11,6 @@ const CouponScreen = ({ navigation }) => {
   const {products, loading, page, hasMore} = useSelector(state => state.product);
   const { coupons } = useSelector(state => state.coupons);
   const dispatch = useDispatch();
-  const [showHelpButton, setshowHelpButton] = React.useState(false)
 
   function formatDate(isoString) {
     const date = new Date(isoString);
@@ -51,9 +50,6 @@ const CouponScreen = ({ navigation }) => {
         title="Mã giảm giá & ưu đãi"
         showLeftButton={true}
         onLeftButtonPress={() => navigation.goBack()}
-        showRightButton={setshowHelpButton}
-        rightIcon={require("../../assets/icons/ic_help.png")}
-        onRightButtonPress={null}
       />
      <FlatList
       ListHeaderComponent={

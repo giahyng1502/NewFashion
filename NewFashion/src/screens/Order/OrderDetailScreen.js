@@ -1,18 +1,22 @@
-import { Image, Text, TouchableOpacity, View, FlatList, Animated, StyleSheet } from 'react-native'
+import { Image, Text, TouchableOpacity, View, FlatList, Animated, StyleSheet,Alert } from 'react-native'
 import React, { useRef, useState,useEffect } from 'react'
 import BaseHeader from '../../components/BaseHeader'
 import SupportFunctions from '../../utils/SupportFunctions'
+import { useDispatch } from 'react-redux'
+import { cancelOrder } from '../../redux/actions/orderActions'
 
 
 const OrderDetailScreen = ({navigation,route}) => {
     const {order}=route.params
+    const dispatch = useDispatch()
     const orderStatus = [
-        { id: 6, name: 'Đang chờ thanh toán' },
         { id: 0, name: 'Đang Xử lý' },
         { id: 1, name: 'Đang chờ để vận chuyển' },
         { id: 2, name: 'Đang vận chuyển' },
         { id: 3, name: 'Đã giao hàng' },
-        { id: 4, name: 'Đã Hủy'}
+        { id: 4, name: 'Đã Hủy'},
+        { id: 6, name: 'Đang chờ thanh toán' },
+        { id: 7, name: 'Đã thanh toán bằng momo'}
     ];
 
     useEffect(() => {
@@ -36,6 +40,44 @@ const OrderDetailScreen = ({navigation,route}) => {
     const animatedValue = useRef(new Animated.Value(0)).current;
     const bottomSheetHeight = 500;
 
+    const handleCancel = () => {
+        if (!order._id) {
+            Alert.alert('Thông báo', 'Không tìm thấy đơn hàng', [
+                {
+                    text: "Trở về",
+                    style: "destructive",
+                    onPress: () => {
+                        navigation.replace('Main')
+                    }
+                }
+            ])
+        }
+        Alert.alert(
+            "Xác nhận hủy đơn hàng",
+            "Bạn có chắc chắn muốn hủy đơn hàng này không",
+            [
+                {
+                    text: "Không",
+                    style: "cancel",
+                },
+                {
+                    text: "Đồng ý",
+                    style: "destructive",
+                    onPress: () => {
+                        // Gửi yêu cầu xóa lên server với các sản phẩm được chọn
+                        dispatch(cancelOrder(order._id))
+                            .then((result) => {
+                                navigation.replace('Main')
+                            })
+                            .catch((error) => {
+                                console.error("Error cancel order:", error);
+                            });
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
+    };
 
     //mở sheet chi tiết đơn hàng
         const toggleStatusBottomSheet = () => {
@@ -205,9 +247,22 @@ const OrderDetailScreen = ({navigation,route}) => {
                             <Text style={{fontSize: 16,fontWeight: "bold",color: '#000'}}>Phương thức thanh toán:</Text>
                             <Text style={{fontSize: 16,fontWeight: "bold",color: '#737373' }}>{order?.paymentMethod.toUpperCase()}</Text>
                         </View>
+
                     </View>
                 }
             />
+            
+            {order.status === 6 && (
+                <View style={{ position: 'absolute', bottom: 0, width: '100%', backgroundColor: '#fff', padding: 15, borderTopColor: '#BBBBBB', borderTopWidth: 0.5 }}>
+                    <TouchableOpacity style={{ backgroundColor: "gray", padding: 12, borderRadius: 40, alignItems: "center" }} 
+                        onPress={() => {handleCancel()}}>
+                        <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 18 }}>
+                            Hủy đơn hàng
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
 
             {isShowStatusBottomSheet && (
                 <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, top: 0, justifyContent: 'flex-end', overflow: 'hidden' }}>
@@ -219,7 +274,7 @@ const OrderDetailScreen = ({navigation,route}) => {
                     {/* content */}
                     <Animated.View style={{ transform: [{ translateY: sheetTranslateY }], backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomWidth: 1, borderBottomColor: '#BBB' }}>
                         <BaseHeader
-                            title="Order Status History"
+                            title="Lịch sử trạng thái đơn hàng"
                             showRightButton={true}
                             rightIcon={require('../../assets/bt_exit.png')}
                             onRightButtonPress={closeStatusBottomSheet}
@@ -231,10 +286,10 @@ const OrderDetailScreen = ({navigation,route}) => {
                                 renderItem={({ item }) => (
                                     <View style={{ flexDirection: "row", justifyContent: "space-between", marginHorizontal: 15, borderBottomWidth: 1, marginBottom: 10, borderBottomColor: "#E7E7E7" }}>
                                         <View style={{ flexDirection: "column", paddingBottom: 10 }}>
-                                            <Text style={{ fontWeight: "bold", color: "#078809", paddingBottom: 10 }}>{orderStatus.find(status => status.id === order.status)?.name}</Text>
-                                            <Text style={{ fontWeight: "bold" }}>Live Date: {formatDate(item.timestamp)}</Text>
+                                            <Text style={{ fontWeight: "bold", color: "#078809", paddingBottom: 10 }}>{orderStatus.find(status => status.id === item.status)?.name}</Text>
+                                            <Text style={{ fontWeight: "bold" }}>Vào lúc: {formatDate(item.timestamp)}</Text>
                                         </View>
-                                        <Text style={{ fontWeight: "bold" }}>By: {item.updatedBy.name}</Text>
+                                        <Text style={{ fontWeight: "bold" }}>{item.updatedBy.name}</Text>
                                     </View>
                                 )}
                             />
@@ -242,6 +297,7 @@ const OrderDetailScreen = ({navigation,route}) => {
                     </Animated.View>
                     </View>
                 )}
+
         </View>
     )
 }
