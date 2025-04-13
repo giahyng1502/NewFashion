@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
+import { Image, StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Linking } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import ProductCard from '../../components/ProductCard';
 import BaseHeader from '../../components/BaseHeader';
@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts } from '../../redux/actions/productActions';
 import { Dimensions } from 'react-native';
 import { fetchOrders,cancelOrder } from '../../redux/actions/orderActions';
+import { createPayment } from '../../redux/actions/paymentActions';
 import SupportFunctions from '../../utils/SupportFunctions'
 
 const screenWidth = Dimensions.get('window').width;
@@ -108,6 +109,17 @@ const OrderScreen = ({ navigation }) => {
     )
   }
 
+   const createOrder = async ({priceProduct,rawOrderId})=>{
+      try {
+        const res = await createPayment({priceProduct,rawOrderId})
+        console.log('res',res);
+        Linking.openURL(res.payUrl);
+        
+      } catch (error) {
+        console.log('error',error);        
+      }
+   }
+
   const OrderItem = ({ order, orderStatus }) => (
     <View style={{ backgroundColor: '#fff', width: screenWidth }}>
       <View style={{ padding: 10, flexDirection: 'row', justifyContent: 'space-between', borderBottomWidth: 0.5, borderTopWidth: 5, borderBottomColor: '#BBBBBB', borderTopColor: '#e7e7e7', alignItems: 'center' }}>
@@ -127,9 +139,9 @@ const OrderScreen = ({ navigation }) => {
 
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10 }}>
         <Image source={{ uri: order.items[0].color.imageColor }} style={styles.productImage} />
-        <View style={styles.productDetails}>
-          <View>
-            <Text style={styles.productName}>{order.items[0].productName}</Text>
+        <View style={{flexDirection: 'column', justifyContent: 'space-around', flex: 1,marginRight:10}}>
+          <View style={{flex:1}}>
+            <Text numberOfLines={2} ellipsizeMode="tail" style={{fontSize: 14,color: '#000',fontWeight: 'semibold'}}>{order.items[0].productName}</Text>
             <Text style={[styles.productName, { color: '#BBBBBB' }]}>{order.items[0].color.nameColor}, {order.items[0].size}</Text>
           </View>
 
@@ -144,10 +156,18 @@ const OrderScreen = ({ navigation }) => {
             <Text style={[styles.textHeader, { fontSize: 16 }]}>Cancel order</Text>
           </TouchableOpacity>
         ) : (<View />)}
+
+        {order.status === 6 ? (
+          <TouchableOpacity style={{ marginHorizontal: 5, marginRight: 10, paddingVertical: 5, paddingHorizontal: 12, borderWidth: 1, borderColor: 'black', borderRadius: 18, alignSelf: 'flex-end' }}
+            onPress={() => {console.log('order',order);
+              createOrder({priceProduct:order.totalPrice,rawOrderId:order._id})}}>
+            <Text style={[styles.textHeader, { fontSize: 16 }]}>Thanh toán ngay</Text>
+          </TouchableOpacity>
+        ) : (<View />)}
       </View>
       <View style={styles.breaker} />
     </View>
-  );
+  )
 
   return (
     <View style={styles.container}>

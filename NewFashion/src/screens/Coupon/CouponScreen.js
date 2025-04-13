@@ -5,6 +5,7 @@ import { fetchProducts } from '../../redux/actions/productActions';
 import ProductCard from '../../components/ProductCard';
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCoupon } from '../../redux/actions/voucherAction'
+import { ConvertMoney } from '../../until/convert-money';
 
 const CouponScreen = ({ navigation }) => {
   const {products, loading, page, hasMore} = useSelector(state => state.product);
@@ -57,15 +58,6 @@ const CouponScreen = ({ navigation }) => {
      <FlatList
       ListHeaderComponent={
       <>
-
-      {/* Ô nhập code voucher */}
-      {/* <View style={{ flexDirection: "row", alignItems: "center", marginTop: 15, marginBottom: 10 }}>
-        <TextInput placeholder="Enter coupon code" style={{ flex: 1, height: 40, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, paddingHorizontal: 10, marginHorizontal: 15 }} />
-        <TouchableOpacity style={{ borderColor: "#000000", borderWidth: 1, height: 40, width: 80, borderRadius: 40, justifyContent: "center", marginRight: 10 }}>
-          <Text style={{ textAlign: "center", color: "#000000", fontWeight: "bold" }}>Apply</Text>
-        </TouchableOpacity>
-      </View> */}
-
       {/* Ghi chú */}
       <Text style={{ fontSize: 12, marginBottom: 12, marginHorizontal: 15 }}>
         <Text style={{ fontSize: 15, fontWeight: "bold" }}>The discount code can be used</Text>
@@ -85,7 +77,7 @@ const CouponScreen = ({ navigation }) => {
               <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
                 <View style={{ width: 250 }}>
                   <Text style={{ fontSize: 18, fontWeight: "bold" }}>{item.voucherName}</Text>
-                  <Text style={{ fontWeight: "bold", fontSize: 12 }}>{item.voucherDetail}</Text>
+                  <Text style={{ fontWeight: "bold", fontSize: 12 }}>{item.voucherDetail} tối đa {ConvertMoney(item.maxDiscountPrice)}</Text>
                   <Text style={{ fontWeight: "bold", fontSize: 12, marginTop: 30 }}>
                     {formatDate(item.startDate)} - {formatDate(item.endDate)}
                   </Text>

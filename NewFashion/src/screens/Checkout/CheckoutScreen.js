@@ -25,6 +25,7 @@ import { createOrder } from '../../redux/actions/orderActions'
 import { fetchCart } from '../../redux/actions/cartActions'
 import axios from "../../service/axios";
 import {useSocket} from "../../context/socketContext";
+import { ConvertMoney } from '../../until/convert-money';
 
 const CheckoutScreen = ({ navigation }) => {
     const { carts } = useSelector(state => state.cart);
@@ -140,8 +141,6 @@ const CheckoutScreen = ({ navigation }) => {
             });
     }
 
-
-
     //mở sheet chi tiết đơn hàng
     const toggleBottomSheet = () => {
         if (!isShowPriceBottomSheet) {
@@ -237,13 +236,16 @@ const CheckoutScreen = ({ navigation }) => {
     });
 
     const getFinalPriceOfSelectedItems = () => {
-        return newCart
+        const final = newCart
             .filter(item => item.isSelected)
             .reduce((total, item) => {
                 const discountMultiplier = item.disCountSale > 0 ? (1 - item.disCountSale / 100) : 1;
+                console.log('nhân ngu',discountMultiplier);
+                
                 const itemPrice = item.price * discountMultiplier * item.quantity;
                 return total + itemPrice;
             }, 0);
+        return Math.min(newCart.maxDiscountPrice, final);
     }
 
     const getOriginalPriceOfSelectedItems = () => {
@@ -318,13 +320,13 @@ const CheckoutScreen = ({ navigation }) => {
 
     const applyVoucherToCart = (voucher) => {
         const updatedCart = carts.map(item => {
-          const discountAmount = (item.price * voucher.discount) / 100;
-          const appliedDiscount = Math.min(discountAmount, voucher.maxDiscountPrice);
-          const actualDiscountPercent = (appliedDiscount / item.price) * 100;
+            const discountAmount = (item.price * voucher.discount) / 100;
+            const appliedDiscount = Math.min(discountAmount, voucher.maxDiscountPrice);
 
           return {
             ...item,
-            disCountSale: actualDiscountPercent, // Cập nhật phần trăm đã giảm
+            disCountSale: voucher.discount, 
+            maxDiscountPrice: appliedDiscount, // Cập nhật phần trăm đã giảm
           };
         });
 
@@ -639,11 +641,7 @@ const CheckoutScreen = ({ navigation }) => {
                             title="Apply coupon"
                             showRightButton={true}
                             rightIcon={require('../../assets/bt_exit.png')}
-                            onRightButtonPress={()=>{
-
-                                    closeCouponSheet()
-
-                                }
+                            onRightButtonPress={()=>{closeCouponSheet()}
                             }
                         />
 
@@ -675,7 +673,7 @@ const CheckoutScreen = ({ navigation }) => {
                                                     <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
                                                         <View style={{ width: 250 }}>
                                                             <Text style={{ fontSize: 18, fontWeight: "bold" }}>{item.voucherName}</Text>
-                                                            <Text style={{ fontWeight: "bold", fontSize: 12 }}>{item.voucherDetail}</Text>
+                                                            <Text style={{ fontWeight: "bold", fontSize: 12 }}>{item.voucherDetail} tối đa {ConvertMoney(item.maxDiscountPrice)}</Text>
                                                             <Text style={{ fontWeight: "bold", fontSize: 12, marginTop: 30 }}>
                                                                 {formatDate(item.startDate)} - {formatDate(item.endDate)}
                                                             </Text>
