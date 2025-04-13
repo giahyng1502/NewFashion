@@ -25,8 +25,12 @@ import {cancelOrder, createOrder} from '../../redux/actions/orderActions'
 import { fetchCart } from '../../redux/actions/cartActions'
 import axios from "../../service/axios";
 import {useSocket} from "../../context/socketContext";
+<<<<<<< HEAD
 import generatePaymentCode from "../../until/genaratePaymentCode";
 import {createPayment} from "../../redux/actions/paymentAction";
+=======
+import { ConvertMoney } from '../../until/convert-money';
+>>>>>>> origin/ThanhDev
 
 const CheckoutScreen = ({ navigation }) => {
     const { carts } = useSelector(state => state.cart);
@@ -171,8 +175,6 @@ const CheckoutScreen = ({ navigation }) => {
     };
 
 
-
-
     //mở sheet chi tiết đơn hàng
     const toggleBottomSheet = () => {
         if (!isShowPriceBottomSheet) {
@@ -267,6 +269,35 @@ const CheckoutScreen = ({ navigation }) => {
         outputRange: [bottomSheetHeight, 0]
     });
 
+<<<<<<< HEAD
+=======
+    const getFinalPriceOfSelectedItems = () => {
+        const final = newCart
+            .filter(item => item.isSelected)
+            .reduce((total, item) => {
+                const discountMultiplier = item.disCountSale > 0 ? (1 - item.disCountSale / 100) : 1;
+                console.log('nhân ngu',discountMultiplier);
+                
+                const itemPrice = item.price * discountMultiplier * item.quantity;
+                return total + itemPrice;
+            }, 0);
+        return Math.min(newCart.maxDiscountPrice, final);
+    }
+
+    const getOriginalPriceOfSelectedItems = () => {
+        return carts
+            .filter(item => item.isSelected)
+            .reduce((total, item) => {
+                const itemPrice = item.price * item.quantity;
+                return total + itemPrice;
+            }, 0);
+    }
+
+    const getDiscountPriceOfSelectedItems = () => {
+        return getOriginalPriceOfSelectedItems() - getFinalPriceOfSelectedItems();
+    }
+
+>>>>>>> origin/ThanhDev
     const getDefaultInformation = () => {
         const defaultInformation = personalInfo.information.filter(infor => infor.isDefault);
 
@@ -365,10 +396,23 @@ const CheckoutScreen = ({ navigation }) => {
     };
 
     const applyVoucherToCart = (voucher) => {
+<<<<<<< HEAD
         if (!voucher || !carts || !carts.total) return;
 
         const discountPercent = voucher.discount || 0;
         const maxDiscountPrice = voucher.maxDiscountPrice || 0;
+=======
+        const updatedCart = carts.map(item => {
+            const discountAmount = (item.price * voucher.discount) / 100;
+            const appliedDiscount = Math.min(discountAmount, voucher.maxDiscountPrice);
+
+          return {
+            ...item,
+            disCountSale: voucher.discount, 
+            maxDiscountPrice: appliedDiscount, // Cập nhật phần trăm đã giảm
+          };
+        });
+>>>>>>> origin/ThanhDev
 
         const discount = (carts.total * discountPercent) / 100;
         const maxDiscount = Math.min(discount, maxDiscountPrice);
@@ -698,11 +742,7 @@ const CheckoutScreen = ({ navigation }) => {
                             title="Apply coupon"
                             showRightButton={true}
                             rightIcon={require('../../assets/bt_exit.png')}
-                            onRightButtonPress={()=>{
-
-                                    closeCouponSheet()
-
-                                }
+                            onRightButtonPress={()=>{closeCouponSheet()}
                             }
                         />
 
@@ -734,7 +774,7 @@ const CheckoutScreen = ({ navigation }) => {
                                                     <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
                                                         <View style={{ width: 250 }}>
                                                             <Text style={{ fontSize: 18, fontWeight: "bold" }}>{item.voucherName}</Text>
-                                                            <Text style={{ fontWeight: "bold", fontSize: 12 }}>{item.voucherDetail}</Text>
+                                                            <Text style={{ fontWeight: "bold", fontSize: 12 }}>{item.voucherDetail} tối đa {ConvertMoney(item.maxDiscountPrice)}</Text>
                                                             <Text style={{ fontWeight: "bold", fontSize: 12, marginTop: 30 }}>
                                                                 {formatDate(item.startDate)} - {formatDate(item.endDate)}
                                                             </Text>

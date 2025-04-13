@@ -26,6 +26,7 @@ export const createOrder = createAsyncThunk(
                 point,
                 voucherId
             });
+            console.log('name',name);
             return response.order; // hoặc response.data.order tùy API
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response?.data || 'Đã có lỗi xảy ra');

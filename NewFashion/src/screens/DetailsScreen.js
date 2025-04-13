@@ -56,7 +56,6 @@ const DetailsScreen = ({ navigation, route }) => {
         console.log(item);
         console.log(reviews);
 
-
         const saveItemToLocal = async () => {
             try {
                 // Lấy danh sách các item đã lưu từ local storage
@@ -328,7 +327,7 @@ const DetailsScreen = ({ navigation, route }) => {
                                 </View>
                                 <TouchableOpacity
                                     style={{ backgroundColor: '#F0F0F0', width: 30, height: 30, alignItems: 'center', justifyContent: 'center' }}
-                                    onPress={() => setQuantity(quantity + 1)}
+                                    onPress={() => setQuantity(quantity < 20 ? quantity + 1 : 20)}
                                 >
                                     <Image
                                         source={require("../assets/icons/ic_plus.png")}

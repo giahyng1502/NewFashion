@@ -77,7 +77,6 @@ const SplashScreen = ({ navigation }) => {
         }
     };
 
-
     const animate = () => {
         Animated.sequence([
             Animated.timing(fadeAnimLogo, {
