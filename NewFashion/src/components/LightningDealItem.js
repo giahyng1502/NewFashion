@@ -26,7 +26,7 @@ const LightningDealItem = ({ item, onPress }) => {
       <Image source={{ uri: item.productId.image[0] }} style={st.productImage} />
 
       <View style={st.labelContainer}>
-          <Text style={st.labelText}>{`Only ${item.limit} left`}</Text>
+          <Text style={st.labelText}>{`Only ${item.limit - item.productId.sold} left`}</Text>
         </View>
       <Text style={st.priceText}>{SupportFunctions.convertPrice(item.productId.price)}</Text>
       <Text style={st.soldText}>{item.productId.sold} bán</Text>
