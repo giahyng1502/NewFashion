@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     fontSize: 14,
+    color: '#000',
   },
   clearButton: {
     padding: 5,
