@@ -4,6 +4,7 @@ import { View, TextInput, TouchableOpacity, Image, StyleSheet, Keyboard } from '
 const SearchBar = ({ disable, onSearch }) => {
   const [searchText, setSearchText] = useState('');
   const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
+  
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -12,7 +13,7 @@ const SearchBar = ({ disable, onSearch }) => {
     return () => {
       clearTimeout(handler); 
     };
-  }, [debouncedSearchText, onSearch]);
+  }, [debouncedSearchText]);
 
   const handleTextChange = (text) => {
     setSearchText(text);
