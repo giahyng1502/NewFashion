@@ -85,6 +85,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
 //         buildConfigField "String", "MY_WEB_CLIENT_ID", "\"${MY_WEB_CLIENT_ID}\""
     }
 signingConfigs {

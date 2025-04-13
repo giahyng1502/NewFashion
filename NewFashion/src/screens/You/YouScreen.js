@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,86 +6,35 @@ import {
   Image,
   FlatList,
   StyleSheet,
-  ScrollView,
   ActivityIndicator,
+  Pressable,
 } from 'react-native';
 import BenefitsInfoBox from '../../components/BenefitsInfoBox';
 import FilledButton from '../../components/FilledButton';
 import ProductCard from '../../components/ProductCard';
-import AppManager from '../../utils/AppManager'
-import { useSelector } from 'react-redux';
+import AppManager from '../../utils/AppManager';
+import {useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {id} from "@gorhom/bottom-sheet/lib/typescript/utilities/id";
+import {id} from '@gorhom/bottom-sheet/lib/typescript/utilities/id';
+import {menuItems, bottomMenuItems} from './optionsData';
 
-const menuItems = [
-  {
-    id: '1',
-    image: require('../../assets/icons/ic_message.png'),
-    text: 'Messages',
-  },
-  {
-    id: '2',
-    image: require('../../assets/icons/ic_yourOrder.png'),
-    text: 'Your orders',
-  },
-  {
-    id: '3',
-    image: require('../../assets/icons/ic_couponPercent.png'),
-    text: 'Coupons & offers',
-  },
-  {
-    id: '4',
-    image: require('../../assets/icons/ic_Adress.png'),
-    text: 'Addresses',
-  },
-  {
-    id: '5',
-    image: require('../../assets/icons/ic_support.png'),
-    text: 'Customer support',
-  },
-  {
-    id: '6',
-    image: require('../../assets/icons/ic_settings.png'),
-    text: 'Settings',
-  },
-];
-
-const bottomMenuItems = [
-  {
-    id: '1',
-    title: 'Addresses',
-    icon: require('../../assets/icons/ic_Adress.png'),
-  },
-  {
-    id: '2',
-    title: 'Notification',
-    icon: require('../../assets/icons/ic_notification.png'),
-  },
-  {
-    id: '3',
-    title: 'Coupons & offers',
-    icon: require('../../assets/icons/ic_couponPercent.png'),
-  },
-];
-
-const YouScreen = ({ navigation }) => {
-
-  const { personalInfo } = useSelector(state => state.personalInfo);
+const YouScreen = ({navigation}) => {
+  const {personalInfo} = useSelector(state => state.personalInfo);
   const [browsingHistory, setBrowsingHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const handleNavigate = (item) => {
-    if (item.text !== 'Messages') {
+
+  const handleNavigate = item => {
+    if (item?.text !== 'Messages') {
       navigation.navigate(item.text);
-    }
-    else {
-      if (personalInfo.role === 0) {
-        navigation.navigate('ChatDetail',{id : '67eeafc786a3c7e95e9d3a73'});
-      }
-      else if (personalInfo.role > 0) {
-        navigation.navigate(item.text);
+    } else {
+      if (personalInfo?.role === 0) {
+        navigation.navigate('ChatDetail', {id: '67eeafc786a3c7e95e9d3a73'});
+      } else if (personalInfo?.role > 0) {
+        navigation.navigate(item?.text);
       }
     }
-  }
+  };
+
   useEffect(() => {
     const fetchBrowsingHistory = async () => {
       try {
@@ -105,7 +54,6 @@ const YouScreen = ({ navigation }) => {
     console.log('personalInfo:', personalInfo);
 
     if (personalInfo && personalInfo.information) {
-
       setLoading(false);
     } else {
       console.log('No personalInfo data or empty information array');
@@ -114,8 +62,8 @@ const YouScreen = ({ navigation }) => {
   }, [personalInfo]);
 
   const handleSelectedItem = item => {
-    navigation.navigate('ProductDetail', { item });
-  }
+    navigation.navigate('ProductDetail', {item});
+  };
 
   if (loading) {
     return (
@@ -127,16 +75,18 @@ const YouScreen = ({ navigation }) => {
 
   return (
     <View style={st.container}>
-      {/* Danh sách  lịch sử sản phẩm */}
+      {/* Danh sách lịch sử sản phẩm */}
       <FlatList
         data={browsingHistory}
         keyExtractor={item => item._id}
         numColumns={2}
-        renderItem={({ item }) => (
-          <View style={{ flex: 1 / 2, padding: 5 }}>
+        renderItem={({item}) => (
+          <View style={{flex: 1 / 2, padding: 5}}>
             <ProductCard
               item={item}
-              onSelected={() => { handleSelectedItem(item) }}
+              onSelected={() => {
+                handleSelectedItem(item);
+              }}
             />
           </View>
         )}
@@ -184,7 +134,7 @@ const YouScreen = ({ navigation }) => {
                   ))}
                   <View style={st.historyItem}>
                     <Text style={st.sectionTitle}>Browsing history</Text>
-                    <View style={{ flexDirection: 'row' }}>
+                    <View style={{flexDirection: 'row'}}>
                       <Text
                         style={{
                           fontSize: 13,
@@ -196,7 +146,7 @@ const YouScreen = ({ navigation }) => {
                       </Text>
                       <Image
                         source={require('../../assets/icons/ic_next.png')}
-                        style={{ height: 15, width: 15 }}
+                        style={{height: 15, width: 15}}
                         resizeMode="contain"
                       />
                     </View>
@@ -209,14 +159,35 @@ const YouScreen = ({ navigation }) => {
               <>
                 <View>
                   <View style={st.userInfo}>
-                    <Image source={{ uri: personalInfo?.avatar }} style={st.avatar} />
-                    <Text style={st.userName}>{personalInfo?.name}</Text>
+                    <Pressable
+                      style={({pressed}) => [
+                        {opacity: pressed ? 0.8 : 1},
+                        {flexDirection: 'row', gap: 10},
+                      ]}
+                      onPress={() => navigation.navigate('Profile')}>
+                      <Image
+                        source={{uri: personalInfo?.avatar}}
+                        style={st.avatar}
+                      />
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: 5,
+                        }}>
+                        <Text style={st.userName}>{personalInfo?.name}</Text>
+                        <Image
+                          source={require('../../assets/icons/ic_ed.png')}
+                        />
+                      </View>
+                    </Pressable>
                     <View style={st.headerIcons}>
                       <Image
                         source={require('../../assets/icons/ic_support.png')}
                         style={st.icon}
                       />
-                      <TouchableOpacity onPress={() => navigation.navigate('Setting')}>
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('Setting')}>
                         <Image
                           source={require('../../assets/icons/ic_settings.png')}
                           style={st.icon}
@@ -225,18 +196,25 @@ const YouScreen = ({ navigation }) => {
                     </View>
                   </View>
                   {menuItems.slice(0, 2).map(item => (
-                    <MenuItem key={item.id} item={item} onPress={item => handleNavigate(item)} />
+                    <MenuItem
+                      key={item.id}
+                      item={item}
+                      onPress={item => handleNavigate(item)}
+                    />
                   ))}
                   <View style={st.bottomMenu}>
                     {bottomMenuItems.map(item => (
-                      <TouchableOpacity key={item.id} style={st.bottomMenuItem} onPress={() => navigation.navigate(item.title)}>
+                      <TouchableOpacity
+                        key={item.id}
+                        style={st.bottomMenuItem}
+                        onPress={() => navigation.navigate(item.title)}>
                         <Image source={item.icon} style={st.menuIcon} />
                         <Text style={st.menuText}>{item.title}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
                   <Text
-                    style={[st.sectionTitle, { marginLeft: 15, marginTop: 5 }]}>
+                    style={[st.sectionTitle, {marginLeft: 15, marginTop: 5}]}>
                     Browsing history
                   </Text>
 
@@ -263,7 +241,7 @@ const YouScreen = ({ navigation }) => {
   );
 };
 
-const MenuItem = ({ item, onPress }) => (
+const MenuItem = ({item, onPress}) => (
   <TouchableOpacity
     style={st.menuItem}
     onPress={() => {
@@ -273,7 +251,7 @@ const MenuItem = ({ item, onPress }) => (
     <Text style={st.menuText}>{item.text}</Text>
     <Image
       source={require('../../assets/icons/ic_next.png')}
-      style={{ height: 15, width: 15 }}
+      style={{height: 15, width: 15}}
       resizeMode="contain"
     />
   </TouchableOpacity>
@@ -290,7 +268,6 @@ const st = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: 50,
   },
   header: {
     padding: 14,
@@ -340,7 +317,7 @@ const st = StyleSheet.create({
   userInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
+    justifyContent: 'space-between',
     padding: 10,
     borderBottomWidth: 5,
     borderBlockColor: '#EEEEEE',
@@ -353,8 +330,6 @@ const st = StyleSheet.create({
   userName: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginLeft: 10,
-    flex: 1,
   },
   headerIcons: {
     flexDirection: 'row',
