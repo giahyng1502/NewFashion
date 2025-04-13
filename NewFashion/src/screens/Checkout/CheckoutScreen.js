@@ -21,10 +21,12 @@ import SupportFunctions from '../../utils/SupportFunctions';
 import BaseHeader from '../../components/BaseHeader'
 import { deleteInformation, updateDefaultInformation } from '../../redux/actions/infomationActions'
 import { fetchCoupon } from '../../redux/actions/voucherAction'
-import { createOrder } from '../../redux/actions/orderActions'
+import {cancelOrder, createOrder} from '../../redux/actions/orderActions'
 import { fetchCart } from '../../redux/actions/cartActions'
 import axios from "../../service/axios";
 import {useSocket} from "../../context/socketContext";
+import generatePaymentCode from "../../until/genaratePaymentCode";
+import {createPayment} from "../../redux/actions/paymentAction";
 
 const CheckoutScreen = ({ navigation }) => {
     const { carts } = useSelector(state => state.cart);
@@ -49,7 +51,16 @@ const CheckoutScreen = ({ navigation }) => {
     const [isEnabled, setIsEnabled] = useState(false);
     const [payment, setOnPayment] = useState('direct');
     const socket = useSocket();
-    const [newCart, setNewCart] = useState(carts);
+    const [newCart, setNewCart] = useState({
+        finalTotal : carts.total,
+        maxDiscount : 0,
+        total : carts.total,
+    });
+    const momoReturn = useRef(null);
+    const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+    useEffect(() => {
+        console.log(carts)
+    }, []);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -90,10 +101,6 @@ const CheckoutScreen = ({ navigation }) => {
         }
     }, [isLoadingCoupon, isLoadingCart, isLoadingAddress]);
 
-    useEffect(() => {
-        console.log(payment);
-    }, [payment]);
-
     function formatDate(isoString) {
         const date = new Date(isoString);
         
@@ -106,39 +113,63 @@ const CheckoutScreen = ({ navigation }) => {
     
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     }
-
-    const createAnOrder = () => {
-        dispatch(createOrder({
-            name: selectedAddress.name,
-            phoneNumber: selectedAddress.phoneNumber,
-            address: selectedAddress.address,
-            voucherId: selectedCoupon ? selectedCoupon._id : null,
-            momo: payment,
-            point: isEnabled ? personalInfo.point : 0
-        })) // <- chỉ cần thêm dấu ngoặc này ở đây
-            .then(async (order) => {
-                console.log('Tạo đơn thành công');
-                if (order.payload) {
-                    if (payment === 'direct') {
-                        navigation.replace('OrderDone');
-                    } else if (payment === 'momo') {
-                        const response = await axios.post('/momo/payment', {
-                            priceProduct: order?.payload?.totalPrice,
-                            rawOrderId: order.payload._id,
-                        });
-                        if (response && response.payUrl) {
-                            // Mở trang thanh toán MoMo
-                            Linking.openURL(response.payUrl);
-                        } else {
-                            Alert.alert('Lỗi thanh toán', 'Không thể khởi tạo thanh toán MoMo');
-                        }
-                    }
-                }
-            })
-            .catch((error) => {
-                console.log('Create order failed: ', error);
+    const handleMoMoPayment = async (orderData) => {
+        try {
+            const response = await createPayment({
+                priceProduct: orderData.totalPrice,
+                rawOrderId: generatePaymentCode(),
+                idOrder: orderData._id,
             });
-    }
+
+            if (response && response.resultCode === 0) {
+                momoReturn.current = response;
+                Linking.openURL(momoReturn.current.payUrl);
+            } else {
+                Alert.alert('Thông báo', 'Không thể thanh toán bằng hình thức momo lúc này');
+            }
+        } catch (error) {
+            Alert.alert('Lỗi', 'Có lỗi xảy ra khi tạo thanh toán MoMo');
+        }
+    };
+    useEffect(() => {
+        console.log("🟢 isProcessingPayment:", isProcessingPayment);
+    }, [isProcessingPayment]);
+    const createAnOrder = async () => {
+        try {
+            setIsLoading(true);
+            const [response] = await Promise.all([dispatch(createOrder({
+                name: selectedAddress.name,
+                phoneNumber: selectedAddress.phoneNumber,
+                address: selectedAddress.address,
+                voucherId: selectedCoupon ? selectedCoupon._id : null,
+                momo: payment,
+                point: isEnabled ? personalInfo.point : 0
+            }))]);
+
+            const isSuccess = response && response.meta?.requestStatus === "fulfilled";
+            const orderData = response?.payload;
+
+            if (isSuccess && orderData) {
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Cart' }],
+                })
+                if (payment === "direct") {
+                    navigation.replace('OrderDone');
+                } else if (payment === "momo") {
+                    setIsProcessingPayment(true);
+                    await handleMoMoPayment(orderData);
+                }
+            } else {
+                Alert.alert('Thông báo', response?.payload?.message || 'Tạo đơn hàng thất bại');
+            }
+        } catch (error) {
+            Alert.alert('Lỗi', 'Đã có lỗi xảy ra khi tạo đơn hàng');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
 
 
 
@@ -236,29 +267,6 @@ const CheckoutScreen = ({ navigation }) => {
         outputRange: [bottomSheetHeight, 0]
     });
 
-    const getFinalPriceOfSelectedItems = () => {
-        return newCart
-            .filter(item => item.isSelected)
-            .reduce((total, item) => {
-                const discountMultiplier = item.disCountSale > 0 ? (1 - item.disCountSale / 100) : 1;
-                const itemPrice = item.price * discountMultiplier * item.quantity;
-                return total + itemPrice;
-            }, 0);
-    }
-
-    const getOriginalPriceOfSelectedItems = () => {
-        return carts
-            .filter(item => item.isSelected)
-            .reduce((total, item) => {
-                const itemPrice = item.price * item.quantity;
-                return total + itemPrice;
-            }, 0);
-    }
-
-    const getDiscountPriceOfSelectedItems = () => {
-        return getOriginalPriceOfSelectedItems() - getFinalPriceOfSelectedItems();
-    }
-
     const getDefaultInformation = () => {
         const defaultInformation = personalInfo.information.filter(infor => infor.isDefault);
 
@@ -299,6 +307,46 @@ const CheckoutScreen = ({ navigation }) => {
             { cancelable: true }
         );
     };
+    const handleCancel = () => {
+        if (!momoReturn.current.orderId) {
+            Alert.alert('Thông báo','Không tìm thấy đơn hàng',[
+                {
+                    text: "Trở về",
+                    style: "destructive",
+                    onPress: () => {
+                        navigation.replace('Main')
+                    }
+                }
+            ])
+        }
+        Alert.alert(
+            "Xác nhận hủy đơn hàng",
+            "Bạn có chắc chắn muốn hủy đơn hàng này không",
+            [
+                {
+                    text: "Hủy",
+                    style: "cancel",
+                },
+                {
+                    text: "Đồng ý",
+                    style: "destructive",
+                    onPress: () => {
+
+
+                        // Gửi yêu cầu xóa lên server với các sản phẩm được chọn
+                        dispatch(cancelOrder(momoReturn.current.orderId))
+                            .then((result) => {
+                                navigation.replace('Main')
+                            })
+                            .catch((error) => {
+                                console.error("Error cancel order:", error);
+                            });
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
+    };
 
     const handleDefaultAddress = (item) => {
         setDefaultAddress(item)
@@ -317,20 +365,23 @@ const CheckoutScreen = ({ navigation }) => {
     };
 
     const applyVoucherToCart = (voucher) => {
-        const updatedCart = carts.map(item => {
-          const discountAmount = (item.price * voucher.discount) / 100;
-          const appliedDiscount = Math.min(discountAmount, voucher.maxDiscountPrice);
-          const actualDiscountPercent = (appliedDiscount / item.price) * 100;
+        if (!voucher || !carts || !carts.total) return;
 
-          return {
-            ...item,
-            disCountSale: actualDiscountPercent, // Cập nhật phần trăm đã giảm
-          };
-        });
+        const discountPercent = voucher.discount || 0;
+        const maxDiscountPrice = voucher.maxDiscountPrice || 0;
 
-        // Cập nhật state
-        setNewCart(updatedCart);
+        const discount = (carts.total * discountPercent) / 100;
+        const maxDiscount = Math.min(discount, maxDiscountPrice);
+
+        const finalTotal = Math.max(0, carts.total - maxDiscount); // Không cho âm
+
+        setNewCart(prevCart => ({
+            ...prevCart,
+            finalTotal,
+            maxDiscount
+        }));
     };
+
 
     const handleSelectVoucher = (voucher) => {
         if (voucher) {
@@ -357,146 +408,154 @@ const CheckoutScreen = ({ navigation }) => {
 
             {/* body */}
             <ScrollView>
-                <BuyerDetail products={carts} onClickShowPopup={[toggleAdressSheet, toggleBottomSheet]} information={selectedAddress} />
-                <PaymentAnhCoupon onPayment={setOnPayment} products={newCart} personalInfo={personalInfo} onSwitch={setIsEnabled} onClickShowPopup={toggleCouponSheet} />
+                <BuyerDetail products={carts.products} onClickShowPopup={[toggleAdressSheet, toggleBottomSheet]} information={selectedAddress} />
+                <PaymentAnhCoupon onPayment={setOnPayment} newCart={newCart} personalInfo={personalInfo} onSwitch={setIsEnabled} onClickShowPopup={toggleCouponSheet} />
                 <SubInfor />
             </ScrollView>
 
             {/* footer */}
             <View style={styles.footerContainer}>
                 {/* Phần tổng tiền */}
-                <View style={styles.priceContainer}>
-                    <View style={styles.realPriceContainer}>
-                        <Text style={styles.totalPrice}>{SupportFunctions.convertPrice((
-                            (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
-                                ? 0
-                                : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
-                        ))}</Text>
-                        <TouchableOpacity onPress={toggleBottomSheet}>
-                            <Image source={require('../../assets/icons/ic_arrowUp.png')} resizeMode='cover' style={styles.arrowButton} />
+                {isProcessingPayment ? (
+                    <View style={{flexDirection : 'row',gap : 10,justifyContent:'space-between'}}>
+                        <TouchableOpacity style={[styles.submitButton,{backgroundColor : 'gray',flex : 1}]} onPress={()=>{
+                            handleCancel()
+                        }}>
+                            <Text style={styles.buttonText}>Hủy đơn hàng</Text>
                         </TouchableOpacity>
+                        <TouchableOpacity style={[styles.submitButton,{backgroundColor : '#ff6600',flex : 1}]} onPress={() => {
+                            Linking.openURL(momoReturn.current.payUrl)
+                        }}>
+                            <Text style={styles.buttonText}>Thanh toán</Text>
+                        </TouchableOpacity>
+
                     </View>
-                    <Text style={styles.savedAmount}>Saved {SupportFunctions.convertPrice(getDiscountPriceOfSelectedItems() + (isEnabled ? personalInfo?.point : 0)) }</Text>
-                </View>
-                {/* Nút Submit Order */}
-                <TouchableOpacity style={styles.submitButton} onPress={() => createAnOrder()}>
-                    <Text style={styles.buttonText}>Submit order</Text>
-                </TouchableOpacity>
+                ):(
+                <>
+                    <View style={styles.priceContainer}>
+                        <View style={styles.realPriceContainer}>
+                            <Text style={styles.totalPrice}>{SupportFunctions.convertPrice((
+                                (isEnabled ? newCart.finalTotal - personalInfo.point : newCart.finalTotal)
+                            ))}</Text>
+                            <TouchableOpacity onPress={toggleBottomSheet}>
+                                <Image source={require('../../assets/icons/ic_arrowUp.png')} resizeMode='cover' style={styles.arrowButton} />
+                            </TouchableOpacity>
+                        </View>
+                        <Text style={styles.savedAmount}>Saved {SupportFunctions.convertPrice(newCart.maxDiscount + (isEnabled ? personalInfo.point : 0))}</Text>
+                    </View>
+                    {/* Nút Submit Order */}
+                    <TouchableOpacity style={[styles.submitButton,{backgroundColor : '#ff6600',}]} onPress={() => createAnOrder()}>
+                        <Text style={styles.buttonText}>Submit order</Text>
+                    </TouchableOpacity>
 
-                {isShowPriceBottomSheet && (
-                    <View style={{ position: 'absolute', bottom: 80, left: 0, right: 0, top: 0, justifyContent: 'flex-end', overflow: 'hidden' }}>
-                        {/* background */}
-                        <TouchableOpacity style={{ ...StyleSheet.absoluteFillObject }} onPress={closePriceBottomSheet} >
-                            <Animated.View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'black', opacity: backdropOpacity }} />
-                        </TouchableOpacity>
+                    {isShowPriceBottomSheet && (
+                        <View style={{ position: 'absolute', bottom: 80, left: 0, right: 0, top: 0, justifyContent: 'flex-end', overflow: 'hidden' }}>
+                            {/* background */}
+                            <TouchableOpacity style={{ ...StyleSheet.absoluteFillObject }} onPress={closePriceBottomSheet} >
+                                <Animated.View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'black', opacity: backdropOpacity }} />
+                            </TouchableOpacity>
 
-                        {/* content */}
-                        <Animated.View style={{ transform: [{ translateY: sheetTranslateY }], backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomWidth: 1, borderBottomColor: '#BBB' }}>
-                            <BaseHeader
-                                title="Price Detail"
-                                showRightButton={true}
-                                rightIcon={require('../../assets/bt_exit.png')}
-                                onRightButtonPress={closePriceBottomSheet}
-                            />
-
-                            <View style={{ height: 1, backgroundColor: '#BBB' }} />
-
-                            <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
-                                <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-                                    Cart
-                                </Text>
-
-                                <FlatList
-                                    data={carts.filter(item => item.isSelected)}
-                                    keyExtractor={item => item._id}
-                                    horizontal
-                                    style={{ marginTop: 5 }}
-                                    renderItem={({ item }) => (
-                                        <View style={{ alignItems: 'center', marginRight: 5 }}>
-                                            <Image source={{ uri: item.color.imageColor }} style={{ width: 60, height: 60 }} resizeMode="cover" />
-
-                                            <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#737337' }}>
-                                                {SupportFunctions.convertPrice(item.price)} {' '}
-                                                <Text style={{ color: '#FA7806', fontSize: 8, fontWeight: 'bold' }}>
-                                                    x{item.quantity}
-                                                </Text>
-                                            </Text>
-                                        </View>
-                                    )}
+                            {/* content */}
+                            <Animated.View style={{ transform: [{ translateY: sheetTranslateY }], backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, borderBottomWidth: 1, borderBottomColor: '#BBB' }}>
+                                <BaseHeader
+                                    title="Price Detail"
+                                    showRightButton={true}
+                                    rightIcon={require('../../assets/bt_exit.png')}
+                                    onRightButtonPress={closePriceBottomSheet}
                                 />
 
-                                <View style={{ height: 1, backgroundColor: '#BBB', marginTop: 5 }} />
+                                <View style={{ height: 1, backgroundColor: '#BBB' }} />
 
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
+                                <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
                                     <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-                                        Item (s) total:
+                                        Cart
                                     </Text>
 
-                                    <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#737373' }}>
-                                        {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice(getOriginalPriceOfSelectedItems())}
-                                    </Text>
+                                    <FlatList
+                                        data={carts.products.filter(item => item.isSelected)}
+                                        keyExtractor={item => item._id}
+                                        horizontal
+                                        style={{ marginTop: 5 }}
+                                        renderItem={({ item }) => (
+                                            <View style={{ alignItems: 'center', marginRight: 5 }}>
+                                                <Image source={{ uri: item.color.imageColor }} style={{ width: 60, height: 60 }} resizeMode="cover" />
+
+                                                <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#737337' }}>
+                                                    {SupportFunctions.convertPrice(item.price)} {' '}
+                                                    <Text style={{ color: '#FA7806', fontSize: 8, fontWeight: 'bold' }}>
+                                                        x{item.quantity}
+                                                    </Text>
+                                                </Text>
+                                            </View>
+                                        )}
+                                    />
+
+                                    <View style={{ height: 1, backgroundColor: '#BBB', marginTop: 5 }} />
+
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
+                                        <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
+                                            Item (s) total:
+                                        </Text>
+
+                                        <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#737373' }}>
+                                            {/* price of cart item selected */}
+                                            {SupportFunctions.convertPrice(newCart.total)}
+                                        </Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
+                                        <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
+                                            Item (s) discount:
+                                        </Text>
+
+                                        <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#FA7806' }}>
+                                            {/* price of cart item selected */}
+                                            {SupportFunctions.convertPrice(newCart.maxDiscount)}
+                                        </Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
+                                        <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
+                                            Points:
+                                        </Text>
+
+                                        <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#FA7806' }}>
+                                            {/* price of cart item selected */}
+                                            {SupportFunctions.convertPrice(isEnabled ? personalInfo.point : 0)}
+                                        </Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
+                                        <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
+                                            Subtotal:
+                                        </Text>
+
+                                        <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#FA7806' }}>
+                                            {/* price of cart item selected */}
+                                            {SupportFunctions.convertPrice(Math.max(0,newCart.finalTotal - personalInfo.point))}
+                                        </Text>
+                                    </View>
+
+                                    <View style={{ height: 1, backgroundColor: '#BBB', marginTop: 5 }} />
+
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
+                                        <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
+                                            Total:
+                                        </Text>
+
+                                        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
+                                            {/* price of cart item selected */}
+                                            {SupportFunctions.convertPrice(newCart.finalTotal)}
+                                        </Text>
+                                    </View>
+
                                 </View>
+                            </Animated.View>
 
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
-                                    <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-                                        Item (s) discount:
-                                    </Text>
-
-                                    <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#FA7806' }}>
-                                        {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice(getDiscountPriceOfSelectedItems())}
-                                    </Text>
-                                </View>
-
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
-                                    <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-                                        Points:
-                                    </Text>
-
-                                    <Text style={{ fontSize: 12, fontWeight: 'bold', textDecorationLine: 'line-through', color: '#FA7806' }}>
-                                        {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice(isEnabled ? personalInfo.point : 0)}
-                                    </Text>
-                                </View>
-
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
-                                    <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-                                        Subtotal:
-                                    </Text>
-
-                                    <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#FA7806' }}>
-                                        {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice((
-                                            (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
-                                                ? 0
-                                                : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
-                                        ))}
-                                    </Text>
-                                </View>
-
-                                <View style={{ height: 1, backgroundColor: '#BBB', marginTop: 5 }} />
-
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
-                                    <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-                                        Total:
-                                    </Text>
-
-                                    <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
-                                        {/* price of cart item selected */}
-                                        {SupportFunctions.convertPrice((
-                                            (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
-                                                ? 0
-                                                : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
-                                        ))}
-                                    </Text>
-                                </View>
-
-                            </View>
-                        </Animated.View>
-
-                    </View>
-                )}
+                        </View>
+                    )}
+                </>
+            )}
             </View>
 
             {isShowAdressSheet && (
@@ -767,10 +826,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     submitButton: {
-        backgroundColor: '#ff6600',
         paddingVertical: 10,
         paddingHorizontal: 30,
-        borderRadius: 30,
+        borderRadius: 8,
+        alignItems: 'center',
     },
     buttonText: {
         color: '#fff',

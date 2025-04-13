@@ -23,17 +23,13 @@ const titleCategories = [
 ];
 
 const HomeScreen = ({ navigation }) => {
-  const titleCategoryFlatlistRef = useRef(null)
-  const [selectedTitleCategory, setSelectedTitleCategory] = useState(null);
-  const [searchText, setSearchText] = useState('');
   const dispatch = useDispatch();
   const { products, saleProducts, loading, page, hasMore } = useSelector(state => state.product);
   const { carts } = useSelector(state => state.cart);
 
   useEffect(() => {
-    setSelectedTitleCategory(titleCategories[0]);
     dispatch(fetchCart())
-  }, []);
+  }, [dispatch]);
 
   const loadMoreProducts = () => {
     if (!loading && hasMore) {
@@ -77,9 +73,9 @@ const HomeScreen = ({ navigation }) => {
             {/* Cart Button */}
             <TouchableOpacity onPress={handleSelectCartButton} style={{ position: 'absolute', top: 50, right: 20 }}>
               <Image source={require('../../assets/buttons/bt_cart.png')} style={{ width: 35, height: 35 }} />
-              {(AppManager.shared.isUserLoggedIn() && carts.length > 0) && (
+              {(AppManager.shared.isUserLoggedIn() && carts?.products?.length > 0) && (
                 <View style={{ position: 'absolute', top: 2, right: 2, backgroundColor: 'red', width: 16, height: 16, borderRadius: 8, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#fff' }}>
-                  <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>{carts.length}</Text>
+                  <Text style={{ color: '#fff', fontSize: 10, fontWeight: 'bold' }}>{carts.products.length}</Text>
                 </View>
               )}
             </TouchableOpacity>

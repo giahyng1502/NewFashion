@@ -3,9 +3,9 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, Switch } from "react-n
 import { RadioButton } from "react-native-paper";
 import SupportFunctions from '../../utils/SupportFunctions';
 
-const PaymentAndCoupon = ({onPayment, products, personalInfo, onSwitch, onClickShowPopup }) => {
+const PaymentAndCoupon = ({onPayment, newCart, personalInfo, onSwitch, onClickShowPopup }) => {
   useEffect(() => {
-    console.log(products);
+    console.log(newCart);
     
   }, [])
   
@@ -14,29 +14,6 @@ const PaymentAndCoupon = ({onPayment, products, personalInfo, onSwitch, onClickS
   const toggleSwitch = () => {
     setIsEnabled(previousState => !previousState)
     onSwitch(!isEnabled);
-  }
-
-  const getFinalPriceOfSelectedItems = () => {
-    return products
-      .filter(item => item.isSelected)
-      .reduce((total, item) => {
-        const discountMultiplier = item.disCountSale > 0 ? (1 - item.disCountSale / 100) : 1;
-        const itemPrice = item.price * discountMultiplier * item.quantity;
-        return total + itemPrice;
-      }, 0);
-  }
-
-  const getOriginalPriceOfSelectedItems = () => {
-    return products
-      .filter(item => item.isSelected)
-      .reduce((total, item) => {
-        const itemPrice = item.price * item.quantity;
-        return total + itemPrice;
-      }, 0);
-  }
-
-  const getDiscountPriceOfSelectedItems = () => {
-    return getOriginalPriceOfSelectedItems() - getFinalPriceOfSelectedItems();
   }
 
   return (
@@ -113,12 +90,12 @@ const PaymentAndCoupon = ({onPayment, products, personalInfo, onSwitch, onClickS
       <View style={styles.summaryContainer}>
         <View style={styles.summaryRow}>
           <Text style={styles.textBold}>Item(s) total:</Text>
-          <Text style={[styles.textBold, { textDecorationLine: 'line-through', color: '#737373' }]}>{SupportFunctions.convertPrice(getOriginalPriceOfSelectedItems())}</Text>
+          <Text style={[styles.textBold, { textDecorationLine: 'line-through', color: '#737373' }]}>{SupportFunctions.convertPrice(newCart.total)}</Text>
         </View>
 
         <View style={styles.summaryRow}>
           <Text style={styles.textBold}>Item(s) discount:</Text>
-          <Text style={[styles.textBold, { textDecorationLine: 'line-through', color: '#D96923' }]}>{SupportFunctions.convertPrice(getDiscountPriceOfSelectedItems())}</Text>
+          <Text style={[styles.textBold, { textDecorationLine: 'line-through', color: '#D96923' }]}>{SupportFunctions.convertPrice(newCart.maxDiscount)}</Text>
         </View>
 
         <View style={styles.summaryRow}>
@@ -129,9 +106,7 @@ const PaymentAndCoupon = ({onPayment, products, personalInfo, onSwitch, onClickS
         <View style={styles.summaryRow}>
           <Text style={styles.textBold}>Subtotal:</Text>
           <Text style={styles.textBold}>{SupportFunctions.convertPrice((
-              (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
-                  ? 0
-                  : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
+              Math.max((newCart.finalTotal - (isEnabled ? personalInfo.point : 0)),0)
           ))}</Text>
         </View>
 
@@ -144,9 +119,7 @@ const PaymentAndCoupon = ({onPayment, products, personalInfo, onSwitch, onClickS
           <View style={styles.summaryRow}>
             <Text style={[styles.textBold, { fontSize: 20 }]}>Order total:</Text>
             <Text style={[styles.textBold, { fontSize: 20 }]}>{SupportFunctions.convertPrice((
-                (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0)) < 0
-                    ? 0
-                    : (getFinalPriceOfSelectedItems() - (isEnabled ? personalInfo.point : 0))
+                Math.max((newCart.finalTotal - (isEnabled ? personalInfo.point : 0)),0)
             ))}</Text>
           </View>
         </View>

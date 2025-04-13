@@ -1,5 +1,5 @@
 import { ActivityIndicator, Alert, Animated, FlatList, Image, Pressable, ScrollView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import BaseHeader from '../../components/BaseHeader'
 import FilledButton from '../../components/FilledButton'
@@ -7,7 +7,7 @@ import ScreenSize from '../../contants/ScreenSize'
 import OutlinedButton from '../../components/OutlinedButton'
 import ProductCard from '../../components/ProductCard';
 import AppManager from '../../utils/AppManager';
-import { deleteCart, updateCart } from '../../redux/actions/cartActions';
+import {deleteCart, fetchCart, updateCart} from '../../redux/actions/cartActions';
 import SupportFunctions from '../../utils/SupportFunctions';
 import { fetchProducts } from '../../redux/actions/productActions';
 
@@ -32,20 +32,21 @@ const CartScreen = ({ navigation }) => {
   const pickColorAndSizeBottomSheetHeight = 1000
 
   const { carts } = useSelector(state => state.cart);
-  const [cartItems, setCartItems] = React.useState(carts);
+  const [cartItems, setCartItems] = React.useState(carts.products);
   const { products, loading, page, hasMore } = useSelector(state => state.product);
   const { personalInfo } = useSelector(state => state.personalInfo);
   const [isLoading, setIsLoading] = useState(true);
 
   const dispatch = useDispatch();
 
+
   useEffect(() => {
     if (personalInfo) {
-      setCartItems(carts);
-      setTitle(carts.filter(item => item.isSelected).length > 0 ? `Cart (${carts.filter(item => item.isSelected).length})` : 'Cart');
-      setCheckOutTitleButton(carts.filter(item => item.isSelected).length > 0 ? `Checkout (${carts.filter(item => item.isSelected).length})` : 'Checkout');
-      setShowDeleteButton(carts.filter(item => item.isSelected).length > 0);
-      setIsSelectedAll(carts.filter(item => item.isSelected).length === carts.length);
+      setCartItems(carts.products);
+      setTitle(carts.products.filter(item => item.isSelected).length > 0 ? `Cart (${carts.products.filter(item => item.isSelected).length})` : 'Cart');
+      setCheckOutTitleButton(carts.products.filter(item => item.isSelected).length > 0 ? `Checkout (${carts.products.filter(item => item.isSelected).length})` : 'Checkout');
+      setShowDeleteButton(carts.products.filter(item => item.isSelected).length > 0);
+      setIsSelectedAll(carts.products.filter(item => item.isSelected).length === carts.products.length);
       setIsLoading(false);
     }
   }, []);
@@ -57,7 +58,6 @@ const CartScreen = ({ navigation }) => {
       </View>
     );
   }
-
   const loadMoreProducts = () => {
     if (!loading && hasMore) {
       dispatch(fetchProducts(page));
@@ -387,17 +387,6 @@ const CartScreen = ({ navigation }) => {
       navigation.navigate('Login');
     }
   }
-
-  const getFinalPriceOfSelectedItems = () => {
-    return cartItems
-      .filter(item => item.isSelected)
-      .reduce((total, item) => {
-        const discountMultiplier = item.disCountSale > 0 ? (1 - item.disCountSale / 100) : 1;
-        const itemPrice = item.price * discountMultiplier * item.quantity;
-        return total + itemPrice;
-      }, 0);
-  }
-
   const getOriginalPriceOfSelectedItems = () => {
     return cartItems
       .filter(item => item.isSelected)
@@ -408,7 +397,7 @@ const CartScreen = ({ navigation }) => {
   }
 
   const getDiscountPriceOfSelectedItems = () => {
-    return getOriginalPriceOfSelectedItems() - getFinalPriceOfSelectedItems();
+    return getOriginalPriceOfSelectedItems() - carts?.total;
   }
 
   const handleConfirmPickColorAndSize = () => {
@@ -462,6 +451,7 @@ const CartScreen = ({ navigation }) => {
   const handleSelectedItem = (item) => {
     navigation.navigate("ProductDetail", { item });
   }
+
 
   return (
     <View style={st.container}>
@@ -543,7 +533,7 @@ const CartScreen = ({ navigation }) => {
                       <View style={{ flex: 1, height: 100, justifyContent: 'space-between' }}>
                         <View>
                           <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'black' }} numberOfLines={1}>
-                            {item.productId.name}
+                            {item?.productId?.name}
                           </Text>
 
                           <TouchableOpacity onPress={() => { openPickUpColorAndSizeBottomSheet(item) }} style={{ backgroundColor: '#eee', padding: 5, borderRadius: 5, alignSelf: 'flex-start', marginTop: 5, flexDirection: 'row', alignItems: 'center' }}>
@@ -663,7 +653,7 @@ const CartScreen = ({ navigation }) => {
               <View style={{ justifyContent: cartItems.some(item => item.isSelected && item.disCountSale > 0) ? 'flex-start' : 'center', alignItems: 'center', height: 50 }}> {/* Adjust height for vertical centering */}
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
-                    {SupportFunctions.convertPrice(getFinalPriceOfSelectedItems())}
+                    {SupportFunctions.convertPrice(carts.total)}
                   </Text>
                   <Image source={require("../../assets/icons/ic_arrowUp.png")} style={{ width: 18, height: 18, marginLeft: 5 }} resizeMode="contain" />
                 </View>
@@ -760,7 +750,7 @@ const CartScreen = ({ navigation }) => {
 
                 <Text style={{ fontSize: 14, fontWeight: 'bold' }}>
                   {/* price of cart item selected */}
-                  {SupportFunctions.convertPrice(getFinalPriceOfSelectedItems())}
+                  {SupportFunctions.convertPrice(carts.total)}
                 </Text>
               </View>
 
