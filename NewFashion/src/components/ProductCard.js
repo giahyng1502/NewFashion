@@ -12,14 +12,14 @@ const ProductCard = ({ item, onSelected, style }) => (
       <Image source={{ uri: item.image[0] }} style={st.image} resizeMode='cover' />
     </View>
     <Text style={st.title} numberOfLines={1}>{item.name}</Text>
-    {(item.stock <= 10) && <Text style={st.almostSoldOut}>Almost sold out</Text>}
+    {(item.stock <= 10) && <Text style={st.almostSoldOut}>Gần hết hàng rồi</Text>}
     <View style={st.ratingContainer}>
       <StarRating rating={item.rating} />
       <Text style={{color: '#737373', fontSize: 12}}>{item.rateCount}</Text>
     </View>
     <View style={st.priceContainer}>
       <Text style={st.price}>{convertPrice(item.price)}</Text>
-      <Text style={st.sold}>{item.sold} sold</Text>
+      <Text style={st.sold}>{item.sold} lượt bán</Text>
     </View>
   </TouchableOpacity>
 );

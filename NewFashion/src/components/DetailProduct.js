@@ -33,58 +33,58 @@ const DetailProduct = ({ item }) => {
     return (
         <View style={st.container}>
             <View style={st.cusinfoproduct}>
-                <Text style={st.namedata}>Material:</Text>
+                <Text style={st.namedata}>Vật liệu:</Text>
                 <Text style={st.infodata}>{item.description.material}</Text>
             </View>
             <View style={st.cusinfoproduct}>
-                <Text style={st.namedata}>Composition:</Text>
+                <Text style={st.namedata}>Thành phần:</Text>
                 <Text style={st.infodata}>{item.description.composition}</Text>
             </View>
             <View style={st.cusinfoproduct}>
-                <Text style={st.namedata}>Sleeve Length:</Text>
+                <Text style={st.namedata}>Chiều dài tay áo:</Text>
                 <Text style={st.infodata}>{item.description.sleeveLength}</Text>
             </View>
 
             {expanded && (
                 <View>
                     <View style={st.cusinfoproduct}>
-                        <Text style={st.namedata}>Pattern:</Text>
+                        <Text style={st.namedata}>Mẫu:</Text>
                         <Text style={st.infodata}>{item.description.pattern}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
-                        <Text style={st.namedata}>Applicable People:</Text>
+                        <Text style={st.namedata}>Người áp dụng:</Text>
                         <Text style={st.infodata}>{item.description.applicablePeople}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
-                        <Text style={st.namedata}>Sheer:</Text>
+                        <Text style={st.namedata}>Trong suốt:</Text>
                         <Text style={st.infodata}>{item.description.sheer}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
-                        <Text style={st.namedata}>Type:</Text>
+                        <Text style={st.namedata}>Kiểu:</Text>
                         <Text style={st.infodata}>{item.description.type}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
-                        <Text style={st.namedata}>Season:</Text>
+                        <Text style={st.namedata}>Mùa:</Text>
                         <Text style={st.infodata}>{item.description.season.join('/')}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
-                        <Text style={st.namedata}>Operation Instruction:</Text>
+                        <Text style={st.namedata}>Hướng dẫn vận hành:</Text>
                         <Text style={st.infodata}>{item.description.operationInstruction}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
-                        <Text style={st.namedata}>Style:</Text>
+                        <Text style={st.namedata}>Phong cách:</Text>
                         <Text style={st.infodata}>{item.description.style}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
-                        <Text style={st.namedata}>Fabric Elasticity:</Text>
+                        <Text style={st.namedata}>Độ đàn hồi của vải:</Text>
                         <Text style={st.infodata}>{item.description.fabricElasticity}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
-                        <Text style={st.namedata}>Weaving Method:</Text>
+                        <Text style={st.namedata}>Phương pháp dệt:</Text>
                         <Text style={st.infodata}>{item.description.weavingMethod}</Text>
                     </View>
                     <View style={st.cusinfoproduct}>
-                        <Text style={st.namedata}>Origin:</Text>
+                        <Text style={st.namedata}>Nguồn gốc:</Text>
                         <Text style={st.infodata}>{item.description.origin}</Text>
                     </View>
                     <View style={st.cusimg}>

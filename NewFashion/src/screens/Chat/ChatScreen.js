@@ -77,7 +77,7 @@ const ChatScreen = ({navigation}) => {
                     <View style={styles.unseenMsgContainer}>
                         {item.unseenMsg > 0 && (
                             <Text style={styles.unseenMsg}>
-                                {item.unseenMsg} new message{item.unseenMsg > 1 ? 's' : ''}
+                                {item.unseenMsg} tin nhắn mới {item.unseenMsg > 1 ? 's' : ''}
                             </Text>
                         )}
                     </View>
@@ -93,7 +93,7 @@ const ChatScreen = ({navigation}) => {
                 data={allUser}
                 renderItem={renderItem}
                 keyExtractor={(item,index) =>`${item._id}${index} chat in product chatScreen`}
-                ListEmptyComponent={<Text style={styles.noConversations}>No conversations available</Text>}
+                ListEmptyComponent={<Text style={styles.noConversations}>Không có cuộc trò chuyện nào có sẵn</Text>}
             />
         </View>
     );

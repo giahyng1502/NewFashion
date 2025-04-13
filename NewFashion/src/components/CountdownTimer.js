@@ -43,7 +43,7 @@ const CountdownTimer = ({ expire, onExpire }) => {
         return (
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text style={{ color: 'white', fontSize: 12, fontWeight: 'semibold', padding: 10 }}>
-                    Flash sale has ended
+                Khuyến mại chớp nhoáng đã kết thúc
                 </Text>
             </View>
         );
@@ -52,7 +52,7 @@ const CountdownTimer = ({ expire, onExpire }) => {
     return (
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={{ color: 'white', fontSize: 12, fontWeight: 'semibold', padding: 10 }}>
-                Ends in
+            Kết thúc trong
             </Text>
 
             {/* Hiển thị thời gian đếm ngược với 3 ô */}

@@ -48,7 +48,7 @@ const CouponScreen = ({ navigation }) => {
   return (
     <View style={st.container}>
       <BaseHeader
-        title="Coupons & offers"
+        title="Mã giảm giá & ưu đãi"
         showLeftButton={true}
         onLeftButtonPress={() => navigation.goBack()}
         showRightButton={setshowHelpButton}
@@ -60,8 +60,8 @@ const CouponScreen = ({ navigation }) => {
       <>
       {/* Ghi chú */}
       <Text style={{ fontSize: 12, marginBottom: 12, marginHorizontal: 15 }}>
-        <Text style={{ fontSize: 15, fontWeight: "bold" }}>The discount code can be used</Text>
-        {"\n"}Limit 1 coupon for each purchase. Discount sheets cannot be applied to shipping charges.
+        <Text style={{ fontSize: 15, fontWeight: "bold" }}>Bạn có thể sử dụng mã giảm giá này</Text>
+        {"\n"}Giới hạn 1 mã giảm giá cho mỗi lần mua. Không áp dụng mã cho phí vận chuyển.
       </Text>
 
       {/* Danh sách coupon */}
@@ -71,7 +71,7 @@ const CouponScreen = ({ navigation }) => {
         renderItem={({ item }) => (
           <View style={{ borderTopWidth: 3, marginVertical: 10, marginHorizontal: 12, borderTopColor: '#FA7806', borderRadius: 2, backgroundColor: "#F0FFEB", height: 150, gap: 5 }}>
             <View style={{ backgroundColor: '#FA7806', width: 30, borderBottomLeftRadius: 3, borderBottomRightRadius: 3 }}>
-              <Text style={{ fontWeight: "bold", color: "#fff", textAlign: "center", fontSize: 10 }}>NEW</Text>
+              <Text style={{ fontWeight: "bold", color: "#fff", textAlign: "center", fontSize: 10 }}>		MỚI</Text>
             </View>
             <View style={{ paddingHorizontal: 15 }}>
               <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
@@ -84,8 +84,8 @@ const CouponScreen = ({ navigation }) => {
                 </View>
               </View>
               <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
-                <Text style={{ color: "#737373", fontWeight: "bold", fontSize: 12 }}>For all items</Text>
-                <Text style={{ fontWeight: "bold" }}><Text style={{ color: "#737373", fontSize: 12 }}>Code: </Text>{item._id}</Text>
+                <Text style={{ color: "#737373", fontWeight: "bold", fontSize: 12 }}>Áp dụng cho tất cả sản phẩm</Text>
+                <Text style={{ fontWeight: "bold" }}><Text style={{ color: "#737373", fontSize: 12 }}>Mã: </Text>{item._id}</Text>
               </View>
             </View>
           </View>

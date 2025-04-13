@@ -55,7 +55,7 @@ const WriteReviews = ({ navigation, route }) => {
             }
 
         } catch (error) {
-            Alert.alert("Error", error?.message || "Something went wrong!");
+            Alert.alert("Error", error?.message || "Có gì đó không ổn!");
         }
     }
 

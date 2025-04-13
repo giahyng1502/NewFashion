@@ -45,18 +45,18 @@ const OrderDoneScreen = ({navigation}) => {
                 <>
                     <View style={{width:'100%',backgroundColor:'#fff',padding:20,alignItems:'center',borderTopColor: '#BBBBBB', borderTopWidth: 0.5}}>
                         <Image source={require('../../assets/icons/ic_greenCheck3.png')} style={{width:80,height:80,marginTop:20}}/>
-                        <Text style={{color:'#000',fontSize:20,fontWeight:'bold',marginTop:20}}>Thank you for ordering!</Text>
-                        <Text style={{color:'#737373',fontSize:14,marginTop:20,marginBottom:10}}>You will receive updates of the product in the mailbox to notification.</Text>
+                        <Text style={{color:'#000',fontSize:20,fontWeight:'bold',marginTop:20}}>Cảm ơn bạn đã đặt hàng!</Text>
+                        <Text style={{color:'#737373',fontSize:14,marginTop:20,marginBottom:10}}>Bạn sẽ nhận được thông tin cập nhật về sản phẩm trong hộp thư thông báo.</Text>
                         <TouchableOpacity style={{ backgroundColor: "#ff7f00", padding: 12, borderRadius: 40, alignItems: "center",width:'100%',margin:10 }}
                             onPress={()=>navigation.navigate('Your orders')}>
                             <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 18 }}>
-                                View order
+                            Xem đơn hàng
                             </Text>
                         </TouchableOpacity>
                     </View>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 20, marginVertical: 10 }}>
                         <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
-                        <Text style={{ marginHorizontal: 10, fontWeight: 'semibold', fontSize: 14, color: '#000' }}>Maybe you will also like</Text>
+                        <Text style={{ marginHorizontal: 10, fontWeight: 'semibold', fontSize: 14, color: '#000' }}>Có thể bạn cũng sẽ thích</Text>
                         <View style={{ flex: 1, height: 1, backgroundColor: '#BBBBBB' }} />
                     </View>
                 </>

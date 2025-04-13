@@ -7,7 +7,7 @@ const ChatHeader = ({onPress}) => {
             <TouchableOpacity onPress={onPress}>
                 <Image style={styles.backIcon} source={require('../../assets/ic_back-filled.png')} />
             </TouchableOpacity>
-            <Text style={styles.title}>Chat</Text>
+            <Text style={styles.title}>Trò chuyện</Text>
             <View style={{width : 20}}></View>
         </View>
     )

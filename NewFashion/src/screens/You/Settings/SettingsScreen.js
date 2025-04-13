@@ -12,32 +12,37 @@ const options = [
     title: 'Sign in / Register',
     nameScreen: 'Login',
     icon: require('../../../assets/icons/ic_arrowRight.png'),
+    h3: 'Đăng ký / Đăng nhập',
   },
   {
     id: '3',
     title: 'Privacy',
     nameScreen: '',
     icon: require('../../../assets/icons/ic_arrowRight.png'),
+    h3: 'Đăng ký / Đăng nhập',
   },
   {
     id: '4',
     title: 'Permissions',
     nameScreen: '',
     icon: require('../../../assets/icons/ic_arrowRight.png'),
+    h3: 'Quyền',
   },
   {
     id: '5',
     title: 'Safety center',
     nameScreen: '',
     icon: require('../../../assets/icons/ic_arrowRight.png'),
+    h3: 'Trung tâm bảo mật',
   },
 ];
 
 const anotherOptions = [
   {
     id: '4',
-    title: 'Sign out',
+    title: 'Đăng xuất',
     nameScreen: '',
+    h3: 'Đăng xuất'
   },
 ];
 
@@ -48,6 +53,7 @@ const settings = [
     title: 'Account security',
     iconRight: require('../../../assets/icons/ic_arrowRight1.png'),
     nameScreen: 'AccountSecurity',
+    h3: 'Tài khoản và bảo mật',
   },
   {
     id: '2',
@@ -55,6 +61,7 @@ const settings = [
     title: 'Privacy',
     iconRight: require('../../../assets/icons/ic_arrowRight1.png'),
     nameScreen: 'Privacy',
+    h3: 'Sự riêng tư',
   },
   {
     id: '3',
@@ -62,6 +69,7 @@ const settings = [
     title: 'Permissions',
     iconRight: require('../../../assets/icons/ic_arrowRight1.png'),
     nameScreen: 'Permissions',
+    h3: 'Quyền',
   },
   {
     id: '4',
@@ -69,6 +77,7 @@ const settings = [
     title: 'Safety center',
     iconRight: require('../../../assets/icons/ic_arrowRight1.png'),
     nameScreen: 'SafetyCenter',
+    h3: 'Trung tâm an toàn',
   },
 ];
 
@@ -109,7 +118,7 @@ const SettingsScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <BaseHeader
-        title="Settings"
+        title="Cài đặt"
         showLeftButton={true}
         onLeftButtonPress={() => navigation.goBack()}
       />
@@ -117,10 +126,9 @@ const SettingsScreen = ({navigation}) => {
       {AppManager.shared.isUserLoggedIn() ? (
         <View>
           <View style={styles.heading}>
-            <Text style={styles.h2}>Your account is protected</Text>
+            <Text style={styles.h2}>Tài khoản của bạn được bảo vệ</Text>
             <Text style={styles.p}>
-              New Fashion protects your personal information and keeps it
-              private, safe and secure.
+            New Fashion bảo vệ thông tin cá nhân của bạn và giữ cho thông tin đó được riêng tư, an toàn và bảo mật.
             </Text>
           </View>
 
@@ -136,7 +144,7 @@ const SettingsScreen = ({navigation}) => {
                 onPress={() => handleNavigate(item)}>
                 <View style={styles.innerCard}>
                   <Image source={item.iconLeft} style={styles.innerIcon} />
-                  <Text style={styles.text}>{item.title}</Text>
+                  <Text style={styles.text}>{item.h3}</Text>
                 </View>
                 <Image source={item.iconRight} style={styles.innerIcon} />
               </Pressable>
@@ -151,7 +159,7 @@ const SettingsScreen = ({navigation}) => {
               index={index}
               item={item}
               onPress={() => {
-                if (item.title === 'Sign out') {
+                if (item.title === 'Đăng xuất') {
                   AppManager.shared.removeUserInfo()
                   navigation.reset({
                     index: 0,

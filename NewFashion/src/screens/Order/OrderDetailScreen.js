@@ -7,12 +7,12 @@ import SupportFunctions from '../../utils/SupportFunctions'
 const OrderDetailScreen = ({navigation,route}) => {
     const {order}=route.params
     const orderStatus = [
-        { id: 6, name: 'Waiting for payment' },
-        { id: 0, name: 'Processing' },
-        { id: 1, name: 'Waiting to ship' },
-        { id: 2, name: 'Shipping' },
-        { id: 3, name: 'Delivered' },
-        { id: 4, name: 'Canceled'}
+        { id: 6, name: 'Đang chờ thanh toán' },
+        { id: 0, name: 'Đang Xử lý' },
+        { id: 1, name: 'Đang chờ để vận chuyển' },
+        { id: 2, name: 'Đang vận chuyển' },
+        { id: 3, name: 'Đã giao hàng' },
+        { id: 4, name: 'Đã Hủy'}
     ];
 
     useEffect(() => {
@@ -90,7 +90,7 @@ const OrderDetailScreen = ({navigation,route}) => {
                     <View>
                         <View style={{ padding: 15, borderTopWidth: 0.5, borderTopColor: '#BBBBBB',borderBottomWidth: 10, borderBottomColor: '#e7e7e7'}}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 18 }}>Order Code</Text>
+                                <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 18 }}>Mã đơn hàng</Text>
                                 <Text style={{ color: '#000', fontSize: 16 }}>{order.orderCode}</Text>
                             </View>
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginVertical: 15 }}>
@@ -105,7 +105,7 @@ const OrderDetailScreen = ({navigation,route}) => {
                                     <Image source={require('../../assets/ic_arrowRight.png')} style={{ width: 20, height: 20 }} resizeMode='contain' />
                                 </TouchableOpacity>
                             </View>
-                            <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 18, marginTop: 10 }}>Buyer Detail</Text>
+                            <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 18, marginTop: 10 }}>Chi tiết người mua</Text>
                             <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'flex-start', marginTop: 15 }}>
                                 <Image source={require('../../assets/icons/ic_Adress.png')} style={{ width: 25, height: 25, marginEnd: 10 }} resizeMode='contain' />
                                 <View style={{ flexDirection: 'column' }}>
@@ -120,7 +120,7 @@ const OrderDetailScreen = ({navigation,route}) => {
                             </View>
                         </View>
                         
-                        <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 18, marginTop: 15, marginLeft:20 ,marginBottom:5}}>All products</Text>
+                        <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 18, marginTop: 15, marginLeft:20 ,marginBottom:5}}>Tất cả sản phẩm</Text>
                     </View>
                 }
                 renderItem={({ item }) => (
@@ -160,41 +160,41 @@ const OrderDetailScreen = ({navigation,route}) => {
                 ListFooterComponent={
                     <View style={{padding: 20,paddingBottom:0}}>
                         <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
-                            <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000' }}>Item(s) total:</Text>
+                            <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000' }}>Tổng số mặt hàng:</Text>
                             <Text style={{ fontSize: 16, fontWeight: "bold", textDecorationLine: 'line-through', color: '#737373' }}>
                                 {SupportFunctions.convertPrice(order.originalPrice)}
                             </Text>
                         </View>
 
                         <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
-                            <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000' }}>Item(s) discount:</Text>
+                            <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000' }}>Giảm giá mặt hàng:</Text>
                             <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000', color: '#D96923' }}>
                                 {SupportFunctions.convertPrice(order.totalDiscount)}
                             </Text>
                         </View>
 
                         <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
-                            <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000' }}>Points:</Text>
+                            <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000' }}>Điểm:</Text>
                             <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000', color: '#D96923' }}>
                                 {SupportFunctions.convertPrice(order.point)}
                             </Text>
                         </View>
 
                         <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
-                            <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000' }}>Subtotal:</Text>
+                            <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000' }}>Tổng cộng:</Text>
                             <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000' }}>
                                 {SupportFunctions.convertPrice(order.totalPrice)}
                             </Text>
                         </View>
 
                         <View style={[{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }, { borderTopWidth: 1, borderBottomWidth: 1, paddingVertical: 15, borderColor: '#D7D7D7' }]}>
-                            <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000' }}>Shipping:</Text>
-                            <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000', color: '#078809' }}>FREE</Text>
+                            <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000' }}>Vận chuyển:</Text>
+                            <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000', color: '#078809' }}>MIỄN PHÍ</Text>
                         </View>
 
                         <View style={{ width: '100%', flexDirection: 'column' }}>
                             <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
-                                <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000', fontSize: 20 }}>Order total:</Text>
+                                <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000', fontSize: 20 }}>Tổng đơn hàng:</Text>
                                 <Text style={{ fontSize: 16, fontWeight: "bold", color: '#000', fontSize: 20 }}>
                                 {SupportFunctions.convertPrice(order.totalPrice)}
                                 </Text>
@@ -202,7 +202,7 @@ const OrderDetailScreen = ({navigation,route}) => {
                         </View>
 
                         <View style={{flexDirection: "row",justifyContent: "space-between",marginBottom: 10,borderTopWidth: 1, paddingVertical: 15, borderColor: '#D7D7D7' }}>
-                            <Text style={{fontSize: 16,fontWeight: "bold",color: '#000'}}>Payment method:</Text>
+                            <Text style={{fontSize: 16,fontWeight: "bold",color: '#000'}}>Phương thức thanh toán:</Text>
                             <Text style={{fontSize: 16,fontWeight: "bold",color: '#737373' }}>{order?.paymentMethod.toUpperCase()}</Text>
                         </View>
                     </View>

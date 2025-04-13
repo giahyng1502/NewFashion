@@ -220,7 +220,7 @@ function CommentScreen({ navigation,route }) {
             style={styles.container}
         >
 
-            <BaseHeader title={'New Fashion'} showLeftButton={true} onLeftButtonPress={() => {navigation.goBack();}} />
+            <BaseHeader title={'Bình luận bài viết'} showLeftButton={true} onLeftButtonPress={() => {navigation.goBack();}} />
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={{ flex: 1 }}>
                             <FlatList

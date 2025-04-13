@@ -30,13 +30,13 @@ const OrderScreen = ({ navigation }) => {
   const { products, loading, page, hasMore } = useSelector(state => state.product);
   const [isLoading, setIsLoading] = useState(true)
   const orderStatus = [
-    { id: -2, name: 'All orders' },
-    { id: 6, name: 'Waiting for payment' },
-    { id: 0, name: 'Processing' },
-    { id: 1, name: 'Waiting to ship' },
-    { id: 2, name: 'Shipping' },
-    { id: 3, name: 'Delivered' },
-    { id: 4, name: 'Canceled' } ];
+    { id: -2, name: 'Tất cả các đơn hàng' },
+    { id: 6, name: 'Đang chờ thanh toán' },
+    { id: 0, name: 'Đang Xử lý' },
+    { id: 1, name: 'Chờ giao hàng' },
+    { id: 2, name: 'Đang giao hàng' },
+    { id: 3, name: 'Đã giao hàng' },
+    { id: 4, name: 'Đã hủy' } ];
   const { orders } = useSelector(state => state.orders);
 
   useEffect(() => {
@@ -65,19 +65,19 @@ const OrderScreen = ({ navigation }) => {
 
     const handleCancelOrder = (orderId) => {
       Alert.alert(
-        "Confirm Cancel",
-        "Are you sure to cancel this order?",
+        "Xác nhận Hủy bỏ",
+        "Bạn có chắc chắn muốn hủy đơn hàng này không?",
         [
           {
-            text: "Cancel",
+            text: "Hủy bỏ",
             style: "cancel",
           },
           {
-            text: "Yes",
+            text: "Đúng",
             style: "destructive",
             onPress: () => {
               dispatch(cancelOrder(orderId)).unwrap();
-              alert('Cancel order successfully')
+              Alert('Hủy đơn hàng thành công')
             },
           },
         ],
@@ -95,7 +95,7 @@ const OrderScreen = ({ navigation }) => {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading orders...</Text>
+        <Text>Đang tải đơn hàng...</Text>
       </View>
     );
   }
@@ -128,7 +128,7 @@ const OrderScreen = ({ navigation }) => {
         </Text>
         <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={() => navigation.navigate('OrderDetail', { order })}>
           <Text style={{ fontSize: 14, color: '#737373', fontWeight: 'bold' }}>
-            {order.items.length} items: <Text style={{ fontSize: 14, color: '#000', fontWeight: 'bold' }}>{SupportFunctions.convertPrice(order.totalPrice)}</Text>
+            {order.items.length} mặt hàng: <Text style={{ fontSize: 14, color: '#000', fontWeight: 'bold' }}>{SupportFunctions.convertPrice(order.totalPrice)}</Text>
           </Text>
           <Image source={require('../../assets/icons/ic_arrowRight.png')} style={{ width: 12, height: 12, marginLeft: 3 }} />
         </TouchableOpacity>
@@ -173,7 +173,7 @@ const OrderScreen = ({ navigation }) => {
     <View style={styles.container}>
       {/* header */}
       <BaseHeader
-        title="Your orders"
+        title="Đơn hàng của bạn"
         showLeftButton={true}
         showRightButton={true}
         rightIcon={require('../../assets/buttons/bt_cart2.png')}
@@ -203,7 +203,7 @@ const OrderScreen = ({ navigation }) => {
             {(orders && orders.length === 0) ? (
               <View style={styles.emptyContainer}>
                 <Image source={require('../../assets/icons/ic_emptyOrder.png')} style={{ width: 60, height: 60 }} />
-                <Text style={[styles.textHeader, { fontSize: 16, marginLeft: 10 }]}>You don’t have any orders</Text>
+                <Text style={[styles.textHeader, { fontSize: 16, marginLeft: 10 }]}>Bạn không có đơn hàng nào</Text>
               </View>
             ) : (
               <View style={{ width: '100%' }}>
@@ -218,7 +218,7 @@ const OrderScreen = ({ navigation }) => {
               </View>
             )}
 
-            <Text style={[styles.textHeader, { fontSize: 16, padding: 10 }]}>Maybe you will be also like</Text>
+            <Text style={[styles.textHeader, { fontSize: 16, padding: 10 }]}>Có lẽ bạn cũng sẽ thích</Text>
           </>
         )}
         renderItem={({ item }) => (

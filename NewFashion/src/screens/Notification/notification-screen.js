@@ -13,7 +13,7 @@ const NotificationScreen = ({navigation}) => {
     }, [dispatch]);
     return (
         <View style={styles.container}>
-            <BaseHeader title="Notifications" showLeftButton={true} onLeftButtonPress={() => navigation.goBack()}/>
+            <BaseHeader title="Thông báo" showLeftButton={true} onLeftButtonPress={() => navigation.goBack()}/>
             {
                 isLoading ? (
                     <ActivityIndicator size="large" color="#0000ff" />
