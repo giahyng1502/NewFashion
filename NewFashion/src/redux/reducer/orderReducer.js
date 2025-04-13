@@ -21,7 +21,7 @@ const orderSlice = createSlice({
       })
 
       .addCase(createOrder.fulfilled, (state, action) => {
-        state.orders = action.payload;
+        state.orders = [action.payload,...state.orders];
       })
       .addCase(createOrder.rejected, (state, action) => {
         console.log('Fetch categories failed: ', action.payload);
