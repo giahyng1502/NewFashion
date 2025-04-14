@@ -382,7 +382,7 @@ const CartScreen = ({ navigation }) => {
         navigation.navigate('CheckOut');
       } else {
         //show alert
-        Alert.alert('Warning', 'Please select at least one item to checkout');
+        Alert.alert('Cảnh báo', 'Bạn cần phải chọn tối thiểu 1 sản phẩm để thanh toán');
       }
     } else {
       navigation.navigate('Login');
@@ -788,7 +788,7 @@ const CartScreen = ({ navigation }) => {
                   </Text>
 
                   <Text style={{ fontSize: 14, color: '#737373' }}>
-                    Quantity: {selectedCartItem.quantity}
+                    Số lượng: {selectedCartItem.quantity}
                   </Text>
                 </View>
               </View>
@@ -803,7 +803,7 @@ const CartScreen = ({ navigation }) => {
             <ScrollView>
               <View style={{ padding: 20 }}>
                 <Text style={{ fontSize: 14 }}>
-                  Color
+                  Màu sắc
                 </Text>
 
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
@@ -822,7 +822,7 @@ const CartScreen = ({ navigation }) => {
 
               <View style={{ padding: 20 }}>
                 <Text style={{ fontSize: 14 }}>
-                  Size
+                  Kích cỡ
                 </Text>
 
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
@@ -840,7 +840,7 @@ const CartScreen = ({ navigation }) => {
 
               <View style={{ padding: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text style={{ fontSize: 14 }}>
-                  Quantity
+                  Số lượng
                 </Text>
 
                 <View style={{ flexDirection: 'row', alignItems: 'center', borderRadius: 5, borderWidth: 1, borderColor: '#73733760', paddingHorizontal: 5 }}>
@@ -875,7 +875,7 @@ const CartScreen = ({ navigation }) => {
 
             </ScrollView>
 
-            <FilledButton onPress={handleConfirmPickColorAndSize} title={'Confirm'} customStyle={{ width: ScreenSize.width - 40, backgroundColor: '#FA7806', alignSelf: 'center', marginBottom: 20 }} />
+            <FilledButton onPress={handleConfirmPickColorAndSize} title={'Hoàn tất'} customStyle={{ width: ScreenSize.width - 40, backgroundColor: '#FA7806', alignSelf: 'center', marginBottom: 20 }} />
 
           </Animated.View>
 

@@ -79,7 +79,7 @@ const OrderScreen = ({ navigation }) => {
             style: "destructive",
             onPress: () => {
               dispatch(cancelOrder(orderId)).unwrap();
-              Alert('Hủy đơn hàng thành công')
+              Alert.alert('Thành công','Đơn hàng đã bị hủy')
             },
           },
         ],
@@ -166,7 +166,7 @@ const OrderScreen = ({ navigation }) => {
         {order.status === 0 ? (
           <TouchableOpacity style={{ marginHorizontal: 5, marginRight: 10,paddingVertical: 5, paddingHorizontal: 12, borderWidth: 1, borderColor: 'black', borderRadius: 18, alignSelf: 'flex-end' }}
             onPress={() => handleCancelOrder(order._id)}>
-            <Text style={[styles.textHeader, { fontSize: 16 }]}>Cancel order</Text>
+            <Text style={[styles.textHeader, { fontSize: 16 }]}>Hủy đơn hàng</Text>
           </TouchableOpacity>
         ) : (<View />)}
 
