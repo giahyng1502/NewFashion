@@ -7,7 +7,6 @@ import { configureGoogleSignIn } from './src/firebase/configAuth';
 import { setUser } from "./src/redux/reducer/userReducer";
 import AppManager from "./src/utils/AppManager";
 import { SafeAreaView } from 'react-native-safe-area-context'
-import NotificationDisplay from "./src/screens/Notification/toast-notification";
 import {createNotificationChannel, requestUserPermission} from "./src/firebase/notifice";
 import messaging from "@react-native-firebase/messaging";
 import axios from "./src/service/axios";
@@ -22,7 +21,7 @@ const AppWrapper = () => {
     );
 };
 
-const App = (n) => {
+const App = () => {
     const dispatch = useDispatch();
     // Lấy userId sau khi Redux Provider đã được khởi tạo
     const userId = useSelector((state) => state.user?.userId);
@@ -84,8 +83,6 @@ const App = (n) => {
         <SafeAreaView style={{ flex: 1 ,margin : 0}}>
             <SocketProvider userId={userId} setNotification={setNotification}>
                 <AppNavigator />
-                {/* Cấu hình cho Toast */}
-                <NotificationDisplay notification={notification}/>
             </SocketProvider>
 
         </SafeAreaView>

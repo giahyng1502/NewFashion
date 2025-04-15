@@ -3,7 +3,7 @@ import AppManager from "../utils/AppManager";
 // baseURL: "http://160.191.245.3:3000",
 // baseURL: "https://ce7f-58-186-78-252.ngrok-free.app",
 // https://3737-42-114-151-175.ngrok-free.app
-export const baseUrl = 'https://8e6a-113-23-50-168.ngrok-free.app'
+export const baseUrl = 'https://2541-14-232-99-194.ngrok-free.app'
 
 const api = axios.create({
     baseURL: baseUrl,

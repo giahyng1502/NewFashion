@@ -19,6 +19,7 @@ export async function createNotificationChannel() {
         id: channelId,  // ID kênh thông báo
         name: 'Default Channel',  // Tên kênh
         importance: AndroidImportance.HIGH,  // Độ quan trọng của thông báo
+        sound: 'default'
     });
 }
 
