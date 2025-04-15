@@ -11,7 +11,6 @@ export async function setupNotificationHandlers() {
             android: {
                 channelId: 'default',
                 smallIcon: 'ic_launcher',
-                importance: AndroidImportance.HIGH,
                 pressAction: {
                     id: 'default',
                 },
