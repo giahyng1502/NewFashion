@@ -120,7 +120,7 @@ const OrderDetailScreen = ({navigation,route}) => {
     return (
         <View style={{ backgroundColor: '#fff', flex: 1 }}>
             <BaseHeader
-                title='Order Detail'
+                title='Chi tiết đơn hàng'
                 showLeftButton={true}
                 onLeftButtonPress={() => navigation.goBack()}
             />
@@ -189,7 +189,7 @@ const OrderDetailScreen = ({navigation,route}) => {
                                             onPress={() => {item.reviewId !== null 
                                                 ? navigation.navigate('MyReview', { item: item })
                                                 : navigation.navigate('WriteReview',{ product: item, orderId: order._id })}}>
-                                            <Text style={{ fontSize: 16, color: '#000', fontWeight: 'bold' }}>{item.reviewId !== null ? 'See review' : 'Write review'}</Text>
+                                            <Text style={{ fontSize: 16, color: '#000', fontWeight: 'bold' }}>{item.reviewId !== null ? 'Xem đánh giá' : 'Viết đánh giá'}</Text>
                                         </TouchableOpacity>
                                     )}
                                 </View>

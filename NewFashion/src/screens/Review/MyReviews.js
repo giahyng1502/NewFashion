@@ -26,7 +26,7 @@ const MyReviews = ({ navigation, route }) => {
     return (
         <View style={st.container}>
             {/* header */}
-            <BaseHeader title="My Review" showLeftButton={true} showRightButton={true} onLeftButtonPress={() => { navigation.goBack() }} />
+            <BaseHeader title="Đánh giá của tôi" showLeftButton={true} showRightButton={true} onLeftButtonPress={() => { navigation.goBack() }} />
 
             <View style={{ paddingHorizontal: 16, }}>
                 {/* Product Info */}
@@ -53,9 +53,6 @@ const MyReviews = ({ navigation, route }) => {
                     {/* Timestamp */}
                     <Text style={st.timestamp}>{formatDate(item.reviewId.reviewDate)}</Text>
                     {/* Edit Button */}
-                    <TouchableOpacity style={st.editButton}>
-                        <Text style={st.editText}>Delete</Text>
-                    </TouchableOpacity>
                 </View>
             </View>
 

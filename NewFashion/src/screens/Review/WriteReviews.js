@@ -30,13 +30,13 @@ const WriteReviews = ({ navigation, route }) => {
     const handleReview = () => {
         try {
             if (!product || !product?.productId) {
-                Alert.alert("Error", "Product data is missing!");
+                Alert.alert("Lỗi", "Thông tin không hợp lệ");
                 return;
             }
             console.log("Submitting review for product ID:", product.productId);
 
             if (!rating || !review) {
-                Alert.alert("Error", "Your review isn't valid");
+                Alert.alert("Lỗi", "Thông tin không hợp lệ");
                 return
             } else {
                 dispatch(
@@ -49,7 +49,7 @@ const WriteReviews = ({ navigation, route }) => {
                     })
                 ) // unwrap() giúp lấy dữ liệu từ Promise
 
-                Alert.alert("Review sent", "Your review has been sent", [
+                Alert.alert("Thành công", "Đánh giá của bạn đã được ghi nhận", [
                     { text: "OK", onPress: () => navigation.replace('Your orders') }
                 ]);
             }
@@ -97,7 +97,7 @@ const WriteReviews = ({ navigation, route }) => {
     return (
         <View style={st.container}>
             {/* Header */}
-            <BaseHeader title="Write a review" showLeftButton={true} showRightButton={true} onLeftButtonPress={() => { navigation.goBack() }} />
+            <BaseHeader title="Viết đánh giá" showLeftButton={true} showRightButton={true} onLeftButtonPress={() => { navigation.goBack() }} />
 
             <View style={{ borderBottomWidth: 7, borderBottomColor: '#E7E7E7' }}>
                 {/* Product Info */}
@@ -129,11 +129,11 @@ const WriteReviews = ({ navigation, route }) => {
                         </TouchableOpacity>
                     ))}
                 </View>
-                <Text style={st.rateLabel}>Rate this product*</Text>
+                <Text style={st.rateLabel}>Xếp hạng sản phẩm</Text>
 
                 {/* Review Input */}
                 <View style={{ paddingHorizontal: 10 }}>
-                    <Text style={{ color: '#1E1E1E', fontWeight: '600', fontSize: 16, marginVertical: 8 }}>Write a review</Text>
+                    <Text style={{ color: '#1E1E1E', fontWeight: '600', fontSize: 16, marginVertical: 8 }}>Viết nhận xét</Text>
                     <View style={st.reviewBox}>
                         <TextInput
                             style={st.textInput}
@@ -148,10 +148,10 @@ const WriteReviews = ({ navigation, route }) => {
 
                 {/* Add Photos or Videos */}
                 <View style={{ paddingHorizontal: 10 }}>
-                    <Text style={{ color: '#1E1E1E', fontWeight: '600', fontSize: 16, marginVertical: 8 }}>Add photos or videos</Text>
+                    <Text style={{ color: '#1E1E1E', fontWeight: '600', fontSize: 16, marginVertical: 8 }}>Thêm ảnh hoặc video</Text>
                     <TouchableOpacity style={st.imagePicker} onPress={() => selectImage()}>
                         <Image source={require("../../assets/icons/ic_add_photo.png")} />
-                        <Text style={st.imagePickerText}>Add photos or videos</Text>
+                        <Text style={st.imagePickerText}>Thêm ảnh hoặc video</Text>
                     </TouchableOpacity>
                     <View style={{ flexDirection: "row", flexWrap: "wrap", marginVertical: 18 }}>
                         {images.map((uri, index) => (
@@ -160,7 +160,7 @@ const WriteReviews = ({ navigation, route }) => {
                     </View>
                 </View>
                 <TouchableOpacity style={st.submitButton} onPress={() => handleReview()}>
-                    <Text style={st.submitButtonText}>Send</Text>
+                    <Text style={st.submitButtonText}>Gửi</Text>
                 </TouchableOpacity>
             </View>
         </View>
