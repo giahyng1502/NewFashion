@@ -87,11 +87,15 @@ const YouScreen = ({ navigation }) => {
       navigation.navigate(item.text);
     }
     else {
-      if (personalInfo.role === 0) {
-        navigation.navigate('ChatDetail',{id : '67eeafc786a3c7e95e9d3a73'});
-      }
-      else if (personalInfo.role > 0) {
-        navigation.navigate(item.text);
+      if (personalInfo._id) {
+        if (personalInfo?.role === 0) {
+          navigation.navigate('ChatDetail',{id : '67eeafc786a3c7e95e9d3a73'});
+        }
+        else if (personalInfo?.role === 1 || personalInfo?.role === 2) {
+          navigation.navigate(item.text);
+        }
+      }else {
+        navigation.navigate('Login');
       }
     }
   }
