@@ -171,8 +171,8 @@ const LoginScreen = ({ navigation }) => {
                 </View>
                 <View style={st.separator} />
                 <Text style={st.troubleSubtitle}>Nhập địa chỉ email của bạn bên dưới và chúng tôi sẽ gửi cho bạn mã đặt lại mật khẩu gồm 6 chữ số.</Text>
-                <TextField placeholder="Enter your email" customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }} />
-                <FilledButton title="Submit" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} onPress={() => setCurrentSheet('sheet3')} />
+                <TextField placeholder="Nhập địa chỉ email" customStyle={{ width: ScreenSize.width - 40, marginTop: 4 }} />
+                <FilledButton title="Gửi" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} onPress={() => setCurrentSheet('sheet3')} />
               </>
             )}
             {currentSheet === 'sheet3' && (
@@ -188,7 +188,7 @@ const LoginScreen = ({ navigation }) => {
                 </View>
                 <View style={st.separator} />
                 <Text style={[st.troubleSubtitle, { paddingHorizontal: 10 }]}>Vui lòng kiểm tra hộp thư của bạn ngay bây giờ! Nhập mã đặt lại mật khẩu gồm 6 chữ số
-                  được gửi đến dominhhieuhn01@gmail.com. Mã sẽ hết hạn sau 2 giờ.</Text>
+                  được gửi đến email của bạn. Mã sẽ hết hạn sau 2 giờ.</Text>
 
                 <View style={{ flexDirection: 'row', justifyContent: 'center', padding: 10 }}>
                   {values.map((value, index) => (
@@ -203,7 +203,7 @@ const LoginScreen = ({ navigation }) => {
                 </View>
                 <View>
                   <Text style={{ alignSelf: 'center' }}>60 giây Gửi lại mã</Text>
-                  <FilledButton title="Submit" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} onPress={() => setCurrentSheet('sheet4')} />
+                  <FilledButton title="Gửi" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} onPress={() => setCurrentSheet('sheet4')} />
                 </View>
                 <View style={{ marginTop: 60, alignSelf: 'flex-start', padding: 10 }} >
                   <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8 }}>
@@ -240,7 +240,7 @@ const LoginScreen = ({ navigation }) => {
                   <Text style={st.passwordQuality}>
                     Đừng sử dụng mật khẩu của một trang web khác hoặc thứ gì đó quá dễ đoán như tên thú cưng của bạn.
                   </Text>
-                  <FilledButton title="Submit" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} onPress={() => setCurrentSheet('sheet5')} />
+                  <FilledButton title="Gửi" customStyle={{ backgroundColor: 'black', width: ScreenSize.width - 40, marginTop: 20 }} onPress={() => setCurrentSheet('sheet5')} />
                 </View>
               </>
             )}
@@ -410,6 +410,7 @@ const st = StyleSheet.create({
   troubleSubtitle: {
     fontSize: 14,
     color: '#1E1E1E',
+    marginHorizontal:10,
     marginBottom: 10,
     fontWeight: '700',
   },
