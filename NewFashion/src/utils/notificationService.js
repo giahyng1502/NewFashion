@@ -6,10 +6,11 @@ export async function setupNotificationHandlers() {
         console.log('📩 Thông báo nhận khi app đang mở:', remoteMessage);
 
         await notifee.displayNotification({
-            title: remoteMessage.notification?.title || 'Thông báo mới',
-            body: remoteMessage.notification?.body || '',
+            title: remoteMessage.data?.title || 'Thông báo mới',
+            body: remoteMessage.data?.body || '',
             android: {
                 channelId: 'default',
+                importance: AndroidImportance.HIGH,  // Độ quan trọng của thông báo
                 smallIcon: 'ic_launcher',
                 pressAction: {
                     id: 'default',

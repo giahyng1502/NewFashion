@@ -11,8 +11,8 @@ import notifee, {AndroidImportance} from "@notifee/react-native";
 messaging().setBackgroundMessageHandler(async remoteMessage => {
     console.log('Thông báo nhận được khi ứng dụng chạy nền:', remoteMessage);
     await notifee.displayNotification({
-        title: remoteMessage.notification?.title || 'Thông báo mới',
-        body: remoteMessage.notification?.body || '',
+        title: remoteMessage.data?.title || 'Thông báo mới',
+        body: remoteMessage.data?.body || '',
         android: {
             channelId: 'default',
             smallIcon: 'ic_launcher',
