@@ -36,7 +36,8 @@ const App = () => {
                 dispatch(setUser(user)); // Cập nhật Redux store
             }
         };
-        fetchUserData();
+        fetchUserData(); // Gọi hàm ngay lập tức
+
     }, [dispatch]);
     // config firebaseAuth
     useEffect(() => {

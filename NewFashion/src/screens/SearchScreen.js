@@ -3,9 +3,11 @@ import React, { useEffect, useRef, useState } from 'react'
 import SearchBar from '../components/SearchBar';
 import ProductCard from '../components/ProductCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { searchProduct } from '../redux/actions/productActions';
+import {uploadImageForImageCrop} from "../until/upload";
+import axios from "../service/axios";
+import LoadingDialog from "../dialogs/loadingDialog";
 
 
 
@@ -15,6 +17,7 @@ const SearchScreen = ({ navigation, onSearch }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [productList, setProductList] = useState([]);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false)
   /// lịch sử tìm kiếm
   useEffect(() => {
     const fetchLocalData = async () => {
@@ -36,11 +39,11 @@ const SearchScreen = ({ navigation, onSearch }) => {
   }
 
   const fetchProducts = async (query) => {
-    setSearchQuery(query); 
+    setSearchQuery(query);
     if (!query.trim()) {
       setProductList([]);
       return;
-    }  
+    }
     dispatch(searchProduct(query))
       .then(async (kq) => {
         const results = kq.payload
@@ -50,20 +53,31 @@ const SearchScreen = ({ navigation, onSearch }) => {
           setRecentSearch(updatedRecentSearch);
           await AsyncStorage.setItem('recentSearch', JSON.stringify(updatedRecentSearch));
         }
-      }) 
+      })
       .catch((error) => {
         console.log('err ', error);
       });
   };
-
+  const onImagePicked = async (image)=> {
+    setLoading(true);
+    const imageLink =await uploadImageForImageCrop(image);
+    const res = await axios.post('tensor/search-by-image',{ imageUrl : imageLink[0] });
+    if (res && res.data) {
+      setProductList(res.data);
+      setSearchQuery('image');
+      setLoading(false);
+    }
+  }
   return (
-    <View>
+      <>
+        <LoadingDialog loading={loading}/>
+        <View>
       {/* Header */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16 }}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image source={require('../assets/ic_back.png')} style={{ width: 20, height: 20 }} />
         </TouchableOpacity>
-        <SearchBar disable={true} onSearch={fetchProducts} />
+        <SearchBar disable={true} onSearch={fetchProducts} onImagePicked={onImagePicked} />
       </View>
 
       {/* Hiển thị DataSearch khi có nội dung tìm kiếm */}
@@ -87,7 +101,7 @@ const SearchScreen = ({ navigation, onSearch }) => {
           {/* Recent Search */}
           {recentSearch.length > 0 && (
             <View style={{ paddingHorizontal: 16, marginBottom: 10 }}>
-              <View style={[styles.sectionHeader, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 5 }]}>
+              <View style={[{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 5 }]}>
                 <Text style={styles.sectionTitle}>Từ khóa vừa tìm kiếm</Text>
                 <TouchableOpacity
                   onPress={async () => {
@@ -124,7 +138,7 @@ const SearchScreen = ({ navigation, onSearch }) => {
           {/* Browsing History */}
           {browsingHistory.length > 0 && (
             <View style={{ paddingHorizontal: 16 }}>
-              <View style={[styles.sectionHeader, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 5, paddingBottom: 5 }]}>
+              <View style={[ { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 5, paddingBottom: 5 }]}>
                 <Text style={styles.sectionTitle}>Lịch sử tìm kiếm</Text>
               </View>
               <FlatList
@@ -147,6 +161,7 @@ const SearchScreen = ({ navigation, onSearch }) => {
         </>
       )}
     </View>
+      </>
   );
 };
 
@@ -189,7 +204,7 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff', 
+    backgroundColor: '#ffffff',
     borderRadius: 24,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -198,7 +213,7 @@ const styles = StyleSheet.create({
   image: {
     width: 40,
     height: 40,
-    borderRadius: 20, 
+    borderRadius: 20,
     marginRight: 8,
   },
   text: {

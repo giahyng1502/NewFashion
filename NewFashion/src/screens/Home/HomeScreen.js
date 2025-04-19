@@ -1,26 +1,20 @@
-import { StyleSheet, Animated, ScrollView, TouchableOpacity, FlatList, View, Image, Text, LayoutAnimation, ActivityIndicator } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
-import { TextInput } from 'react-native-gesture-handler'
+import { StyleSheet,  TouchableOpacity, FlatList, View, Image, Text, LayoutAnimation, ActivityIndicator } from 'react-native'
+import React, { useEffect,  } from 'react'
 import ProductCard from '../../components/ProductCard';
-import { io } from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
-import { setSocketConnection } from "../../redux/reducer/userReducer";
-import ScreenSize from '../../contants/ScreenSize';
 import AppManager from '../../utils/AppManager';
 import SearchBar from '../../components/SearchBar';
 import { fetchProducts } from '../../redux/actions/productActions';
-import { jwtDecode } from "jwt-decode";
 import { fetchCart } from '../../redux/actions/cartActions';
-import SupportFunctions from '../../utils/SupportFunctions';
 import LightningDealItem from '../../components/LightningDealItem';
 
-const titleCategories = [
-  { id: "1", name: "All", image: null },
-  { id: "2", name: "DEALS", image: require("../../assets/icons/ic_deals.png"), highlight: true },
-  { id: "3", name: "Best Sellers", image: require("../../assets/icons/ic_bestSell.png") },
-  { id: "4", name: "5-Star Rated", image: require("../../assets/icons/ic_fiveStar.png") },
-  { id: "5", name: "New Arrivals", image: require("../../assets/icons/ic_newArrvals.png") },
-];
+// const titleCategories = [
+//   { id: "1", name: "All", image: null },
+//   { id: "2", name: "DEALS", image: require("../../assets/icons/ic_deals.png"), highlight: true },
+//   { id: "3", name: "Best Sellers", image: require("../../assets/icons/ic_bestSell.png") },
+//   { id: "4", name: "5-Star Rated", image: require("../../assets/icons/ic_fiveStar.png") },
+//   { id: "5", name: "New Arrivals", image: require("../../assets/icons/ic_newArrvals.png") },
+// ];
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
