@@ -25,6 +25,7 @@ import { fetchCart } from '../../redux/actions/cartActions'
 import {useSocket} from "../../context/socketContext";
 import generatePaymentCode from "../../until/genaratePaymentCode";
 import {createPayment} from "../../redux/actions/paymentAction";
+import { ConvertMoney } from '../../until/convert-money';
 
 const CheckoutScreen = ({ navigation }) => {
     const { carts } = useSelector(state => state.cart);
@@ -373,7 +374,6 @@ const CheckoutScreen = ({ navigation }) => {
 
         const discountPercent = voucher.discount || 0;
         const maxDiscountPrice = voucher.maxDiscountPrice || 0;
-
         const discount = (carts.total * discountPercent) / 100;
         const maxDiscount = Math.min(discount, maxDiscountPrice);
 

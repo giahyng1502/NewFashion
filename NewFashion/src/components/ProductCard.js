@@ -9,7 +9,12 @@ const convertPrice = (price) => {
 const ProductCard = ({ item, onSelected, style }) => (
   <TouchableOpacity style={[st.card, style]} onPress={() => onSelected(item)}>
     <View style={st.imageContainer}>
-      <Image source={{ uri: item.image[0] }} style={st.image} resizeMode='cover' />
+      <Image
+          source={{ uri: item.imageUrl ? item.imageUrl : item.image[0] }}
+          style={st.image}
+          resizeMode='cover'
+      />
+
     </View>
     <Text style={st.title} numberOfLines={1}>{item.name}</Text>
     {(item.stock <= 10) && <Text style={st.almostSoldOut}>Gần hết hàng rồi</Text>}
@@ -74,12 +79,12 @@ const st = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    width: "100%",  
+    width: "100%",
     paddingHorizontal: 1,
   },
   price: {
     fontSize: 16,
-    color: "#1D1D1D", 
+    color: "#1D1D1D",
     fontWeight: "700",
   },
   cartIcon: {

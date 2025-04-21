@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "992734735800-521tnadirsh1usv0v6tehfn5hsdkmvce.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.newfashion",
+            "certificate_hash": "882d0f0361568c49956f35955cdd9b5215135d63"
+          }
+        },
+        {
           "client_id": "992734735800-gs293137hjiqq66r6gtjjg4d7emv3ct0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

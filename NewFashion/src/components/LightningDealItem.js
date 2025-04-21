@@ -8,8 +8,8 @@ const LightningDealItem = ({ item, onPress }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       const currentTime = new Date().getTime();
-      const startTime = new Date(item.createdAt).getTime();
-      const endTime = new Date(item.expireAt).getTime();
+      const startTime = new Date(item?.createdAt).getTime();
+      const endTime = new Date(item?.expireAt).getTime();
 
       const totalTime = endTime - startTime;
       const elapsedTime = currentTime - startTime;
@@ -19,17 +19,17 @@ const LightningDealItem = ({ item, onPress }) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [item.createdAt, item.expireAt]);
+  }, [item.createdAt, item?.expireAt]);
 
   return (
     <TouchableOpacity style={st.productItem} onPress={onPress}>
-      <Image source={{ uri: item.productId.image[0] }} style={st.productImage} />
+      <Image source={{ uri: item?.productId?.image[0] }} style={st.productImage} />
 
       <View style={st.labelContainer}>
           <Text style={st.labelText}>{`Còn lại ${item.limit - item.productId.sold}`}</Text>
         </View>
-      <Text style={st.priceText}>{SupportFunctions.convertPrice(item.productId.price)}</Text>
-      <Text style={st.soldText}>{item.productId.sold} bán</Text>
+      <Text style={st.priceText}>{SupportFunctions.convertPrice(item?.productId?.price)}</Text>
+      <Text style={st.soldText}>{item?.productId?.sold} bán</Text>
       <View style={st.progressBarBackground}>
         <View style={[st.progressBarFill, { width: `${progress}%` }]}>
           <Image source={require('../assets/icons/ic_clock.png')} style={{ width: 14, height: 14, position: 'absolute', right: -7, top: -4.5 }} />

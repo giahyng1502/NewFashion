@@ -3,11 +3,12 @@ import AppManager from "../utils/AppManager";
 // baseURL: "http://160.191.245.3:3000",
 // baseURL: "https://ce7f-58-186-78-252.ngrok-free.app",
 // https://3737-42-114-151-175.ngrok-free.app
-export const baseUrl = 'http://160.191.245.3:3000'
+// https://backend-newfashion-328609313507.asia-southeast1.run.app
+export const baseUrl = 'https://api.hungcy.id.vn'
 
 const api = axios.create({
     baseURL: baseUrl,
-    timeout: 50000,
+    timeout: 20000,
     headers: {
         "Content-Type": "application/json",
     },
