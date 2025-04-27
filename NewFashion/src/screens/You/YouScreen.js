@@ -187,10 +187,6 @@ const YouScreen = ({navigation}) => {
                       </View>
                     </Pressable>
                     <View style={st.headerIcons}>
-                      <Image
-                        source={require('../../assets/icons/ic_support.png')}
-                        style={st.icon}
-                      />
                       <TouchableOpacity
                         onPress={() => navigation.navigate('Setting')}>
                         <Image

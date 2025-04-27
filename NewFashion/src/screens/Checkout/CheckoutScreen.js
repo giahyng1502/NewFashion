@@ -150,10 +150,6 @@ const CheckoutScreen = ({ navigation }) => {
             const orderData = response?.payload;
 
             if (isSuccess && orderData) {
-                navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Cart' }],
-                })
                 if (payment === "direct") {
                     navigation.replace('OrderDone');
                 } else if (payment === "momo") {

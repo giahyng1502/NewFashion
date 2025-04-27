@@ -24,12 +24,6 @@ export const menuItems = [
     title:'Danh sách địa chỉ'
   },
   {
-    id: '5',
-    image: require('../../assets/icons/ic_support.png'),
-    text: 'Customer support',
-    title:'Hỗ trợ khách hàng'
-  },
-  {
     id: '6',
     image: require('../../assets/icons/ic_settings.png'),
     text: 'Settings',
