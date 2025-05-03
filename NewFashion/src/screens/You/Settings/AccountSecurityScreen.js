@@ -6,18 +6,18 @@ const getPasswordStrength = password => {
   const length = password.length;
 
   if (length >= 10 || (length > 8 && specialChars > 0)) {
-    return {label: 'Strong', color: '#078809'};
+    return {label: 'Mạnh', color: '#078809'};
   }
   if (length >= 8 && specialChars === 0) {
-    return {label: 'Fair', color: '#EE640F'};
+    return {label: 'Trung bình', color: '#EE640F'};
   }
   if (length === 8 && specialChars > 0) {
-    return {label: 'Good', color: '#EF9E1C'};
+    return {label: 'Tốt', color: '#EF9E1C'};
   }
   if (length === 6 && specialChars >= 3) {
-    return {label: 'Strong', color: '#078809'};
+    return {label: 'Mạnh', color: '#078809'};
   }
-  return {label: 'Weak', color: '#DF0808'};
+  return {label: 'Yếu', color: '#DF0808'};
 };
 
 const formatPhoneNumber = phone =>

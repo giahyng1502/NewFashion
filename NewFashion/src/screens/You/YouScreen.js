@@ -19,6 +19,7 @@ import {menuItems, bottomMenuItems} from './optionsData';
 
 const YouScreen = ({navigation}) => {
   const {personalInfo} = useSelector(state => state.personalInfo);
+  //const {personalInfo} = AppManager.shared.getUserInfo()
   const [browsingHistory, setBrowsingHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
