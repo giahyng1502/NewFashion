@@ -23,6 +23,7 @@ import {
   updateInformation,
 } from '../../redux/actions/infomationActions';
 import {updateUser} from '../../redux/actions/userActions';
+import {uploadImageForImageCrop} from "../../until/upload";
 
 const {width: screenWidth, height: screenHeight} = Dimensions.get('window');
 const CROP_SIZE = 280;
@@ -140,8 +141,10 @@ export default function CircularCropScreen() {
         params.imagePath,
         cropRegion,
       );
-
-      const data = {...personalInfo, avatar: croppedImage};
+      const imageUrl = await uploadImageForImageCrop(croppedImage,'AVATAR');
+      console.log('hungcy,',imageUrl)
+      console.log('dsds',croppedImage)
+      const data = {...personalInfo, avatar: imageUrl[0]};
       await dispatch(updateUser(data)).unwrap();
       await dispatch(fetchInformation()).unwrap();
       navigation.pop();
