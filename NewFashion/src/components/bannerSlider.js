@@ -3,7 +3,7 @@ import { View, Image, FlatList, StyleSheet, Dimensions, Text } from 'react-nativ
 
 const { width } = Dimensions.get('window');
 
-const ImageSlider = ({ images }) => {
+const BannerSlider = ({ images }) => {
     const flatListRef = useRef(null);
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
     image: {
         width: width,
         height: 200,
+        borderRadius: 10,
         resizeMode: 'cover',
     },
     quantity: {
@@ -70,4 +71,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ImageSlider;
+export default BannerSlider;

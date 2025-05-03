@@ -9,6 +9,7 @@ import postReducer from "../reducer/postReducer";
 import voucherReducer from '../reducer/voucherReducer'
 import orderReducer from '../reducer/orderReducer'
 import notificationReducer from "../reducer/notificationReducer";
+import bannerReducer from "../reducer/bannerReducer";
 
 export default configureStore({
     reducer: {
@@ -21,6 +22,7 @@ export default configureStore({
         post: postReducer,
         coupons: voucherReducer,
         orders:orderReducer,
-        notification: notificationReducer
+        notification: notificationReducer,
+        banner : bannerReducer
     }
 })

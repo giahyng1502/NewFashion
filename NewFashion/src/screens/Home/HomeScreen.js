@@ -7,14 +7,18 @@ import SearchBar from '../../components/SearchBar';
 import { fetchProducts } from '../../redux/actions/productActions';
 import { fetchCart } from '../../redux/actions/cartActions';
 import LightningDealItem from '../../components/LightningDealItem';
+import {fetchBanner} from "../../redux/actions/bannerAction";
+import BannerSlider from "../../components/bannerSlider";
 
 const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const { products, saleProducts, loading, page, hasMore } = useSelector(state => state.product);
+  const {banner} = useSelector(state => state.banner);
   const { carts } = useSelector(state => state.cart);
 
   useEffect(() => {
     dispatch(fetchCart())
+    dispatch(fetchBanner())
   }, [dispatch]);
 
   const loadMoreProducts = () => {
@@ -55,7 +59,7 @@ const HomeScreen = ({ navigation }) => {
           {/* Banner */}
           <View style={st.bannerContainer}>
             {/* Banner */}
-            <Image source={require('../../assets/img_banner2.png')} style={st.bannerImage} />
+            <BannerSlider images={banner} />
             {/* Cart Button */}
             <TouchableOpacity onPress={handleSelectCartButton} style={{ position: 'absolute', top: 50, right: 20 }}>
               <Image source={require('../../assets/buttons/bt_cart.png')} style={{ width: 35, height: 35 }} />
