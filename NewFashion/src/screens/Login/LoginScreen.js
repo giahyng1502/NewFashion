@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Linking } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Image, Linking, Alert} from 'react-native';
 import BenefitsInfoBox from '../../components/BenefitsInfoBox';
 import OutlinedButton from '../../components/OutlinedButton';
 import ScreenSize from '../../contants/ScreenSize';
@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux';
 import AppManager from '../../utils/AppManager';
 import { onGoogleButtonPress } from './signInWithGoogle';
 import { loginWithGoogle } from "../../redux/actions/userActions";
+import {fetchInformation} from "../../redux/actions/infomationActions";
 
 const LoginScreen = ({ navigation }) => {
 
@@ -53,20 +54,23 @@ const LoginScreen = ({ navigation }) => {
         return;
       }
 
-      dispatch(loginWithGoogle(data.user._user)).then((result) => {
+      dispatch(loginWithGoogle(data.user._user)).then(async (result) => {
         console.log(result);
-        if (result?.meta.requestStatus === 'fulfilled') {
-          AppManager.shared.saveUserInfo(result.payload.token)
-            .then(() => AppManager.shared.getToken())
-            .then((token) => {
-              console.log('token: ', token);
-              navigation.replace('Main');
-            })
-            .catch((err) => {
-              console.log('Error in token processing: ', err);
-            });
-        } else {
-          console.log('Google login failed:', result);
+        try {
+          await AppManager.shared.saveUserInfo(result.payload.token);
+
+          const token = await AppManager.shared.getToken();
+          console.log('token: ', token);
+
+          if (token) {
+            const fetchPersonalInfo = await dispatch(fetchInformation()).unwrap();
+            console.log('Fetch personal info success:', fetchPersonalInfo);
+
+            navigation.replace('Main');
+          }
+        } catch (err) {
+          console.log('Error in token processing: ', err);
+          Alert.alert('Error', 'An error occurred while processing the token. Please try again.');
         }
       });
     } catch (error) {
