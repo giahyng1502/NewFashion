@@ -470,7 +470,7 @@ const AddAddressScreen = ({ navigation, route }) => {
             </View>
 
             {/* Save button */}
-            <FilledButton title="Save" customStyle={{ alignSelf: 'center', backgroundColor: '#EE640F', width: ScreenSize.width - 40, marginVertical: 20 }} onPress={() => { saveInfomation() }} />
+            <FilledButton title="Lưu" customStyle={{ alignSelf: 'center', backgroundColor: '#EE640F', width: ScreenSize.width - 40, marginVertical: 20 }} onPress={() => { saveInfomation() }} />
 
             {/* Bottom Sheet */}
             {isVisible && (
@@ -624,14 +624,14 @@ const AddAddressScreen = ({ navigation, route }) => {
                             <Image source={require('../assets/bt_exit.png')} resizeMode='contain' />
                         </Pressable>
                         <Text style={{ fontSize: 14, fontWeight: 'bold', textAlign: 'center', marginTop: 30 }}>
-                            Courier may be unable to deliver your order as the address provider {' '}
+                            Nhân viên giao hàng có thể không giao được đơn hàng của bạn vì {' '}
                             <Text style={{ color: '#D96923' }}>
-                                maybe missing the building / house number.
+                                địa chỉ mà bạn cung cấp có thể thiếu số nhà hoặc số tòa nhà.
                             </Text>
-                            {' '} Please check if the address provided is correct.
+                            {' '} Vui lòng kiểm tra lại địa chỉ được cung cấp.
                         </Text>
                         <Text style={{ fontSize: 13, fontWeight: 'bold', textAlign: 'left', marginTop: 10, width: '100%', color: '#737373' }}>
-                            Shipping address:
+                            Địa chỉ giao hàng của bạn:
                         </Text>
 
                         <View style={{ padding: 10, borderRadius: 5, backgroundColor: '#F5F5F5', width: '100%', marginTop: 4 }}>
@@ -640,8 +640,8 @@ const AddAddressScreen = ({ navigation, route }) => {
                             </Text>
                         </View>
 
-                        <FilledButton title="Edit my address" customStyle={{ backgroundColor: '#EE640F', width: '100%', marginTop: 20 }} onPress={() => setModalVisible(false)} />
-                        <OutlinedButton title="It is correct" customStyle={{ width: '100%', marginTop: 10 }} onPress={confirmInformation} />
+                        <FilledButton title="Chỉnh sửa" customStyle={{ backgroundColor: '#EE640F', width: '100%', marginTop: 20 }} onPress={() => setModalVisible(false)} />
+                        <OutlinedButton title="Địa chỉ chuẩn xác" customStyle={{ width: '100%', marginTop: 10 }} onPress={confirmInformation} />
                     </View>
                 </View>
             </Modal>

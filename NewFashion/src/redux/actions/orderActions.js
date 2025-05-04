@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../service/axios"
+import { fetchCart } from "./cartActions";
 
 // Tạo async thunk để fetch orders từ API
 export const fetchOrders = createAsyncThunk(
@@ -27,6 +28,7 @@ export const createOrder = createAsyncThunk(
                 voucherId
             });
             console.log('name',name);
+            thunkAPI.dispatch(fetchCart())
             return response.order; // hoặc response.data.order tùy API
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response?.data || 'Đã có lỗi xảy ra');
@@ -50,8 +52,6 @@ export const writeReview = createAsyncThunk(
     "review/writeReview",
     async ({ orderId, rate, content, productId, images }, thunkAPI) => {
         try {
-            
-
             const response = await axios.put(
                 `/putreview/${orderId}`,{rate,content, productId, images} 
             );

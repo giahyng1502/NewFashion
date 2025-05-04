@@ -29,6 +29,11 @@ function ProfileScreen({navigation}) {
     };
   }, []);
 
+  useEffect(() => {
+    console.log('personalInfo: ', personalInfo);
+  }, [personalInfo])
+  
+
   const onHandleOpenSheet = useCallback(
     type => {
       if (type !== sheetType) {
@@ -56,7 +61,7 @@ function ProfileScreen({navigation}) {
       <BaseHeader
         showLeftButton={true}
         title="Thông tin cá nhân"
-        onLeftButtonPress={() => navigation.navigate('Main', {screen: 'You'})}
+        onLeftButtonPress={() => navigation.goBack()}
       />
       <Body user={user} onHandleOpenSheet={onHandleOpenSheet} />
       <Footer />

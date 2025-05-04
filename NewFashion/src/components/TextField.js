@@ -62,6 +62,7 @@ const TextField = ({
         onChangeText={handleChangeText}
         onBlur={onBlur}
         placeholder={placeholder}
+        placeholderTextColor={'gray'}
         secureTextEntry={type === TextFieldType.PASSWORD && !showPassword}
         keyboardType={type === TextFieldType.PHONENUMBER ? 'phone-pad' : 'default'}
       />

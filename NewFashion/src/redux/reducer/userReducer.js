@@ -2,6 +2,7 @@ import {createSlice} from '@reduxjs/toolkit';
 import {
   loginWithEmail,
   loginWithGoogle,
+  register,
   updateUser,
 } from '../actions/userActions';
 
@@ -40,6 +41,17 @@ export const userSlice = createSlice({
     builder
       .addCase(loginWithEmail.fulfilled, (state, action) => {
         const user = action.payload.user;
+        console.log('user',user);
+        state.userId = user._id;
+        state.name = user.name;
+        state.email = user.email;
+        state.avatar = user.avatar;
+        state.role = user.role;
+      })
+      .addCase(register.fulfilled, (state,action)=>{
+        console.log('abc',action.payload.data);
+        const user = action.payload.data;
+        console.log('user',user);
         state.userId = user._id;
         state.name = user.name;
         state.email = user.email;

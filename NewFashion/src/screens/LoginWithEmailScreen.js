@@ -14,6 +14,7 @@ const LoginWithEmailScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rePassword, setRePassword] = useState('');
   const [strengLabel, setStrengLabel] = useState('')
   const [isRegister, setIsRegister] = useState(false);
   const [isContinue, setIsContinue] = useState(false);
@@ -27,6 +28,8 @@ const LoginWithEmailScreen = ({ navigation }) => {
   //errorLabel
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  const [rePasswordError, setRePasswordError] = useState('')
+  
 
   const validateField = (field, value) => {
     let error = '';
@@ -40,6 +43,10 @@ const LoginWithEmailScreen = ({ navigation }) => {
       case 'password':
         error = value.length < 8 ? 'Mật khẩu phải có ít nhất 8 ký tự' : '';
         setPasswordError(error);
+        return error;
+      case 'rePassword':
+        error = value[0] !== value[1] ? 'Mật khẩu không khớp' : '';
+        setRePasswordError(error);
         return error;
       default:
         return '';
@@ -193,8 +200,9 @@ const LoginWithEmailScreen = ({ navigation }) => {
   const handleRegister = () => {
     const emailError = validateField('email', email);
     const passwordError = validateField('password', password);
+    const rePasswordError = validateField('rePassword', [password,rePassword]);
   
-    if (emailError || passwordError) {
+    if (emailError || passwordError || rePasswordError) {
       console.log('Register failed');
       return;
     }
@@ -222,7 +230,7 @@ const LoginWithEmailScreen = ({ navigation }) => {
             console.log('token: ', token);
   
             setIsLoading(false); // Tắt loading trước khi chuyển màn
-            navigation.replace('Main');
+            navigation.replace('Splash');
           } catch (err) {
             console.log('Error in saving or retrieving token: ', err);
             setIsLoading(false);
@@ -315,11 +323,25 @@ const LoginWithEmailScreen = ({ navigation }) => {
             <>
               <PasswordStrengthBar password={password} customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }} onChangeText={setStrengLabel} />
               <Text style={{ fontWeight: 'bold', fontSize: 14, marginTop: 8, alignSelf: 'flex-start', marginVertical: 5 }}>Chất lượng mật khẩu: {strengLabel}</Text>
-            </>
 
+              <Text style={{ marginTop: 10 }}>Nhập lại mật khẩu *</Text>
+              <TextField
+                type={TextFieldType.PASSWORD}
+                placeholder="Vui lòng nhập lại mật khẩu của bạn"
+                onChangeText={setRePassword}
+                customStyle={{ width: ScreenSize.width - 40, marginTop: 10 }}
+              />
+              {rePasswordError &&
+                <View style={st.errorContainer}>
+                  <Image source={require('../assets/icons/ic_warningValidate.png')} resizeMode='contain' style={{ width: 16, height: 16 }} />
+                  <Text style={st.errorLabel} numberOfLines={0}>{rePasswordError}</Text>
+                </View>
+              }
+            </>
           }
         </Animated.View>
       )}
+
       <FilledButton
         onPress={handleContinue}
         title="Tiếp tục"

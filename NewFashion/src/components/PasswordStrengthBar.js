@@ -29,16 +29,16 @@ const PasswordStrengthBar = ({ password, customStyle, onChangeText }) => {
 
         switch (strength) {
             case 1:
-                onChangeText('Weak');
+                onChangeText('Yếu');
                 break
             case 2:
-                onChangeText('Fair');
+                onChangeText('Trung bình');
                 break
             case 3:
-                onChangeText('Good');
+                onChangeText('Tốt');
                 break
             case 4:
-                onChangeText('Strong');
+                onChangeText('Mạnh');
                 break
             default:
                 onChangeText('');

@@ -46,41 +46,6 @@ const anotherOptions = [
   },
 ];
 
-const settings = [
-  {
-    id: '1',
-    iconLeft: require('../../../assets/icons/ic_account.png'),
-    title: 'Account security',
-    iconRight: require('../../../assets/icons/ic_arrowRight1.png'),
-    nameScreen: 'AccountSecurity',
-    h3: 'Tài khoản và bảo mật',
-  },
-  {
-    id: '2',
-    iconLeft: require('../../../assets/icons/ic_shieldLock.png'),
-    title: 'Privacy',
-    iconRight: require('../../../assets/icons/ic_arrowRight1.png'),
-    nameScreen: 'Privacy',
-    h3: 'Sự riêng tư',
-  },
-  {
-    id: '3',
-    iconLeft: require('../../../assets/icons/ic_shieldKey.png'),
-    title: 'Permissions',
-    iconRight: require('../../../assets/icons/ic_arrowRight1.png'),
-    nameScreen: 'Permissions',
-    h3: 'Quyền',
-  },
-  {
-    id: '4',
-    iconLeft: require('../../../assets/icons/ic_shieldCheck.png'),
-    title: 'Safety center',
-    iconRight: require('../../../assets/icons/ic_arrowRight1.png'),
-    nameScreen: 'SafetyCenter',
-    h3: 'Trung tâm an toàn',
-  },
-];
-
 const SettingsScreen = ({navigation}) => {
   const handleNavigate = ({nameScreen}) => navigation.navigate(nameScreen);
   const filteredOptions = options
@@ -131,26 +96,6 @@ const SettingsScreen = ({navigation}) => {
             New Fashion bảo vệ thông tin cá nhân của bạn và giữ cho thông tin đó được riêng tư, an toàn và bảo mật.
             </Text>
           </View>
-
-          {/* Grid 2x2 */}
-          <View style={styles.grid}>
-            {settings.map(item => (
-              <Pressable
-                key={item.id}
-                style={({pressed}) => [
-                  {opacity: pressed ? 0.5 : 1},
-                  styles.card,
-                ]}
-                onPress={() => handleNavigate(item)}>
-                <View style={styles.innerCard}>
-                  <Image source={item.iconLeft} style={styles.innerIcon} />
-                  <Text style={styles.text}>{item.h3}</Text>
-                </View>
-                <Image source={item.iconRight} style={styles.innerIcon} />
-              </Pressable>
-            ))}
-          </View>
-          <View style={styles.firstIndex} />
 
           {/* Phần danh sách dưới */}
           {mergedOptions.map((item, index) => (

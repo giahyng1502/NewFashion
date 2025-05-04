@@ -107,9 +107,9 @@ const LoginScreen = ({ navigation }) => {
 
 
 
-        <TouchableOpacity style={st.troubleContainer} onPress={() => openBottomSheet()} >
+        {/* <TouchableOpacity style={st.troubleContainer} onPress={() => openBottomSheet()} >
           <Text style={st.troubleText}>Gặp sự cố khi đăng nhập?</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <Text style={st.termsText}>
           Bằng cách tiếp tục, bạn đồng ý với chúng tôi{' '}

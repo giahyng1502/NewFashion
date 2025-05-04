@@ -19,6 +19,7 @@ import {menuItems, bottomMenuItems} from './optionsData';
 
 const YouScreen = ({navigation}) => {
   const {personalInfo} = useSelector(state => state.personalInfo);
+  //const {personalInfo} = AppManager.shared.getUserInfo()
   const [browsingHistory, setBrowsingHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -187,10 +188,6 @@ const YouScreen = ({navigation}) => {
                       </View>
                     </Pressable>
                     <View style={st.headerIcons}>
-                      <Image
-                        source={require('../../assets/icons/ic_support.png')}
-                        style={st.icon}
-                      />
                       <TouchableOpacity
                         onPress={() => navigation.navigate('Setting')}>
                         <Image

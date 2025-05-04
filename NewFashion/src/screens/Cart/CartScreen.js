@@ -50,7 +50,7 @@ const CartScreen = ({ navigation }) => {
     }else{
       setIsLoading(false)
     }
-  }, []);
+  }, [carts]);
 
   if (isLoading) {
     return (
@@ -514,7 +514,7 @@ const CartScreen = ({ navigation }) => {
             )}
 
             {/* cart items */}
-            {AppManager.shared.isUserLoggedIn() && cartItems.length > 0 && (
+            {AppManager.shared.isUserLoggedIn() && carts.products.length > 0 && (
               <FlatList
                 data={cartItems}
                 keyExtractor={(item,index) =>`${item._id}${index} cart item in cart`}

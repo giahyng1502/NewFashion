@@ -68,6 +68,7 @@ const OrderDetailScreen = ({navigation,route}) => {
                         dispatch(cancelOrder(order._id))
                             .then((result) => {
                                 navigation.replace('Main')
+                                Alert.alert('Hủy đơn hàng thành công','Đơn hàng của bạn đã bị hủy')
                             })
                             .catch((error) => {
                                 console.error("Error cancel order:", error);
