@@ -16,12 +16,12 @@ const ProductItem = ({ item }) => {
     );
 };
 
-const BuyerDetail = ({ products, onClickShowPopup, information }) => {
+const BuyerDetail = ({ products, onClickShowPopup, information ,isMomo}) => {
     return (
         <View style={styles.container}>
             {/* Thông tin thanh toán */}
             <View style={styles.buyerContainer}>
-                <TouchableOpacity onPress={onClickShowPopup[0]}>
+                <TouchableOpacity onPress={onClickShowPopup[0]} disabled={isMomo}>
                     {/* Địa chỉ giao hàng */}
                     <View style={styles.addressContainer}>
                         <View style={[styles.nameAndPhone, { margin: 0, flex: 1 }]}>
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
         width: '100%',
         flexDirection: 'column'
     },
-    //địa chỉ người mua  
+    //địa chỉ người mua
     buyerContainer: {
         backgroundColor: '#fafafa',
         paddingVertical: 20,

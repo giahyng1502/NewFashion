@@ -18,7 +18,7 @@ import PaymentAnhCoupon from './PaymentAndCoupon'
 import SubInfor from './SubInfor'
 import SupportFunctions from '../../utils/SupportFunctions';
 import BaseHeader from '../../components/BaseHeader'
-import { deleteInformation, updateDefaultInformation } from '../../redux/actions/infomationActions'
+import {deleteInformation, fetchInformation, updateDefaultInformation} from '../../redux/actions/infomationActions'
 import { fetchCoupon } from '../../redux/actions/voucherAction'
 import {cancelOrder, createOrder} from '../../redux/actions/orderActions'
 import { fetchCart } from '../../redux/actions/cartActions'
@@ -31,8 +31,8 @@ const CheckoutScreen = ({ navigation }) => {
     const { carts } = useSelector(state => state.cart);
     const { personalInfo } = useSelector(state => state.personalInfo);
     const { coupons } = useSelector(state => state.coupons);
-    const [addresses, setAddresses] = useState(null)
-
+    const [addresses, setAddresses] = useState(null);
+    const [isMomo, setIsMomo] = useState(false);
     const [isShowPriceBottomSheet, setIsShowPriceBottomSheet] = useState(false)
     const animatedValue = useRef(new Animated.Value(0)).current;
     const bottomSheetHeight = 500
@@ -49,7 +49,6 @@ const CheckoutScreen = ({ navigation }) => {
     const [isLoadingCart, setIsLoadingCart] = useState(true)
     const [isEnabled, setIsEnabled] = useState(false);
     const [payment, setOnPayment] = useState('direct');
-    const socket = useSocket();
     const [newCart, setNewCart] = useState({
         finalTotal : carts.total,
         maxDiscount : 0,
@@ -71,16 +70,12 @@ const CheckoutScreen = ({ navigation }) => {
                 console.error('Error fetching data:', error);
             }
         };
-    
+
         fetchData();
     }, []);
     useEffect(() => {
-        if (socket) {
-            socket.on('payment', (resultCode) => {
-                console.log(resultCode)
-            })
-        }
-    }, []);
+        dispatch(fetchInformation())
+    }, [dispatch]);
     useEffect(() => {
         // console.log('personalInfo:', personalInfo);
 
@@ -102,14 +97,14 @@ const CheckoutScreen = ({ navigation }) => {
 
     function formatDate(isoString) {
         const date = new Date(isoString);
-        
+
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng tính từ 0 nên +1
         const day = String(date.getDate()).padStart(2, '0');
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
         const seconds = String(date.getSeconds()).padStart(2, '0');
-    
+
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     }
     const handleMoMoPayment = async (orderData) => {
@@ -121,8 +116,8 @@ const CheckoutScreen = ({ navigation }) => {
             });
 
             if (response && response.resultCode === 0) {
-                momoReturn.current = response;
-                Linking.openURL(momoReturn.current.payUrl);
+                momoReturn.current = orderData;
+                Linking.openURL(response.payUrl);
             } else {
                 Alert.alert('Thông báo', 'Không thể thanh toán bằng hình thức momo lúc này');
             }
@@ -130,7 +125,7 @@ const CheckoutScreen = ({ navigation }) => {
             Alert.alert('Lỗi', 'Có lỗi xảy ra khi tạo thanh toán MoMo');
         }
     };
-    
+
     useEffect(() => {
         console.log("🟢 isProcessingPayment:", isProcessingPayment);
     }, [isProcessingPayment]);
@@ -154,6 +149,7 @@ const CheckoutScreen = ({ navigation }) => {
                     navigation.replace('OrderDone');
                 } else if (payment === "momo") {
                     setIsProcessingPayment(true);
+                    setIsMomo(true);
                     await handleMoMoPayment(orderData);
                 }
             } else {
@@ -408,8 +404,8 @@ const CheckoutScreen = ({ navigation }) => {
 
             {/* body */}
             <ScrollView>
-                <BuyerDetail products={carts.products} onClickShowPopup={[toggleAdressSheet, toggleBottomSheet]} information={selectedAddress} />
-                <PaymentAnhCoupon onPayment={setOnPayment} newCart={newCart} personalInfo={personalInfo} onSwitch={setIsEnabled} onClickShowPopup={toggleCouponSheet} />
+                <BuyerDetail isMomo={isMomo} products={carts.products} onClickShowPopup={[toggleAdressSheet, toggleBottomSheet]} information={selectedAddress} />
+                <PaymentAnhCoupon isMomo={isMomo} onPayment={setOnPayment} newCart={newCart} personalInfo={personalInfo} onSwitch={setIsEnabled} onClickShowPopup={toggleCouponSheet} />
                 <SubInfor />
             </ScrollView>
 
@@ -424,7 +420,7 @@ const CheckoutScreen = ({ navigation }) => {
                             <Text style={styles.buttonText}>Hủy đơn hàng</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.submitButton,{backgroundColor : '#ff6600',flex : 1}]} onPress={() => {
-                            Linking.openURL(momoReturn.current.payUrl)
+                            handleMoMoPayment(momoReturn.current)
                         }}>
                             <Text style={styles.buttonText}>Thanh toán</Text>
                         </TouchableOpacity>

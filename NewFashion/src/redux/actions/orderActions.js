@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../service/axios"
 import { fetchCart } from "./cartActions";
+import {fetchInformation} from "./infomationActions";
 
 // Tạo async thunk để fetch orders từ API
 export const fetchOrders = createAsyncThunk(
@@ -40,7 +41,7 @@ export const cancelOrder = createAsyncThunk(
     'order/cancelOrder',
     async (_id, thunkAPI) => {
         try {
-            const response = await axios.put(`/order/cancel/${_id}`);            
+            const response = await axios.put(`/order/cancel/${_id}`);
             return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data);
@@ -53,7 +54,7 @@ export const writeReview = createAsyncThunk(
     async ({ orderId, rate, content, productId, images }, thunkAPI) => {
         try {
             const response = await axios.put(
-                `/putreview/${orderId}`,{rate,content, productId, images} 
+                `/putreview/${orderId}`,{rate,content, productId, images}
             );
             return response.review; // Đảm bảo API trả về dữ liệu đúng
         } catch (error) {

@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     },
     image: {
         width: width,
-        height: 200,
+        height: 350,
         resizeMode: 'cover',
     },
     quantity: {

@@ -3,12 +3,12 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, Switch } from "react-n
 import { RadioButton } from "react-native-paper";
 import SupportFunctions from '../../utils/SupportFunctions';
 
-const PaymentAndCoupon = ({onPayment, newCart, personalInfo, onSwitch, onClickShowPopup }) => {
+const PaymentAndCoupon = ({onPayment,isMomo,newCart, personalInfo, onSwitch, onClickShowPopup }) => {
   useEffect(() => {
     console.log(newCart);
-    
+
   }, [])
-  
+
   const [selectedPayment, setSelectedPayment] = useState("direct");
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => {
@@ -31,6 +31,7 @@ const PaymentAndCoupon = ({onPayment, newCart, personalInfo, onSwitch, onClickSh
         <View style={styles.paymentOption}>
           <RadioButton
             value="direct"
+            disabled={isMomo}
             status={selectedPayment === "direct" ? "checked" : "unchecked"}
             onPress={() => {
               setSelectedPayment("direct")
@@ -45,6 +46,7 @@ const PaymentAndCoupon = ({onPayment, newCart, personalInfo, onSwitch, onClickSh
         <View style={styles.paymentOption}>
           <RadioButton
             value="momo"
+            disabled={isMomo}
             status={selectedPayment === "momo" ? "checked" : "unchecked"}
             onPress={() => {
               setSelectedPayment("momo")
@@ -62,7 +64,7 @@ const PaymentAndCoupon = ({onPayment, newCart, personalInfo, onSwitch, onClickSh
       {/* Coupon */}
       <View style={[styles.titleContainer, { marginBottom: 0, padding: 15, justifyContent: 'space-between', alignItems: 'center' }]}>
         <Text style={styles.couponText}>Áp dụng mã giảm giá</Text>
-        <TouchableOpacity onPress={()=>onClickShowPopup()}>
+        <TouchableOpacity onPress={()=>onClickShowPopup()} disabled={isMomo}>
           <Image source={require('../../assets/ic_arrowRight.png')} style={styles.importantIcon} />
         </TouchableOpacity>
       </View>
@@ -79,6 +81,7 @@ const PaymentAndCoupon = ({onPayment, newCart, personalInfo, onSwitch, onClickSh
           trackColor={{ false: "#767577", true: "#81b0ff" }}
           thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
           onValueChange={toggleSwitch}
+          disabled={isMomo}
           value={isEnabled}
         />
       </View>
