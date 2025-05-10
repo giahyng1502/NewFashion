@@ -157,7 +157,7 @@ Bạn có thể tham khảo web quản trị ở đây:
 ## 📺 Video demo
 
 Bạn có thể xem video demo ứng dụng tại đây:  
-[👉 Xem video demo](https://youtu.be/po5xc1yhpkM)
+[👉 Xem video demo](https://youtu.be/A2xO4Iza9H0)
 
 ---
 
